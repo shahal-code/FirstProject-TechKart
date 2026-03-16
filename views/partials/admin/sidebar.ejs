@@ -1,0 +1,66 @@
+<aside id="adminSidebar" class="fixed inset-y-0 left-0 lg:static lg:block w-64 border-r border-white/5 flex flex-col glass-morphism z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <div class="p-8 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-3xl font-bold">bolt</span>
+            <span class="text-xl font-bold tracking-tighter uppercase">TechKart</span>
+        </div>
+        <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <nav class="flex-1 px-4 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'dashboard' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+            href="/admin/dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-medium text-sm">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-medium text-sm">Products</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span class="font-medium text-sm">Orders</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'users' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+            href="/admin/users">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium text-sm">Customers</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">confirmation_number</span>
+            <span class="font-medium text-sm">Coupons</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">monitoring</span>
+            <span class="font-medium text-sm">Reports</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">category</span>
+            <span class="font-medium text-sm">Category</span>
+        </a>
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            href="#">
+            <span class="material-symbols-outlined">redeem</span>
+            <span class="font-medium text-sm">Offer</span>
+        </a>
+    </nav>
+    <div class="p-6 border-t border-white/5">
+        <a href="/admin/logout" class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-all mt-auto mb-4">
+            <span class="material-symbols-outlined font-bold">logout</span>
+            <span class="font-bold text-sm">Logout</span>
+        </a>
+        <div class="bg-primary/5 rounded-xl p-4">
+            <p class="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">System Status</p>
+            <div class="flex items-center gap-2">
+                <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+                <span class="text-xs text-slate-400">Secure &amp; Online</span>
+            </div>
+        </div>
+    </div>
+</aside>

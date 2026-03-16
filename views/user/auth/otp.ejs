@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TechKart Premium Verification</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0055ff",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0f1623",
+                        "dark-form": "#0D0D0D",
+                        "dark-card": "#131313",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+                @apply bg-[#0D0D0D] text-gray-200 antialiased;
+            }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Input specific styling to remove spin arrows logic for numbers */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-form font-display text-white overflow-hidden h-screen w-screen">
+    <div class="flex h-full w-full flex-col lg:flex-row">
+        <!-- Left Side content (Laptop visual) -->
+        <div class="relative hidden lg:flex lg:w-1/2 flex-col justify-center items-center bg-[#070b13] overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-50">
+                <div class="w-full h-full bg-cover bg-left"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlnf5aHccqEycRlxUalf8vCI7t1e3PiALiuXTwOHlC2ZyRO33EELlCD9aw1QpVVmDo7ROA_GZk6EBwdVFuwqy2qiTPm6l5ZVeHhRof-cXfpH4cLAnbwZx2AhG4aswJI9Cg8oAncd8JY-xdiGDCmwtubEOA3ITdXtu_ReETFkok4-PJ2iM0-ZelpmFalDpy7hjXt2vZJSRk5Te2MnZprompt");'>
+                </div>
+            </div>
+            <!-- Custom laptop overlay if no direct image match exists, fallback to dark sleek background -->
+            <div class="absolute inset-0 z-10 bg-gradient-to-tr from-[#020617] via-transparent to-[#020617]/90"></div>
+
+            <div class="relative z-20 flex flex-col items-center text-center px-12">
+                <div
+                    class="mb-8 flex items-center justify-center p-5 bg-[#1a2b4c]/70 rounded-full border border-primary/20 backdrop-blur-md">
+                    <span class="material-symbols-outlined text-primary text-6xl"
+                        style="font-variation-settings: 'FILL' 1">bolt</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4 text-white">TechKart Premium</h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-md leading-relaxed mx-auto">
+                    Unlock exclusive access to the world's most powerful hardware and elite tech services.
+                </p>
+            </div>
+            <div
+                class="absolute bottom-10 left-10 flex items-center gap-2 text-white/40 text-xs tracking-widest font-semibold uppercase">
+                <span class="material-symbols-outlined text-sm">verified</span>
+                <span>Authorized Hardware Provider</span>
+            </div>
+        </div>
+
+        <!-- Right Side content (OTP Verification) -->
+        <div class="flex-1 flex flex-col bg-[#131313] min-h-screen relative">
+            <header class="absolute top-0 w-full flex items-center justify-end px-8 py-8 lg:px-12 z-20">
+                <a class="text-sm font-medium text-gray-500 hover:text-white transition-colors" href="#">Support</a>
+            </header>
+
+            <main class="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-24 h-full relative z-10">
+                <div class="w-full max-w-[480px]">
+                    <div class="mb-10 text-center md:text-left">
+                        <h2 class="text-3xl md:text-4xl font-black tracking-tight text-white mb-3">Verify Your Account
+                        </h2>
+                        <p class="text-gray-400 text-sm md:text-base">We've sent a 6-digit code to your email.</p>
+                        <% if(typeof message !=='undefined' ) { %>
+                            <p class="text-red-500 text-sm mt-2">
+                                <%= message %>
+                            </p>
+                            <% } %>
+                    </div>
+
+                    <form action="<%= typeof actionUrl !== 'undefined' ? actionUrl : '/user/verify-otp' %>" method="POST" id="otpForm" class="flex flex-col gap-10">
+                        <div class="flex justify-between gap-2 md:gap-4 w-full">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" autofocus oninput="moveToNext(this, event)">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" oninput="moveToNext(this, event)">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" oninput="moveToNext(this, event)">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" oninput="moveToNext(this, event)">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" oninput="moveToNext(this, event)">
+                            <input type="number"
+                                class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                maxLength="1" oninput="moveToNext(this, event)">
+                        </div>
+
+                        <input type="hidden" name="otp" id="otpValue">
+
+                        <div class="flex flex-col items-center gap-6 mt-2">
+                            <button
+                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-lg transition-all shadow-[0_0_20px_rgba(0,85,255,0.3)] flex items-center justify-center gap-2"
+                                type="submit" onclick="submitOtp()">
+                                Verify & Continue
+                            </button>
+
+                            <div class="text-sm font-medium flex flex-col items-center gap-2">
+                                <span class="text-gray-400">Didn't receive the code?
+                                    <button type="button" id="resendBtn"
+                                        class="text-primary hover:underline ml-1 cursor-not-allowed opacity-50" disabled
+                                        onclick="resendOtp()">Resend</button>
+                                </span>
+                                <span class="text-xs text-gray-500" id="timerText">Resend in <span
+                                        id="timer">00:59</span></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+            <footer class="absolute bottom-0 w-full px-8 py-8 text-center bg-transparent z-20">
+                <p class="text-gray-600 text-[11px] font-medium tracking-wide">
+                    © 2024 TechKart Inc. All rights reserved. <a class="hover:text-gray-400 ml-1 transition-colors"
+                        href="#">Privacy Policy</a> · <a class="hover:text-gray-400 transition-colors" href="#">Terms of
+                        Service</a>
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Store hidden OTP value for submission form logic
+        function submitOtp() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            let otp = '';
+            inputs.forEach(input => {
+                otp += input.value;
+            });
+            document.getElementById('otpValue').value = otp;
+        }
+
+        // Auto move cursor logic
+        function moveToNext(currentInput, e) {
+            // Backspace handling
+            if (e.inputType === "deleteContentBackward") {
+                if (currentInput.previousElementSibling) {
+                    currentInput.previousElementSibling.focus();
+                }
+                return;
+            }
+
+            // Move to next handling
+            if (currentInput.value.length > 1) {
+                currentInput.value = currentInput.value.slice(0, 1);
+            }
+            if (currentInput.value.length === 1 && currentInput.nextElementSibling) {
+                currentInput.nextElementSibling.focus();
+            }
+        }
+
+        // Listen to explicit keydown for backspace when input is already empty
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    if (this.previousElementSibling) {
+                        this.previousElementSibling.focus();
+                    }
+                }
+            });
+        });
+
+        // OTP Timer logic
+        let count = 59;
+        const timerElement = document.getElementById('timer');
+        const resendBtn = document.getElementById('resendBtn');
+        const timerText = document.getElementById('timerText');
+
+        const countdown = setInterval(() => {
+            if (count <= 0) {
+                clearInterval(countdown);
+                timerElement.innerHTML = "00:00";
+                resendBtn.disabled = false;
+                resendBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+                timerText.style.display = 'none';
+            } else {
+                let seconds = count < 10 ? '0' + count : count;
+                timerElement.innerHTML = `00:${seconds}`;
+                count--;
+            }
+        }, 1000);
+
+        function resendOtp() {
+            if (!resendBtn.disabled) {
+                // Post request to backend to resend OTP
+                const resendUrl = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/user/resend-otp" %>';
+                fetch(resendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    // Reset timer visual just in case page doesn't refresh
+                    resendBtn.disabled = true;
+                    resendBtn.classList.add('cursor-not-allowed', 'opacity-50');
+                    timerText.style.display = 'inline';
+                    count = 59;
+                    timerElement.innerHTML = `00:59`;
+                    // Note: would normally restart the setInterval here if no redirect
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

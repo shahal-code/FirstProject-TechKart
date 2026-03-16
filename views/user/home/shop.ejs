@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TechKart | Advanced Luxury Catalog</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0055FF",
+                        "dark-bg": "#0D0D0D",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+                @apply bg-[#0D0D0D] text-gray-200 antialiased;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: #0055FF;
+        }
+        .filter-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            @apply p-6 rounded-2xl;
+        }
+        .premium-heading {
+            letter-spacing: 0.05em;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input[type="checkbox"] {
+            @apply rounded border-white/10 bg-white/5 text-primary focus:ring-primary focus:ring-offset-0 transition-all;
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <%- include('../../partials/user/header') %>
+            <main class="flex-1">
+                <div class="bg-gradient-to-b from-primary/5 to-transparent border-b border-white/5">
+                    <div class="max-w-[1400px] mx-auto px-4 py-12 md:py-20">
+                        <div class="flex flex-col gap-4">
+                            <h1 class="text-white text-4xl md:text-5xl font-black premium-heading uppercase">TechKart
+                                Shop</h1>
+                            <p class="text-gray-400 text-lg max-w-xl">Advanced technical selection for the next
+                                generation of computing.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="max-w-[1400px] mx-auto px-4 py-12">
+                    <div class="flex flex-col lg:flex-row gap-12">
+                        <aside class="w-full lg:w-72 flex-shrink-0">
+                            <div class="sticky top-24 space-y-6">
+                                <div class="filter-section">
+                                    <h3
+                                        class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                                        Categories
+                                        <span class="w-8 h-px bg-primary/40"></span>
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input checked="" class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Gaming</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Business</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Workstations</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Ultraportable</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="filter-section">
+                                    <h3
+                                        class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                                        Processor
+                                        <span class="w-8 h-px bg-primary/40"></span>
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Intel
+                                                Core i9</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Intel
+                                                Core i7</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Intel
+                                                Core i5</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">AMD
+                                                Ryzen 9</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">AMD
+                                                Ryzen 7</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="filter-section">
+                                    <h3
+                                        class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                                        RAM Capacity
+                                        <span class="w-8 h-px bg-primary/40"></span>
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">64GB</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">32GB</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">16GB</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input class="size-4" type="checkbox" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">8GB</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="filter-section">
+                                    <h3
+                                        class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                                        Price Range
+                                        <span class="w-8 h-px bg-primary/40"></span>
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input
+                                                class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
+                                                name="price" type="radio" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Under
+                                                $1,000</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input
+                                                class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
+                                                name="price" type="radio" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">$1,000
+                                                - $2,000</span>
+                                        </label>
+                                        <label class="flex items-center gap-3 group cursor-pointer">
+                                            <input
+                                                class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
+                                                name="price" type="radio" />
+                                            <span
+                                                class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Over
+                                                $2,000</span>
+                                        </label>
+                                    </div>
+                                    <div class="mt-8">
+                                        <div class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3">
+                                            Custom Range</div>
+                                        <input
+                                            class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                                            max="5000" min="0" type="range" />
+                                        <div class="flex justify-between mt-2">
+                                            <span class="text-[10px] text-gray-500 font-bold">$0</span>
+                                            <span class="text-[10px] text-gray-500 font-bold">$5k+</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    class="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-[0_0_25px_-5px_#0055FF] transition-all duration-300">
+                                    Apply All Filters
+                                </button>
+                            </div>
+                        </aside>
+                        <div class="flex-1">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-6 mb-10 pb-6 border-b border-white/5">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active
+                                        Filters:</span>
+                                    <div class="flex gap-2">
+                                        <div
+                                            class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                            Gaming
+                                            <span class="material-symbols-outlined text-xs cursor-pointer">close</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Sort
+                                        By:</span>
+                                    <select
+                                        class="bg-white/5 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-white px-6 py-2 focus:ring-1 focus:ring-primary focus:border-primary">
+                                        <option>Featured</option>
+                                        <option>Price: Low to High</option>
+                                        <option>Price: High to Low</option>
+                                        <option>Newest Arrivals</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBI0rs7bU8uqm4YT7t2w-6RTUHEn-Q7RHT5mqs_y_H2Q7FyxIDJsYHWkzdfYyTyrGMZiBo7EG9yOHxqdXoiHBZObyeqIq8LyCrhnKuHtPW3mdafOpp4-YBaCOTJcctAoioU-DqeD8PTZoc2oPS9ZavZfQLAmO4mG22hXCTMMsut2dmJuBgW33vMxolPjGSbm_wvpjRxMGRpzKi9zbZ0iahS8MpnXNeDypssuEqMwEWvUqNcbUvfFDUQ0X4PrddwyQdHesElS0RhioIW");'>
+                                        </div>
+                                        <div
+                                            class="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                            Limited Edition</div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Stitch
+                                                Pro 15</h3>
+                                            <span class="text-primary font-bold text-2xl">$999</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">Intel Core i7 • 16GB RAM •
+                                            512GB SSD • Super Retina XDR</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpBxnKUHAfu5PhzmdT4GARfKXc9okGBVokED6s67nOEWPHyJ-rQA-2ydnw9odlBfColM5VvVIVvpK4Glnn2L6oxvE8iV6GCX51vPOM5hfiN1WGoijEW10r46jgnmRq6yMKC1LBDXWGdLljTXhms3AzsIxfVv2mH39hqR3iexaMjqg9iWsEUOo_D2JBPKtZRt2hcRKM5bWFQMQ86lJ7KQk-hH44WGJo_vM7oQX5-nkFigJZKwgLL7_h6Ld7Wg8NvDtJHc1NlDfmKz3Z");'>
+                                        </div>
+                                        <div
+                                            class="absolute top-6 left-6 bg-emerald-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                            New Arrival</div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Zenith
+                                                Ultra</h3>
+                                            <span class="text-primary font-bold text-2xl">$2,149</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">Intel Core i9 • 32GB RAM •
+                                            Pro Carbon Finish • 2TB NVMe</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFOy6Cpvns5F9Q30z9tPB12e5pAjPfVGvbwbpaE9Q39r_LQPWHmSYFotZjGmXLnHDeAZ2K61m87UPZ1Dx4kGPAh3_0HvF2iCjtgWs1R987k_YCDXteMLnFb_mf5mhjrm6NQv0uXzq25oSlpePSfyag0yt84NdAfcb86Cc5l5TGA1o9gXC7I0URtquHYzGaEjiZ3ICnqiHePKSXyArxhAVUK8KyUm0COrEQWqJHm2q_78J7or7e_6k45C1oyV-LcId_JLYaUu1_PLJG");'>
+                                        </div>
+                                        <div
+                                            class="absolute top-6 left-6 bg-amber-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                            Hot Seller</div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Flow
+                                                Air</h3>
+                                            <span class="text-primary font-bold text-2xl">$799</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">AMD Ryzen 7 • 16GB RAM •
+                                            Feather-light • Liquid Cooling</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6dimibt_t4FisiP5Li4TwUc_V7o7qcrtwkIQWa8aaIRmbTqrbeTkv43wL7sY4IT63Ivfcty31ooifdC7zAQjTdUbpYK-hmvkWMCDExuqIxqNPtK22LW64rGicjKkBVepPHCWtBGZkDhUlHpvNB_oAXciUA-rRWSjf3jGwx5zgXnzuDZ3s5faZFQB3tyZpJQaaDUC_MASzmQZKwBAClE_LdUOwYnKT8me7Ok7Cw1YMybK6sI0FudHDHav83nRj76qnczC7HE1DchTC");'>
+                                        </div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Titan
+                                                GTR</h3>
+                                            <span class="text-primary font-bold text-2xl">$3,499</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">AMD Ryzen 9 • 64GB RAM •
+                                            RTX 5090 • Elite Workstation</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBI0rs7bU8uqm4YT7t2w-6RTUHEn-Q7RHT5mqs_y_H2Q7FyxIDJsYHWkzdfYyTyrGMZiBo7EG9yOHxqdXoiHBZObyeqIq8LyCrhnKuHtPW3mdafOpp4-YBaCOTJcctAoioU-DqeD8PTZoc2oPS9ZavZfQLAmO4mG22hXCTMMsut2dmJuBgW33vMxolPjGSbm_wvpjRxMGRpzKi9zbZ0iahS8MpnXNeDypssuEqMwEWvUqNcbUvfFDUQ0X4PrddwyQdHesElS0RhioIW");'>
+                                        </div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Onyx M1
+                                            </h3>
+                                            <span class="text-primary font-bold text-2xl">$1,599</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">Intel Core i7 • 32GB RAM •
+                                            Deep Black Matte • Enterprise Battery</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpBxnKUHAfu5PhzmdT4GARfKXc9okGBVokED6s67nOEWPHyJ-rQA-2ydnw9odlBfColM5VvVIVvpK4Glnn2L6oxvE8iV6GCX51vPOM5hfiN1WGoijEW10r46jgnmRq6yMKC1LBDXWGdLljTXhms3AzsIxfVv2mH39hqR3iexaMjqg9iWsEUOo_D2JBPKtZRt2hcRKM5bWFQMQ86lJ7KQk-hH44WGJo_vM7oQX5-nkFigJZKwgLL7_h6Ld7Wg8NvDtJHc1NlDfmKz3Z");'>
+                                        </div>
+                                    </div>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase">Vision
+                                                X</h3>
+                                            <span class="text-primary font-bold text-2xl">$1,899</span>
+                                        </div>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed">Intel Core i9 • 32GB RAM •
+                                            Dual 14" Displays • Creator Suite</p>
+                                        <button
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center mt-20 gap-2">
+                                <button
+                                    class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <button
+                                    class="size-12 flex items-center justify-center rounded-full bg-primary text-white font-bold text-xs">1</button>
+                                <button
+                                    class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white font-bold text-xs hover:border-primary hover:text-primary transition-all">2</button>
+                                <button
+                                    class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <%- include('../../partials/user/footer') %>
+        </div>
+    </div>
+
+</body>
+
+</html>

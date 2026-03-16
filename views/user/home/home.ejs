@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TechKart | Power for Every Passion</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0055FF",
+                        "dark-bg": "#0D0D0D",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+                @apply bg-[#0D0D0D] text-gray-200 antialiased;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: #0055FF;
+        }
+        .premium-heading {
+            letter-spacing: 0.05em;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <%- include('../../partials/user/header') %>
+            <main class="flex-1">
+                <div class="max-w-[1200px] mx-auto px-4 py-16 md:py-32">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex flex-col gap-6">
+                                <div
+                                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 w-fit">
+                                    <span class="size-2 rounded-full bg-primary animate-pulse"></span>
+                                    <span class="text-primary text-[10px] font-bold uppercase tracking-widest">Next
+                                        Generation Computing</span>
+                                </div>
+                                <h1
+                                    class="text-white text-5xl md:text-7xl font-black leading-[1.05] premium-heading uppercase">
+                                    Power for Every <br /><span class="text-primary">Passion</span>
+                                </h1>
+                                <p class="text-gray-400 text-lg md:text-xl font-medium max-w-lg leading-relaxed">
+                                    Experience the pinnacle of engineering. We bridge the gap between raw performance
+                                    and minimalist luxury.
+                                </p>
+                            </div>
+                            <div class="flex flex-wrap gap-5">
+                                <a href="/user/shop"
+                                    class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-primary text-white text-sm font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_30px_-5px_#0055FF] hover:scale-105">
+                                    Shop All Laptops
+                                </a>
+                                <button
+                                    class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 border border-white/20 text-white text-sm font-bold uppercase tracking-widest hover:bg-white/5 transition-all">
+                                    Explore Lineup
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative mt-12 lg:mt-0">
+                            <div class="relative z-10 w-full aspect-square bg-center bg-cover bg-no-repeat rounded-3xl shadow-2xl border border-white/10"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6dimibt_t4FisiP5Li4TwUc_V7o7qcrtwkIQWa8aaIRmbTqrbeTkv43wL7sY4IT63Ivfcty31ooifdC7zAQjTdUbpYK-hmvkWMCDExuqIxqNPtK22LW64rGicjKkBVepPHCWtBGZkDhUlHpvNB_oAXciUA-rRWSjf3jGwx5zgXnzuDZ3s5faZFQB3tyZpJQaaDUC_MASzmQZKwBAClE_LdUOwYnKT8me7Ok7Cw1YMybK6sI0FudHDHav83nRj76qnczC7HE1DchTC");'>
+                            </div>
+                            <div
+                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-primary/15 blur-[120px] rounded-full -z-10 animate-pulse">
+                            </div>
+
+                            <!-- Floating Card -->
+                            <div
+                                class="absolute -bottom-8 -left-8 z-20 glass-card p-6 rounded-2xl shadow-2xl hidden md:block min-w-[240px]">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="bg-primary p-3 rounded-xl shadow-[0_0_20px_rgba(0,85,255,0.4)] flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-white text-2xl">bolt</span>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">
+                                            ULTRA-CORE GEN 3</p>
+                                        <p class="text-sm text-white font-bold">Unrivaled Processing</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating badge -->
+                            <div
+                                class="absolute -top-6 -right-6 z-20 glass-card p-4 rounded-xl shadow-2xl hidden lg:block backdrop-blur-md">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-emerald-500">check_circle</span>
+                                    <span class="text-[10px] text-white font-bold uppercase tracking-widest">In Stock &
+                                        Ready to Ship</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/[0.02] py-24 border-y border-white/5">
+                    <div class="max-w-[1200px] mx-auto px-4">
+                        <div class="mb-16 text-center">
+                            <h2 class="text-white text-4xl font-black premium-heading uppercase mb-4">Choose Your Path
+                            </h2>
+                            <div class="h-1 w-20 bg-primary mx-auto rounded-full"></div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div
+                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                <div
+                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-3xl">sports_esports</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <h3 class="text-white text-xl font-bold premium-heading">GAMING</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">High-refresh rates and
+                                        desktop-class graphics for enthusiasts.</p>
+                                </div>
+                                <div
+                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                    Learn More <span
+                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div
+                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                <div
+                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-3xl">work</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <h3 class="text-white text-xl font-bold premium-heading">BUSINESS</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">Enterprise-grade security and
+                                        all-day battery endurance.</p>
+                                </div>
+                                <div
+                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                    Learn More <span
+                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div
+                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                <div
+                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-3xl">school</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <h3 class="text-white text-xl font-bold premium-heading">STUDENT</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">Lightweight versatility that keeps
+                                        up with your campus life.</p>
+                                </div>
+                                <div
+                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                    Learn More <span
+                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div
+                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                <div
+                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-3xl">palette</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <h3 class="text-white text-xl font-bold premium-heading">CREATORS</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">Color-accurate displays and massive
+                                        multi-core power.</p>
+                                </div>
+                                <div
+                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                    Learn More <span
+                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="max-w-[1200px] mx-auto px-4 py-24">
+                    <div class="flex items-center justify-between mb-16">
+                        <h2 class="text-white text-4xl font-black premium-heading uppercase">Current Favorites</h2>
+                        <a class="text-primary font-bold text-xs uppercase tracking-[0.2em] border-b-2 border-primary pb-1"
+                            href="#">See All</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        <div
+                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBI0rs7bU8uqm4YT7t2w-6RTUHEn-Q7RHT5mqs_y_H2Q7FyxIDJsYHWkzdfYyTyrGMZiBo7EG9yOHxqdXoiHBZObyeqIq8LyCrhnKuHtPW3mdafOpp4-YBaCOTJcctAoioU-DqeD8PTZoc2oPS9ZavZfQLAmO4mG22hXCTMMsut2dmJuBgW33vMxolPjGSbm_wvpjRxMGRpzKi9zbZ0iahS8MpnXNeDypssuEqMwEWvUqNcbUvfFDUQ0X4PrddwyQdHesElS0RhioIW");'>
+                                </div>
+                                <div
+                                    class="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                    Limited Edition</div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-white text-2xl font-black premium-heading">STITCH PRO 15</h3>
+                                    <span class="text-primary font-bold text-2xl">$999</span>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">M2 Chip • 16GB Unified Memory •
+                                    512GB SSD • Super Retina XDR</p>
+                                <button
+                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpBxnKUHAfu5PhzmdT4GARfKXc9okGBVokED6s67nOEWPHyJ-rQA-2ydnw9odlBfColM5VvVIVvpK4Glnn2L6oxvE8iV6GCX51vPOM5hfiN1WGoijEW10r46jgnmRq6yMKC1LBDXWGdLljTXhms3AzsIxfVv2mH39hqR3iexaMjqg9iWsEUOo_D2JBPKtZRt2hcRKM5bWFQMQ86lJ7KQk-hH44WGJo_vM7oQX5-nkFigJZKwgLL7_h6Ld7Wg8NvDtJHc1NlDfmKz3Z");'>
+                                </div>
+                                <div
+                                    class="absolute top-6 left-6 bg-emerald-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                    New Arrival</div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-white text-2xl font-black premium-heading">ZENITH ULTRA</h3>
+                                    <span class="text-primary font-bold text-2xl">$1,249</span>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">OLED 4K Infinity • Core i9 Ultra •
+                                    32GB RAM • Pro Carbon Finish</p>
+                                <button
+                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
+                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFOy6Cpvns5F9Q30z9tPB12e5pAjPfVGvbwbpaE9Q39r_LQPWHmSYFotZjGmXLnHDeAZ2K61m87UPZ1Dx4kGPAh3_0HvF2iCjtgWs1R987k_YCDXteMLnFb_mf5mhjrm6NQv0uXzq25oSlpePSfyag0yt84NdAfcb86Cc5l5TGA1o9gXC7I0URtquHYzGaEjiZ3ICnqiHePKSXyArxhAVUK8KyUm0COrEQWqJHm2q_78J7or7e_6k45C1oyV-LcId_JLYaUu1_PLJG");'>
+                                </div>
+                                <div
+                                    class="absolute top-6 left-6 bg-amber-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                    Hot Seller</div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-white text-2xl font-black premium-heading">FLOW AIR</h3>
+                                    <span class="text-primary font-bold text-2xl">$799</span>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">Feather-light Design • 18hr Pro
+                                    Battery • Liquid Cooling Tech</p>
+                                <button
+                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <%- include('../../partials/user/footer') %>
+        </div>
+    </div>
+
+</body>
+
+</html>
