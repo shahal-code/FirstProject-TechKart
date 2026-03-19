@@ -31,13 +31,15 @@
             },
         }
     </script>
-    <style type="text/tailwindcss">
-        @layer base {
-            body {
-                font-family: 'Inter', sans-serif;
-                @apply bg-[#0D0D0D] text-gray-200 antialiased;
-            }
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D0D0D;
+            color: #d1d5db;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -46,12 +48,22 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
+            appearance: none;
             margin: 0;
         }
+
         input[type="number"] {
             -moz-appearance: textfield;
+            appearance: none;
         }
     </style>
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 
 <body class="bg-dark-form font-display text-white overflow-hidden h-screen w-screen">
@@ -103,7 +115,8 @@
                             <% } %>
                     </div>
 
-                    <form action="<%= typeof actionUrl !== 'undefined' ? actionUrl : '/user/verify-otp' %>" method="POST" id="otpForm" class="flex flex-col gap-10">
+                    <form action="<%= typeof actionUrl !== 'undefined' ? actionUrl : '/user/verify-otp' %>"
+                        method="POST" id="otpForm" class="flex flex-col gap-10">
                         <div class="flex justify-between gap-2 md:gap-4 w-full">
                             <input type="number"
                                 class="w-12 h-14 md:w-16 md:h-16 text-center text-2xl font-bold bg-[#1A1A1A] border border-gray-800 rounded-lg text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
@@ -126,6 +139,8 @@
                         </div>
 
                         <input type="hidden" name="otp" id="otpValue">
+                        <input type="hidden" id="resendUrl"
+                            value="<%= typeof resendUrl !== 'undefined' ? resendUrl : '/user/resend-otp' %>">
 
                         <div class="flex flex-col items-center gap-6 mt-2">
                             <button
@@ -158,89 +173,7 @@
         </div>
     </div>
 
-    <script>
-        // Store hidden OTP value for submission form logic
-        function submitOtp() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            let otp = '';
-            inputs.forEach(input => {
-                otp += input.value;
-            });
-            document.getElementById('otpValue').value = otp;
-        }
-
-        // Auto move cursor logic
-        function moveToNext(currentInput, e) {
-            // Backspace handling
-            if (e.inputType === "deleteContentBackward") {
-                if (currentInput.previousElementSibling) {
-                    currentInput.previousElementSibling.focus();
-                }
-                return;
-            }
-
-            // Move to next handling
-            if (currentInput.value.length > 1) {
-                currentInput.value = currentInput.value.slice(0, 1);
-            }
-            if (currentInput.value.length === 1 && currentInput.nextElementSibling) {
-                currentInput.nextElementSibling.focus();
-            }
-        }
-
-        // Listen to explicit keydown for backspace when input is already empty
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('keydown', function (e) {
-                if (e.key === 'Backspace' && this.value === '') {
-                    if (this.previousElementSibling) {
-                        this.previousElementSibling.focus();
-                    }
-                }
-            });
-        });
-
-        // OTP Timer logic
-        let count = 59;
-        const timerElement = document.getElementById('timer');
-        const resendBtn = document.getElementById('resendBtn');
-        const timerText = document.getElementById('timerText');
-
-        const countdown = setInterval(() => {
-            if (count <= 0) {
-                clearInterval(countdown);
-                timerElement.innerHTML = "00:00";
-                resendBtn.disabled = false;
-                resendBtn.classList.remove('cursor-not-allowed', 'opacity-50');
-                timerText.style.display = 'none';
-            } else {
-                let seconds = count < 10 ? '0' + count : count;
-                timerElement.innerHTML = `00:${seconds}`;
-                count--;
-            }
-        }, 1000);
-
-        function resendOtp() {
-            if (!resendBtn.disabled) {
-                // Post request to backend to resend OTP
-                const resendUrl = '<%= typeof resendUrl !== "undefined" ? resendUrl : "/user/resend-otp" %>';
-                fetch(resendUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(res => {
-                    // Reset timer visual just in case page doesn't refresh
-                    resendBtn.disabled = true;
-                    resendBtn.classList.add('cursor-not-allowed', 'opacity-50');
-                    timerText.style.display = 'inline';
-                    count = 59;
-                    timerElement.innerHTML = `00:59`;
-                    // Note: would normally restart the setInterval here if no redirect
-                    window.location.reload();
-                });
-            }
-        }
-    </script>
+    <script src="/js/auth/otp.js"></script>
 </body>
 
 </html>

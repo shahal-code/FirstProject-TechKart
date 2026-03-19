@@ -6,16 +6,20 @@ import * as adminAuth from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
-router.get("/login", adminAuth.isAdminLoggedOut, (req, res) => {
-  res.render("admin/login", { message: null, email: null });
+router.use(adminAuth.noCache);
+
+router.get("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
+  const message = req.query.message || null;
+  const email = req.query.email || null;
+  res.render("admin/login", { message, email });
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
   const { email, password } = req.body;
 
   const validationError = validateLogin(req.body);
   if (validationError) {
-    return res.render("admin/login", { message: validationError, email });
+    return res.redirect(303, `/admin/login?message=${encodeURIComponent(validationError)}&email=${encodeURIComponent(email)}`);
   }
 
   const adminEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
@@ -24,12 +28,12 @@ router.post("/login", (req, res) => {
   if (email === adminEmail && password === adminPassword) {
     req.session.admin = true;
     return req.session.save((err) => {
-        if (err) console.log("Admin session save error:", err);
-        res.redirect("/admin/dashboard");
+      if (err) console.log("Admin session save error:", err);
+      res.redirect(303, "/admin/dashboard");
     });
   }
 
-  res.render("admin/login", { message: "Invalid login credentials", email });
+  res.redirect(303, `/admin/login?message=${encodeURIComponent("Invalid login credentials")}&email=${encodeURIComponent(email)}`);
 });
 
 router.get("/dashboard", adminAuth.isAdminLoggedIn, Dashboard.loadDashboard);

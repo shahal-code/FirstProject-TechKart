@@ -7,10 +7,10 @@ export const validateEmail = (email) => {
 
 export const validatePassword = (password) => {
     if (!password) return "Password is required";
-    if (password.length < 5) return "Password must be at least 5 characters long";
+    if (password.length < 8) return "Password must be at least 8 characters long";
     // Optional: Add more complexity checks if desired
-    // const complexRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // if (!complexRegex.test(password)) return "Password must contain uppercase, lowercase, number and special character";
+    const complexRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+     if (!complexRegex.test(password)) return "Password must contain uppercase, lowercase, number and special character";
     return null;
 };
 
