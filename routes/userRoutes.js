@@ -59,6 +59,7 @@ router.get('/shop', userAuth.isAuthenticated, userAuth.isBlocked, PageController
 router.get('/contact', userAuth.isAuthenticated, userAuth.isBlocked, PageController.ContactPage_load);
 router.get('/about', userAuth.isAuthenticated, userAuth.isBlocked, PageController.AboutPage_load);
 
+
 router.get('/dashboard', userAuth.isAuthenticated, PageController.Dashboard_load);
 
 // Profile
@@ -89,6 +90,7 @@ router.post('/address/edit/:id', userAuth.isAuthenticated, Address.editAddress);
 router.get('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.get('/delete-address/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.delete('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
+router.get('/settings',userAuth.isAuthenticated);
 
 router.get('/logout', userAuth.isAuthenticated, usercontroller.isLogout);
 

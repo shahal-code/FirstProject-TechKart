@@ -51,3 +51,12 @@ export const page_404 = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+export const Settings = async(req,res)=>{
+    try{
+        res.render("views/settings");
+    }catch(error){
+        console.log(error.message);
+        res.status(500).send("internal server Eroor");
+    }
+}

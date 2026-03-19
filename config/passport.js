@@ -28,8 +28,23 @@ passport.use(
           image = image.replace("s96-c", "s400-c");
         }
 
-        // Find existing user
-        let user = await User.findOne({ email });
+        // Find existing user by Google ID first
+        let user = await User.findOne({ googleId: profile.id });
+
+        if (user) {
+          // Update profile image if needed
+          if (image && (!user.profileImage || user.profileImage.includes('googleusercontent.com'))) {
+            user.profileImage = image;
+          }
+          if (!user.fullname) {
+            user.fullname = profile.displayName;
+          }
+          await user.save();
+          return done(null, user);
+        }
+
+        // If not found by Google ID, check if user exists by email (local auth)
+        user = await User.findOne({ email });
 
         if (user) {
           // Always sync Google data
@@ -47,18 +62,18 @@ passport.use(
           }
 
           await user.save();
-        } else {
-          //  Create new user
-          user = new User({
-            fullname: profile.displayName,
-            email: email,
-            googleId: profile.id,
-            profileImage: image,
-          });
-
-          await user.save();
+          return done(null, user);
         }
 
+        //  Create new user
+        user = new User({
+          fullname: profile.displayName,
+          email: email,
+          googleId: profile.id,
+          profileImage: image,
+        });
+
+        await user.save();
         return done(null, user);
 
       } catch (error) {
