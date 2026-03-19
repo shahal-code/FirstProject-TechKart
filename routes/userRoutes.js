@@ -9,6 +9,7 @@ import * as PageController from "../controller/usercontroller/pages.controller.j
 import * as Profile from "../controller/usercontroller/profile.js";
 import * as Address from "../controller/usercontroller/address.js";
 
+
 // Authentication
 router
   .route('/login')
@@ -90,7 +91,7 @@ router.post('/address/edit/:id', userAuth.isAuthenticated, Address.editAddress);
 router.get('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.get('/delete-address/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.delete('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
-router.get('/settings',userAuth.isAuthenticated);
+router.get('/settings', userAuth.isAuthenticated);
 
 router.get('/logout', userAuth.isAuthenticated, usercontroller.isLogout);
 

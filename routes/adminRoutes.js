@@ -3,7 +3,7 @@ import * as Dashboard from "../controller/admincontroller/dashboard.js";
 import * as Customers from "../controller/admincontroller/customers.js";
 import { validateLogin } from "../utils/validation.js";
 import * as adminAuth from "../middleware/adminAuth.js";
-
+import * as CategoryController from "../controller/admincontroller/categoryController.js";
 const router = express.Router();
 
 router.use(adminAuth.noCache);
@@ -52,6 +52,9 @@ router.get("/logout", (req, res) => {
     res.redirect("/admin/login");
   });
 });
+
+// Category
+router.get("/category", adminAuth.isAdminLoggedIn, CategoryController.categoryInfo);
 
 
 export default router;
