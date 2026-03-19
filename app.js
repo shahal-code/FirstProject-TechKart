@@ -5,34 +5,40 @@ import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import passport from "passport";
 import './config/passport.js';
-import { noCache } from "./middleware/userAuth.js";
 import session from "express-session";
 import User from "./models/userModel.js";
-import { errorHandler, notFoundHandler } from "./middleware/errorHandling.js";
-
 const app = express();
 
 connectDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
+
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "-1");
+  next();
+});
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "fallback-secret",
-    resave:false,
-    saveUninitialized:false,
+    resave: false,
+    saveUninitialized: false,
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(noCache);
+
 
 app.use(async (req, res, next) => {
   try {
     res.locals.user = req.session.user ? await User.findById(req.session.user) : null;
+    res.locals.loginMethod = req.session.loginMethod || null;
     res.locals.path = req.path;
     next();
   } catch (error) {
@@ -46,10 +52,6 @@ app.set("views", "./views");
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
-
-// Error Handling Middleware
-app.use(notFoundHandler);
-app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");

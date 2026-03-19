@@ -16,7 +16,8 @@ const generateOtp = () => {
 export const loadlogin = async (req, res) => {
     try {
         const message = req.query.message || null;
-        res.render("user/auth/login", { message, email: null });
+        const email = req.query.email || null;
+        res.render("user/auth/login", { message, email });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -29,60 +30,59 @@ export const login = async (req, res) => {
 
         const validationError = validateLogin(req.body);
         if (validationError) {
-            return res.render("user/auth/login", {
-                message: validationError,
-                email
-            });
+            return res.redirect(303, `/user/login?message=${encodeURIComponent(validationError)}&email=${encodeURIComponent(email)}`);
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render("user/auth/login", { message: "User not found", email });
+            return res.redirect(303, `/user/login?message=${encodeURIComponent("User not found")}&email=${email ? encodeURIComponent(email) : ""}`);
         }
-        if (user.isBlocked) {
-            return res.render("user/auth/login", { message: "User is blocked by admin", email });
+
+        if (!user.password) {
+            return res.redirect(303, `/user/login?message=${encodeURIComponent("This account was created with Google. Please use 'Sign in with Google'.")}&email=${encodeURIComponent(email)}`);
         }
+
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.render("user/auth/login", { message: "Invalid Password", email });
+            return res.redirect(303, `/user/login?message=${encodeURIComponent("Invalid Password")}&email=${encodeURIComponent(email)}`);
         }
         req.session.user = user._id;
+        req.session.loginMethod = 'local';
         req.session.save((err) => {
             if (err) console.log("User session save error:", err);
-            res.redirect("/user/dashboard");
+            res.redirect(303, "/user/dashboard");
         });
     } catch (error) {
-        console.log(error);
-        res.status(500).send("login failed");
+        console.log("Login Error:", error);
+        res.redirect(303, `/user/login?message=${encodeURIComponent("An error occurred during login. Please try again.")}`);
     }
 };
 
-export const loadregister = async (req, res) => {
+export const loadsignup = async (req, res) => {
     try {
-        res.render("user/auth/signup", { message: null, fullname: null, email: null });
+        const message = req.query.message || null;
+        const fullname = req.query.fullname || null;
+        const email = req.query.email || null;
+        res.render("user/auth/signup", { message, fullname, email });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
     }
 };
 
-export const register = async (req, res) => {
+export const signup = async (req, res) => {
     try {
         const { fullname, email, password, confirmPassword } = req.body;
 
         const validationError = validateSignup(req.body);
         if (validationError) {
-            return res.render("user/auth/signup", {
-                message: validationError,
-                fullname,
-                email
-            });
+            return res.redirect(303, `/user/signup?message=${encodeURIComponent(validationError)}&fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}`);
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.render("user/auth/signup", { message: "User already exists", fullname, email });
+            return res.redirect(303, `/user/signup?message=${encodeURIComponent("User already exists")}&fullname=${fullname ? encodeURIComponent(fullname) : ""}&email=${email ? encodeURIComponent(email) : ""}`);
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -104,20 +104,21 @@ export const register = async (req, res) => {
 
         req.session.save((err) => {
             if (err) console.log("Session save error:", err);
-            res.redirect("/user/otp");
+            res.redirect(303, "/user/otp");
         });
     } catch (error) {
-        console.log(error);
-        res.send("Signup Failed");
+        console.log("Signup Error:", error);
+        res.redirect(303, `/user/signup?message=${encodeURIComponent("An error occurred during signup. Please try again.")}`);
     }
 };
 
 export const load_otp = async (req, res) => {
     try {
         if (!req.session.userData && !req.session.resetEmail) {
-            return res.redirect("/user/register");
+            return res.redirect(303, "/user/signup");
         }
-        res.render("user/auth/otp", { message: null, actionUrl: "/user/otp", resendUrl: "/user/resend-otp" });
+        const message = req.query.message || null;
+        res.render("user/auth/otp", { message, actionUrl: "/user/otp", resendUrl: "/user/resend-otp" });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -130,19 +131,17 @@ export const Verifyotp = async (req, res) => {
 
         const otpError = validateOtp(otp);
         if (otpError) {
-            const actionUrl = "/user/otp";
-            const resendUrl = "/user/resend-otp";
-            return res.render("user/auth/otp", { message: otpError, actionUrl, resendUrl });
+            return res.redirect(303, `/user/otp?message=${encodeURIComponent(otpError)}`);
         }
 
         if (Date.now() > req.session.otpExpiry) {
-            return res.render("user/auth/otp", { message: "OTP has expired. Please resend.", actionUrl: "/user/otp", resendUrl: "/user/resend-otp" });
+            return res.redirect(303, `/user/otp?message=${encodeURIComponent("OTP has expired. Please resend.")}`);
         }
 
         if (otp === req.session.otp) {
             if (req.session.resetEmail) {
                 // If it was for reset-password, redirect to reset-password page
-                return res.redirect("/user/reset-password");
+                return res.redirect(303, "/user/reset-password");
             }
             const newUser = new User({
                 fullname: req.session.userData.fullname,
@@ -156,13 +155,13 @@ export const Verifyotp = async (req, res) => {
             delete req.session.otp;
             delete req.session.otpExpiry;
 
-            return res.redirect("/user/login");
+            return res.redirect(303, "/user/login");
         } else {
-            return res.render("user/auth/otp", { message: "Invalid OTP. Please try again.", actionUrl: "/user/otp", resendUrl: "/user/resend-otp" });
+            return res.redirect(303, `/user/otp?message=${encodeURIComponent("Invalid OTP. Please try again.")}`);
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).send("Verification Failed");
+        console.log("OTP Verification Error:", error);
+        res.redirect(303, `/user/otp?message=${encodeURIComponent("Verification failed. Please try again.")}`);
     }
 };
 
@@ -188,7 +187,9 @@ export const resendOTP = async (req, res) => {
 
 export const load_Forgot_Password = async (req, res) => {
     try {
-        res.render("user/auth/forgot-password", { message: null, email: null });
+        const message = req.query.message || null;
+        const email = req.query.email || null;
+        res.render("user/auth/forgot-password", { message, email });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -201,12 +202,12 @@ export const fogotPassword = async (req, res) => {
 
         const emailError = validateEmail(email);
         if (emailError) {
-            return res.render("user/auth/forgot-password", { message: emailError, email });
+            return res.redirect(303, `/user/forgot-password?message=${encodeURIComponent(emailError)}&email=${encodeURIComponent(email)}`);
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render("user/auth/forgot-password", { message: "User not found", email });
+            return res.redirect(303, `/user/forgot-password?message=${encodeURIComponent("User not found")}&email=${email ? encodeURIComponent(email) : ""}`);
         }
 
         const otp = generateOtp();
@@ -219,17 +220,18 @@ export const fogotPassword = async (req, res) => {
 
         req.session.save((err) => {
             if (err) console.log("Session save error:", err);
-            res.redirect("/user/otp");
+            res.redirect(303, "/user/otp");
         });
 
     } catch (error) {
-        console.log(error);
-        res.send("Error sending OTP");
+        console.log("Forgot Password Error:", error);
+        res.redirect(303, `/user/forgot-password?message=${encodeURIComponent("Error sending OTP. Please try again.")}`);
     }
 };
 
 export const load_reset_password = async (req, res) => {
-    res.render("user/auth/reset-password", { message: null });
+    const message = req.query.message || null;
+    res.render("user/auth/reset-password", { message });
 };
 
 export const reset_Password = async (req, res) => {
@@ -238,11 +240,11 @@ export const reset_Password = async (req, res) => {
 
         const passwordError = validatePassword(password);
         if (passwordError) {
-            return res.render("user/auth/reset-password", { message: passwordError });
+            return res.redirect(303, `/user/reset-password?message=${encodeURIComponent(passwordError)}`);
         }
 
         if (password !== confirmPassword) {
-            return res.render("user/auth/reset-password", { message: "Passwords do not match" });
+            return res.redirect(303, `/user/reset-password?message=${encodeURIComponent("Passwords do not match")}`);
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -256,11 +258,11 @@ export const reset_Password = async (req, res) => {
         delete req.session.otp;
         delete req.session.otpExpiry;
 
-        res.redirect("/user/login");
+        res.redirect(303, "/user/login");
 
     } catch (error) {
-        console.log(error);
-        res.send("Password reset failed");
+        console.log("Password Reset Error:", error);
+        res.redirect(303, `/user/reset-password?message=${encodeURIComponent("Password reset failed. Please try again.")}`);
     }
 };
 
