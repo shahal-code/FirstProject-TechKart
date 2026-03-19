@@ -15,7 +15,7 @@ export const categoryInfo = async (req, res) => {
 
     // Fetch categories with pagination and descending sort
     const categories = await Category.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -24,7 +24,7 @@ export const categoryInfo = async (req, res) => {
 
     // Calculate summary stats for the cards
     const totalCount = await Category.countDocuments();
-    const newestCategory = await Category.findOne().sort({ createdAt: -1 });
+    const newestCategory = await Category.findOne().sort({ created_at: -1 });
 
     res.render("admin/category", {
       categories,
@@ -36,7 +36,7 @@ export const categoryInfo = async (req, res) => {
         total: totalCount,
         addedQuarter: 0, // You can add logic for this later
         newestName: newestCategory ? newestCategory.name : "N/A",
-        newestDate: newestCategory ? newestCategory.createdAt : null,
+        newestDate: newestCategory ? newestCategory.created_at : null,
       }
     });
 
