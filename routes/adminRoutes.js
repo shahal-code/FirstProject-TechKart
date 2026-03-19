@@ -55,6 +55,16 @@ router.get("/logout", (req, res) => {
 
 // Category
 router.get("/category", adminAuth.isAdminLoggedIn, CategoryController.categoryInfo);
+router.get("/addCategory", adminAuth.isAdminLoggedIn, CategoryController.getAddCategoryPage);
+router.post("/addCategory", adminAuth.isAdminLoggedIn, CategoryController.addCategory);
+
+router.get("/toggleCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.toggleCategoryStatus);
+router.post("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.editCategory);
+router.get("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.getEditCategoryPage);
+
+
+
+
 
 
 export default router;

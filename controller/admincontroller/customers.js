@@ -23,7 +23,7 @@ export const getUsers = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    res.render("admin/users", {
+    res.render("admin/customers/users", {
       users,
       page,
       totalPages,
