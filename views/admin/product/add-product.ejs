@@ -169,8 +169,8 @@
                             <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                                 <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
                             </div>
-                            <p class="font-bold text-white mb-2 text-center">Click to upload product image</p>
-                            <p class="text-[11px] text-slate-500 font-medium">PNG, JPG up to 10MB</p>
+                            <p class="font-bold text-white mb-2 text-center">Click to upload product images</p>
+                            <p class="text-[11px] text-slate-500 font-medium">PNG, JPG up to 10MB (Minimum 4 images)</p>
                             <input type="file" id="imageUpload" name="images" multiple accept="image/*" class="hidden" onchange="previewImages(event)">
                         </label>
 
@@ -222,6 +222,21 @@
                 });
             }
         }
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('imageUpload');
+            if (fileInput.files.length < 4) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Not enough images!',
+                    text: 'Please upload at least 4 images for the product.',
+                    background: '#11151F',
+                    color: '#fff',
+                    confirmButtonColor: '#0055ff'
+                });
+            }
+        });
     </script>
 </body>
 </html>

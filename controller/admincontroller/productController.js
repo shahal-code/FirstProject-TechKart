@@ -60,8 +60,8 @@ export const addProduct = async (req, res) => {
         // Multer puts Cloudinary URLs in req.files[].path
         const images = req.files ? req.files.map(file => file.path) : [];
 
-        if (images.length === 0) {
-            return res.redirect("/admin/addProduct"); 
+        if (images.length < 4) {
+            return res.status(400).send("Backend Error: Please upload at least 4 images for the product."); 
         }
 
         const newProduct = new Product({
