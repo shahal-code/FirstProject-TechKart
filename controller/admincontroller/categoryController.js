@@ -62,6 +62,15 @@ export const addCategory = async (req, res) => {
 
   try {
     const { name, description } = req.body;
+    const errors = [];
+
+    if (!name || name.trim() === "") errors.push("Category name is required");
+    if (!description || description.trim() === "") errors.push("Description is required");
+    if (name && name.length < 3) errors.push("Category name must be at least 3 characters");
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: errors.join(". ") });
+    }
 
     // Check if category already exists
     const existingCategory = await Category.findOne({ 
@@ -137,6 +146,15 @@ export const editCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
+    const errors = [];
+
+    if (!name || name.trim() === "") errors.push("Category name is required");
+    if (!description || description.trim() === "") errors.push("Description is required");
+    if (name && name.length < 3) errors.push("Category name must be at least 3 characters");
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: errors.join(". ") });
+    }
 
     // Check if another category with the same name exists
     const existingCategory = await Category.findOne({ 
@@ -166,6 +184,23 @@ export const editCategory = async (req, res) => {
 
   } catch (error) {
     console.error("Error editing category:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Delete Category
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    
+    if (!deletedCategory) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting category:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

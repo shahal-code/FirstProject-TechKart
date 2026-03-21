@@ -1,8 +1,15 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
+
+// Fix for Node.js >= 17 IPv6 DNS block causing 30s delays with Gmail SMTP
+dns.setDefaultResultOrder("ipv4first");
 
 // Initialize the transporter using the credentials we will receive from the user
+// Initialize the transporter with pooling for performance
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: process.env.NODEMAILER_EMAIL,
         pass: process.env.NODEMAILER_PASSWORD,

@@ -20,12 +20,12 @@ if (avatarInput) {
 
 const editProfileForm = document.getElementById('editProfileForm');
 if (editProfileForm) {
-    editProfileForm.addEventListener('submit', async function(e) {
+    editProfileForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
-        
+
         submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Saving...';
         submitBtn.disabled = true;
 

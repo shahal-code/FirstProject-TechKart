@@ -120,11 +120,13 @@
                     </div>
                     <form action="/user/signup" method="POST" class="space-y-4">
                         <% if (locals.message) { %>
-                            <div
-                                class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
-                                <%= message %>
-                            </div>
-                            <% } %>
+                            <% locals.message.split('||').forEach(msg => { %>
+                                <div
+                                    class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
+                                    <%= msg %>
+                                </div>
+                            <% }) %>
+                        <% } %>
                                 <div class="flex flex-col gap-2">
                                     <label class="text-sm font-medium text-gray-300 px-1">Full Name</label>
                                     <div class="relative group">

@@ -1,61 +1,6 @@
-const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) return "Email is required";
-    if (!emailRegex.test(email)) return "Invalid email format";
-    return null;
-};
-
-const validatePassword = (password) => {
-    if (!password) return "Password is required";
-    if (password.length < 8) return "Password must be at least 8 characters long";
-    return null;
-};
-
-const validateFullname = (fullname) => {
-    if (!fullname) return "Full name is required";
-    if (fullname.trim().length < 3) return "Name must be at least 3 characters long";
-    const nameRegex = /^[a-zA-Z\s]+$/;
-    if (!nameRegex.test(fullname)) return "Name can only contain letters and spaces";
-    return null;
-};
-
-const validateOtp = (otp) => {
-    if (!otp) return "OTP is required";
-    if (!/^\d{6}$/.test(otp)) return "OTP must be 6 digits";
-    return null;
-};
-
-const validateCategoryForm = (name, description) => {
-    const errors = [];
-    if (!name || name.trim() === "") errors.push("Category name is required");
-    if (!description || description.trim() === "") errors.push("Description is required");
-    if (name && name.length < 3) errors.push("Category name must be at least 3 characters");
-    return errors;
-};
-
-// Generic "Required" Field Validator
-const validateRequired = (fields) => {
-    const errors = [];
-    for (const [name, value] of Object.entries(fields)) {
-        if (!value || value.trim() === "") {
-            // Convert camelCase or snake_case to Space Separated Title Case
-            const label = name
-                .replace(/([A-Z])/g, ' $1')
-                .replace(/_/g, ' ')
-                .replace(/^\w/, c => c.toUpperCase());
-            errors.push(`${label} is required`);
-        }
-    }
-    return errors;
-};
-
-// address validation
-const initAddressValidation = () => {
+document.addEventListener('DOMContentLoaded', () => {
     const addressForm = document.getElementById('addressForm');
-    if (!addressForm || addressForm.dataset.validationInitialized) return;
-
-    addressForm.dataset.validationInitialized = 'true';
-    console.log("Address validation initialized");
+    if (!addressForm) return;
 
     const fields = {
         fullname: {
@@ -106,7 +51,7 @@ const initAddressValidation = () => {
     const showError = (input, message) => {
         const container = input.closest('.relative') || input.parentElement;
         let errorDisplay = container.querySelector('.error-message');
-
+        
         if (!errorDisplay) {
             errorDisplay = document.createElement('div');
             errorDisplay.className = 'error-message text-red-500 text-[10px] mt-1 ml-4 font-medium transition-all duration-300 opacity-0 transform -translate-y-2';
@@ -135,7 +80,7 @@ const initAddressValidation = () => {
     const validateField = (name) => {
         const input = addressForm.querySelector(`[name="${name}"]`);
         if (!input) return true;
-
+        
         const error = fields[name].validate(input.value);
         showError(input, error);
         return !error;
@@ -147,7 +92,7 @@ const initAddressValidation = () => {
         if (input) {
             input.addEventListener('input', () => validateField(name));
             input.addEventListener('blur', () => validateField(name));
-
+            
             // For select elements
             if (input.tagName === 'SELECT') {
                 input.addEventListener('change', () => validateField(name));
@@ -165,7 +110,6 @@ const initAddressValidation = () => {
 
         if (!isValid) {
             e.preventDefault();
-            console.log("Form submission prevented due to validation errors");
             // Scroll to the first error
             const firstError = document.querySelector('.error-message.opacity-100');
             if (firstError) {
@@ -173,11 +117,4 @@ const initAddressValidation = () => {
             }
         }
     });
-};
-
-// Initialize on DOM load or immediately if already loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAddressValidation);
-} else {
-    initAddressValidation();
-}
+});

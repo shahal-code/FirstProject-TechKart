@@ -95,6 +95,67 @@ async function toggleList(id, isBlocked) {
     }
 }
 
+// Function to delete Category
+async function deleteCategory(id) {
+    try {
+        const result = await Swal.fire({
+            title: `<span class="text-white">Delete Category?</span>`,
+            text: `Are you sure you want to delete this category? This action cannot be undone.`,
+            icon: 'warning',
+            background: '#111827',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#f43f5e',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'YES, DELETE!',
+            customClass: {
+                popup: 'glass-morphism rounded-3xl',
+                confirmButton: 'rounded-xl font-bold uppercase tracking-widest text-[10px] px-6 py-3',
+                cancelButton: 'rounded-xl font-bold uppercase tracking-widest text-[10px] px-6 py-3'
+            }
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch(`/admin/deleteCategory/${id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: data.message,
+                    background: '#111827',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error || 'Failed to delete category',
+                    background: '#111827',
+                    color: '#fff'
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Delete Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred during deletion',
+            background: '#111827',
+            color: '#fff'
+        });
+    }
+}
+
 
 // Handle Form Submission (Add or Edit)
 document.getElementById('categoryForm')?.addEventListener('submit', async (e) => {

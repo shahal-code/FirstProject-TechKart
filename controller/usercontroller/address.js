@@ -15,7 +15,7 @@ export const load_address = async (req, res) => {
 export const load_addAddress = async (req, res) => {
     try {
         const user = await User.findById(req.session.user);
-        res.render("user/address/addNewAddress", { user });
+        res.render("user/address/addNewAddress", { user, message: req.query.message || null });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -54,6 +54,10 @@ export const addAddress = async (req, res) => {
         await newAddress.save();
         res.redirect("/user/address");
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            const firstError = Object.values(error.errors)[0].message;
+            return res.redirect(`/user/address/add?message=${encodeURIComponent(firstError)}`);
+        }
         console.log(error.message);
         res.status(500).send("Internal Server Error");
     }
@@ -64,7 +68,7 @@ export const load_editAddress = async (req, res) => {
         const addressId = req.params.id;
         const address = await Address.findById(addressId);
         const user = await User.findById(req.session.user);
-        res.render("user/address/editAddress", { address, user });
+        res.render("user/address/editAddress", { address, user, message: req.query.message || null });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -80,6 +84,10 @@ export const editAddress = async (req, res) => {
         });
         res.redirect("/user/address");
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            const firstError = Object.values(error.errors)[0].message;
+            return res.redirect(`/user/address/edit/${addressId}?message=${encodeURIComponent(firstError)}`);
+        }
         console.log(error.message);
         res.status(500).send("Internal Server Error");
     }

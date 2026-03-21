@@ -61,6 +61,8 @@ router.post("/addCategory", adminAuth.isAdminLoggedIn, CategoryController.addCat
 router.get("/toggleCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.toggleCategoryStatus);
 router.post("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.editCategory);
 router.get("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.getEditCategoryPage);
+router.delete("/deleteCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.deleteCategory);
+
 
 
 

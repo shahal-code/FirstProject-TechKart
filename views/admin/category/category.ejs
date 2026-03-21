@@ -237,15 +237,20 @@
                                                 <td class="px-8 py-5 text-right">
                                                     <div class="flex items-center justify-end gap-3">
                                                         <button onclick="window.location.href='/admin/editCategory/<%= category._id %>'"
-                                                            class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
+                                                            class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title="Edit">
                                                             <span class="material-symbols-outlined text-lg">edit</span>
                                                         </button>
                                                         <button
                                                             onclick="toggleList('<%= category._id %>', '<%= category.is_blocked %>')"
-                                                            class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all">
+                                                            class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all" title="<%= !category.is_blocked ? 'Block' : 'Unblock' %>">
                                                             <span class="material-symbols-outlined text-lg">
                                                                 <%= !category.is_blocked ? 'block' : 'check_circle' %>
                                                             </span>
+                                                        </button>
+                                                        <button
+                                                            onclick="deleteCategory('<%= category._id %>')"
+                                                            class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all" title="Delete">
+                                                            <span class="material-symbols-outlined text-lg">delete</span>
                                                         </button>
                                                     </div>
                                                 </td>

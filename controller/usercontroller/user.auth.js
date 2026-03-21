@@ -100,7 +100,7 @@ export const signup = async (req, res) => {
         req.session.otpExpiry = Date.now() + 2 * 60 * 1000; // 2 mins expiry
 
         // Send Email
-        await sendOtpEmail(email, otp);
+        sendOtpEmail(email, otp).catch(err => console.error("Background OTP send error:", err));
 
         req.session.save((err) => {
             if (err) console.log("Session save error:", err);
@@ -176,7 +176,7 @@ export const resendOTP = async (req, res) => {
         req.session.otp = otp;
         req.session.otpExpiry = Date.now() + 2 * 60 * 1000;
 
-        await sendOtpEmail(email, otp);
+        sendOtpEmail(email, otp).catch(err => console.error("Background OTP send error:", err));
 
         res.status(200).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
@@ -216,7 +216,7 @@ export const fogotPassword = async (req, res) => {
         req.session.otp = otp;
         req.session.otpExpiry = Date.now() + 2 * 60 * 1000;
 
-        await sendOtpEmail(email, otp);
+        sendOtpEmail(email, otp).catch(err => console.error("Background OTP send error:", err));
 
         req.session.save((err) => {
             if (err) console.log("Session save error:", err);

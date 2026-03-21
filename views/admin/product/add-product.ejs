@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TechKart Admin - Add New Product</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0055ff",
+                        "background-dark": "#0d0d0d",
+                        "panel-bg": "#11151F",
+                        "input-bg": "#1A1F2B"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            @apply bg-background-dark text-white;
+        }
+        .form-card {
+            @apply bg-panel-bg rounded-[24px] p-8 border border-white/5 shadow-2xl;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .input-label {
+            @apply text-[11px] font-medium text-slate-400 mb-2 block ml-1;
+        }
+        .input-field {
+            @apply bg-input-bg border-none rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary w-full text-white placeholder:text-slate-500;
+        }
+        .upload-zone {
+            @apply border border-dashed border-primary/30 rounded-2xl flex flex-col items-center justify-center p-12 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer;
+        }
+    </style>
+</head>
+
+<body class="flex min-h-screen bg-[#0D0D0D]">
+    <%- include('../../partials/admin/sidebar') %>
+
+    <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
+        <%- include('../../partials/admin/header') %>
+
+        <div class="p-8 lg:p-12 max-w-7xl mx-auto w-full">
+            <!-- Header Area -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-1"><%= typeof product !== 'undefined' && product ? 'Edit Product' : 'Add New Product' %></h2>
+                    <p class="text-sm text-slate-500 font-medium"><%= typeof product !== 'undefined' && product ? 'Update details of your existing hardware' : 'Create a new entry in your hardware catalog' %></p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button type="submit" form="productForm"
+                        class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-3.5 rounded-full font-bold text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(0,85,255,0.4)]">
+                        <span class="material-symbols-outlined text-sm">save</span>
+                        SAVE PRODUCT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form section -->
+            <form id="productForm" action="/admin/product/<%= typeof product !== 'undefined' && product ? 'edit/' + product._id : 'add' %>" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <!-- Left Column (General Information & Tech Specs) -->
+                <div class="xl:col-span-2 space-y-8">
+                    
+                    <!-- General Info Card -->
+                    <div class="form-card">
+                        <div class="flex items-center gap-3 mb-8">
+                            <span class="material-symbols-outlined text-slate-400">info</span>
+                            <h3 class="text-lg font-bold">General Information</h3>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="input-label">Product Name</label>
+                                <input type="text" name="name" class="input-field" placeholder="e.g. TechKart Ultra X" value="<%= typeof product !== 'undefined' && product ? product.name : '' %>" required>
+                            </div>
+                            
+                            <div>
+                                <label class="input-label">Product Description</label>
+                                <textarea name="description" rows="5" class="input-field resize-none rounded-3xl" placeholder="..." required><%= typeof product !== 'undefined' && product ? product.description : '' %></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="input-label">Price (USD)</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                        <input type="number" name="price" step="0.01" class="input-field pl-8" placeholder="TK-XXXX-2024" value="<%= typeof product !== 'undefined' && product ? product.price : '' %>" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="input-label">Category</label>
+                                    <select name="category" class="input-field appearance-none cursor-pointer" required>
+                                        <option value="" disabled <%= typeof product === 'undefined' || !product ? 'selected' : '' %>>Select Category ></option>
+                                        <% if(typeof categories !== 'undefined' && categories.length > 0) { %>
+                                            <% categories.forEach(cat => { %>
+                                                <option value="<%= cat._id %>" <%= typeof product !== 'undefined' && product && product.category && product.category.toString() === cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <option value="gaming">Gaming</option>
+                                            <option value="ultrabook">Ultrabook</option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Specs Card -->
+                    <div class="form-card relative">
+                        <!-- 'SECTION' vertical text from design -->
+                        <div class="absolute -left-12 top-10 -rotate-90 origin-top-left text-slate-600 font-bold tracking-[0.2em] text-sm uppercase hidden xl:block">
+                            Section
+                        </div>
+
+                        <div class="flex items-center gap-3 mb-8">
+                            <span class="material-symbols-outlined text-slate-400">tune</span>
+                            <h3 class="text-lg font-bold">Technical Specs</h3>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div>
+                                <label class="input-label">Size</label>
+                                <input type="text" name="size" class="input-field" placeholder="e.g. 14 inch" value="<%= typeof product !== 'undefined' && product && product.specs ? product.specs.size : '' %>">
+                            </div>
+                            <div>
+                                <label class="input-label">RAM</label>
+                                <input type="text" name="ram" class="input-field" placeholder="e.g. 32GB DDR5" value="<%= typeof product !== 'undefined' && product && product.specs ? product.specs.ram : '' %>">
+                            </div>
+                            <div>
+                                <label class="input-label">Processor</label>
+                                <input type="text" name="processor" class="input-field" placeholder="e.g. Intel Core i9-13900H" value="<%= typeof product !== 'undefined' && product && product.specs ? product.specs.processor : '' %>">
+                            </div>
+                            <div>
+                                <label class="input-label">Storage</label>
+                                <input type="text" name="storage" class="input-field" placeholder="e.g. 1TB NVMe Gen4" value="<%= typeof product !== 'undefined' && product && product.specs ? product.specs.storage : '' %>">
+                            </div>
+                            <div>
+                                <label class="input-label">GPU</label>
+                                <input type="text" name="gpu" class="input-field" placeholder="e.g. NVIDIA RTX 4080" value="<%= typeof product !== 'undefined' && product && product.specs ? product.specs.gpu : '' %>">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (Media) -->
+                <div class="space-y-8">
+                    <div class="form-card">
+                        <div class="flex items-center gap-3 mb-8">
+                            <span class="material-symbols-outlined text-slate-400">image</span>
+                            <h3 class="text-lg font-bold">Product Media</h3>
+                        </div>
+
+                        <label for="imageUpload" class="upload-zone mb-6">
+                            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
+                            </div>
+                            <p class="font-bold text-white mb-2 text-center">Click to upload product image</p>
+                            <p class="text-[11px] text-slate-500 font-medium">PNG, JPG up to 10MB</p>
+                            <input type="file" id="imageUpload" name="images" multiple accept="image/*" class="hidden" onchange="previewImages(event)">
+                        </label>
+
+                        <!-- Preview Zone -->
+                        <div id="imagePreviewContainer" class="bg-input-bg rounded-2xl p-4 flex flex-col gap-2 mb-6">
+                            <% if (typeof product !== 'undefined' && product && product.images && product.images.length > 0) { %>
+                                <% product.images.forEach(image => { %>
+                                    <div class="bg-input-bg rounded-2xl p-4 flex items-center justify-between gap-4 w-full">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                <img src="<%= image %>" class="w-full h-full object-cover" />
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-sm text-white truncate max-w-[150px]">Existing Image</p>
+                                                <p class="text-xs text-slate-500">Saved</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="text-rose-500 hover:bg-rose-500/10 p-2 rounded-lg transition-colors">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </button>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-slate-500">image_not_supported</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-sm text-slate-300">Preview Mode</p>
+                                        <p class="text-xs text-slate-500">No file selected</p>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                            Upload a high-quality product image for the storefront. For best results, use a 1:1 aspect ratio with a transparent background.
+                        </p>
+                    </div>
+
+                    <!-- Delete button shown if editing -->
+                    <% if (typeof product !== 'undefined' && product && product._id) { %>
+                    <div class="flex justify-center mt-12">
+                        <button type="button" onclick="confirmDelete('<%= product._id %>')" class="bg-[#11151F] hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/30 hover:border-transparent px-8 py-3 rounded-xl font-bold text-sm tracking-wide transition-all w-full lg:w-auto flex items-center justify-center shadow-lg">
+                            <span class="material-symbols-outlined text-sm mr-2">delete</span>
+                            Delete Product
+                        </button>
+                    </div>
+                    <% } %>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function previewImages(event) {
+            const container = document.getElementById('imagePreviewContainer');
+            const files = event.target.files;
+            
+            if (files && files.length > 0) {
+                container.innerHTML = '';
+                
+                Array.from(files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'bg-input-bg rounded-2xl p-4 flex items-center justify-between gap-4 mb-2 w-full';
+                        div.innerHTML = `
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    <img src="${e.target.result}" class="w-full h-full object-cover" />
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm text-white truncate max-w-[150px]">${file.name}</p>
+                                    <p class="text-xs text-slate-500">${(file.size / 1024 / 1024).toFixed(1)}MB</p>
+                                </div>
+                            </div>
+                            <button type="button" class="text-rose-500 hover:bg-rose-500/10 p-2 rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-xl">delete</span>
+                            </button>
+                        `;
+                        container.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-slate-500">image_not_supported</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm text-slate-300">Preview Mode</p>
+                            <p class="text-xs text-slate-500">No file selected</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Are you want to delete ?',
+                background: '#11151F',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#10b981',
+                confirmButtonText: 'Delete Product',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    popup: 'rounded-[20px] pb-8 pt-10 border border-white/5 shadow-2xl',
+                    title: 'text-xl font-bold mb-6',
+                    confirmButton: 'rounded-xl font-bold text-sm px-6 py-2.5 shadow-[0_4px_15px_rgba(244,63,94,0.3)]',
+                    cancelButton: 'rounded-xl font-bold text-sm px-6 py-2.5 shadow-[0_4px_15px_rgba(16,185,129,0.3)]'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Make DELETE request block
+                    // fetch('/admin/product/delete/' + id, {method: 'DELETE'})
+                    console.log('Delete confirmed for', id);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

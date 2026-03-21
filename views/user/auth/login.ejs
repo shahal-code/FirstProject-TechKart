@@ -93,11 +93,13 @@
                     </div>
                     <form action="/user/login" method="POST" class="space-y-5">
                         <% if (locals.message) { %>
+                            <% locals.message.split('||').forEach(msg => { %>
                             <div
                                 class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
-                                <%= message %>
+                                <%= msg %>
                             </div>
-                            <% } %>
+                            <% }) %>
+                        <% } %>
                                 <div class="flex flex-col gap-2">
                                     <label class="text-sm font-medium text-gray-300 px-1">Email Address</label>
                                     <div class="relative group">
