@@ -93,12 +93,14 @@
                         <div class="space-y-6">
                             <div>
                                 <label class="input-label">Product Name</label>
-                                <input type="text" name="name" class="input-field" placeholder="e.g. TechKart Ultra X" required>
+                                <input type="text" id="productName" name="name" class="input-field" placeholder="e.g. TechKart Ultra X">
+                                <p id="nameError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                             
                             <div>
                                 <label class="input-label">Product Description</label>
-                                <textarea name="description" rows="5" class="input-field resize-none rounded-3xl" placeholder="..." required></textarea>
+                                <textarea id="productDesc" name="description" rows="5" class="input-field resize-none rounded-3xl" placeholder="..."></textarea>
+                                <p id="descError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
 
                             <div class="grid grid-cols-2 gap-6">
@@ -106,12 +108,13 @@
                                     <label class="input-label">Price (USD)</label>
                                     <div class="relative">
                                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-                                        <input type="number" name="price" step="0.01" class="input-field pl-8" placeholder="2499" required>
+                                        <input type="number" id="productPrice" name="price" step="0.01" class="input-field pl-8" placeholder="2499">
                                     </div>
+                                    <p id="priceError" class="text-rose-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 <div>
                                     <label class="input-label">Category</label>
-                                    <select name="category_id" class="input-field appearance-none cursor-pointer" required>
+                                    <select id="productCategory" name="category_id" class="input-field appearance-none cursor-pointer">
                                         <option value="" disabled selected>Select Category ></option>
                                         <% if(typeof categories !== 'undefined' && categories.length > 0) { %>
                                             <% categories.forEach(cat => { %>
@@ -119,6 +122,7 @@
                                             <% }) %>
                                         <% } %>
                                     </select>
+                                    <p id="categoryError" class="text-rose-500 text-xs mt-1 hidden"></p>
                                 </div>
                             </div>
                         </div>
@@ -134,23 +138,28 @@
                         <div class="grid grid-cols-2 gap-x-8 gap-y-6">
                             <div>
                                 <label class="input-label">Size</label>
-                                <input type="text" name="size" class="input-field" placeholder="e.g. 14 inch">
+                                <input type="text" id="productSize" name="size" class="input-field" placeholder="e.g. 14 inch">
+                                <p id="sizeError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                             <div>
                                 <label class="input-label">RAM</label>
-                                <input type="text" name="ram" class="input-field" placeholder="e.g. 32GB DDR5">
+                                <input type="text" id="productRam" name="ram" class="input-field" placeholder="e.g. 32GB DDR5">
+                                <p id="ramError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                             <div>
                                 <label class="input-label">Processor</label>
-                                <input type="text" name="processor" class="input-field" placeholder="e.g. Intel Core i9-13900H">
+                                <input type="text" id="productProcessor" name="processor" class="input-field" placeholder="e.g. Intel Core i9-13900H">
+                                <p id="processorError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                             <div>
                                 <label class="input-label">Storage</label>
-                                <input type="text" name="storage" class="input-field" placeholder="e.g. 1TB NVMe Gen4">
+                                <input type="text" id="productStorage" name="storage" class="input-field" placeholder="e.g. 1TB NVMe Gen4">
+                                <p id="storageError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                             <div>
                                 <label class="input-label">GPU</label>
-                                <input type="text" name="gpu" class="input-field" placeholder="e.g. NVIDIA RTX 4080">
+                                <input type="text" id="productGpu" name="gpu" class="input-field" placeholder="e.g. NVIDIA RTX 4080">
+                                <p id="gpuError" class="text-rose-500 text-xs mt-1 hidden"></p>
                             </div>
                         </div>
                     </div>
@@ -273,19 +282,7 @@
             });
         }
 
-        document.getElementById('productForm').addEventListener('submit', function(e) {
-            if (selectedFiles.length < 4) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Not enough images!',
-                    text: 'Please upload at least 4 images for the product.',
-                    background: '#11151F',
-                    color: '#fff',
-                    confirmButtonColor: '#0055ff'
-                });
-            }
-        });
     </script>
+    <script src="/js/validation.js"></script>
 </body>
 </html>
