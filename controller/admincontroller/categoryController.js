@@ -1,4 +1,5 @@
 import Category from "../../models/categoryModel.js";
+import Product from "../../models/productModel.js";
 
 // Load Category Page
 export const categoryInfo = async (req, res) => {
@@ -26,8 +27,19 @@ export const categoryInfo = async (req, res) => {
     const totalCount = await Category.countDocuments();
     const newestCategory = await Category.findOne().sort({ created_at: -1 });
 
+    // Get product counts for each category
+    const categoriesWithCounts = await Promise.all(
+      categories.map(async (category) => {
+        const productCount = await Product.countDocuments({ category_id: category._id });
+        return {
+          ...category.toObject(),
+          productCount
+        };
+      })
+    );
+
     res.render("admin/category/category", {
-      categories,
+      categories: categoriesWithCounts,
       page,
       totalPages,
       totalCategories,
