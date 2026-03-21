@@ -247,6 +247,11 @@
                                                                 <%= !category.is_blocked ? 'block' : 'check_circle' %>
                                                             </span>
                                                         </button>
+                                                        <button
+                                                            onclick="deleteCategory('<%= category._id %>')"
+                                                            class="p-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all">
+                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>

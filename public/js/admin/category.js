@@ -141,3 +141,53 @@ document.getElementById('categoryForm')?.addEventListener('submit', async (e) =>
         });
     }
 });
+
+// Function to delete Category
+async function deleteCategory(id) {
+    try {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            background: '#111827',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#f43f5e',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch(`/admin/deleteCategory/${id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error || 'Failed to delete category'
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Delete Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred'
+        });
+    }
+}
