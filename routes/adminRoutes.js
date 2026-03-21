@@ -4,6 +4,9 @@ import * as Customers from "../controller/admincontroller/customers.js";
 import { validateLogin } from "../utils/validation.js";
 import * as adminAuth from "../middleware/adminAuth.js";
 import * as CategoryController from "../controller/admincontroller/categoryController.js";
+import * as ProductController from "../controller/admincontroller/productController.js";
+import { uploadProduct } from "../config/productMulter.js";
+
 const router = express.Router();
 
 router.use(adminAuth.noCache);
@@ -61,10 +64,12 @@ router.post("/addCategory", adminAuth.isAdminLoggedIn, CategoryController.addCat
 router.get("/toggleCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.toggleCategoryStatus);
 router.post("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.editCategory);
 router.get("/editCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.getEditCategoryPage);
+router.delete("/deleteCategory/:id", adminAuth.isAdminLoggedIn, CategoryController.deleteCategory);
 
-
-
-
-
+// Product
+router.get("/product", adminAuth.isAdminLoggedIn, ProductController.loadProducts);
+router.get("/addProduct", adminAuth.isAdminLoggedIn, ProductController.getAddProductPage);
+router.post("/product/add", adminAuth.isAdminLoggedIn, uploadProduct.array('images', 5), ProductController.addProduct);
+router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductController.deleteProduct);
 
 export default router;
