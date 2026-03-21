@@ -32,6 +32,7 @@ export const categoryInfo = async (req, res) => {
       totalPages,
       totalCategories,
       search,
+      activePage: "category",
       stats: {
         total: totalCount,
         addedQuarter: 0, // You can add logic for this later
@@ -45,6 +46,7 @@ export const categoryInfo = async (req, res) => {
     res.redirect("/admin/pageerror");
   }
 };
+
 // Get Add Category Page
 export const getAddCategoryPage = async (req, res) => {
   try {
@@ -59,7 +61,6 @@ export const getAddCategoryPage = async (req, res) => {
 
 // Add New Category
 export const addCategory = async (req, res) => {
-
   try {
     const { name, description } = req.body;
 
@@ -88,6 +89,7 @@ export const addCategory = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 // Toggle Category Status (Block/Unblock)
 export const toggleCategoryStatus = async (req, res) => {
   try {
@@ -111,6 +113,7 @@ export const toggleCategoryStatus = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 // Get Edit Category Page
 export const getEditCategoryPage = async (req, res) => {
   try {
@@ -133,7 +136,6 @@ export const getEditCategoryPage = async (req, res) => {
 
 // Edit Category
 export const editCategory = async (req, res) => {
-
   try {
     const { id } = req.params;
     const { name, description } = req.body;
