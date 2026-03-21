@@ -42,9 +42,16 @@ app.use(async (req, res, next) => {
     res.locals.path = req.path;
     next();
   } catch (error) {
-    console.log("MiddleWare Error", error);
+    console.error("MiddleWare Error", error);
     next();
   }
+});
+
+// Final error handler to catch any missed errors and prevent [object Object] output
+app.use((err, req, res, next) => {
+  console.error("Global Error Caught:");
+  console.error(err);
+  res.status(err.status || 500).send(err.message || "An internal server error occurred.");
 });
 
 app.set("view engine", "ejs");

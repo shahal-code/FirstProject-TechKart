@@ -65,8 +65,8 @@ export const addCategory = async (req, res) => {
     const { name, description } = req.body;
 
     // Check if category already exists
-    const existingCategory = await Category.findOne({ 
-      name: { $regex: new RegExp(`^${name}$`, 'i') } 
+    const existingCategory = await Category.findOne({
+      name: { $regex: new RegExp(`^${name}$`, 'i') }
     });
 
     if (existingCategory) {
@@ -95,7 +95,7 @@ export const toggleCategoryStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await Category.findById(id);
-    
+
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
@@ -103,7 +103,7 @@ export const toggleCategoryStatus = async (req, res) => {
     category.is_blocked = !category.is_blocked;
     await category.save();
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: `Category ${category.is_blocked ? 'blocked' : 'unblocked'} successfully`,
       is_blocked: category.is_blocked
     });
@@ -119,7 +119,7 @@ export const getEditCategoryPage = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await Category.findById(id);
-    
+
     if (!category) {
       return res.redirect("/admin/category");
     }
@@ -141,7 +141,7 @@ export const editCategory = async (req, res) => {
     const { name, description } = req.body;
 
     // Check if another category with the same name exists
-    const existingCategory = await Category.findOne({ 
+    const existingCategory = await Category.findOne({
       name: { $regex: new RegExp(`^${name}$`, 'i') },
       _id: { $ne: id }
     });
@@ -152,8 +152,8 @@ export const editCategory = async (req, res) => {
 
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { 
-        name, 
+      {
+        name,
         description,
         url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
       },
@@ -177,11 +177,11 @@ export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedCategory = await Category.findByIdAndDelete(id);
-    
+
     if (!deletedCategory) {
       return res.status(404).json({ error: "Category not found" });
     }
-    
+
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     console.error("Error deleting category:", error);

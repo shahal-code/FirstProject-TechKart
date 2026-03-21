@@ -93,7 +93,7 @@ export const changePassword = async (req, res) => {
 
         const validationError = validatePassword(newPassword);
         if (validationError) {
-             return res.status(400).json({ success: false, message: validationError });
+            return res.status(400).json({ success: false, message: validationError });
         }
 
         if (newPassword !== confirmPassword) {
@@ -129,21 +129,21 @@ export const sendChangeEmailLink = async (req, res) => {
 
         const emailError = validateEmail(newEmail);
         if (emailError) {
-             return res.status(400).json({ success: false, message: emailError });
+            return res.status(400).json({ success: false, message: emailError });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-             return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
         if (user.email === newEmail) {
-             return res.status(400).json({ success: false, message: "This is already your current email address" });
+            return res.status(400).json({ success: false, message: "This is already your current email address" });
         }
 
         const existingUser = await User.findOne({ email: newEmail });
         if (existingUser) {
-             return res.status(400).json({ success: false, message: "Email address is already in use by another account" });
+            return res.status(400).json({ success: false, message: "Email address is already in use by another account" });
         }
 
         // Generate a secure token
@@ -151,9 +151,9 @@ export const sendChangeEmailLink = async (req, res) => {
 
         // Store token data in session (for a robust app, store in Redis or DB)
         req.session.changeEmailToken = {
-             token,
-             newEmail,
-             expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
+            token,
+            newEmail,
+            expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
         };
 
         const protocol = req.protocol === 'https' ? 'https' : 'http';
@@ -163,8 +163,8 @@ export const sendChangeEmailLink = async (req, res) => {
 
         await sendVerificationLink(newEmail, verificationLink);
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: "A verification link has been sent to your new email address. Please check your inbox (and spam folder).",
             // We don't immediately redirect because we want them to read the success message. The frontend can handle redirection or just showing the message.
         });
@@ -194,18 +194,18 @@ export const verifyChangeEmailLink = async (req, res) => {
         }
 
         if (sessionTokenData.token !== token) {
-             return res.redirect('/user/profile?message=Invalid verification link.');
+            return res.redirect('/user/profile?message=Invalid verification link.');
         }
 
         if (Date.now() > sessionTokenData.expiresAt) {
-             delete req.session.changeEmailToken;
-             return res.redirect('/user/profile?message=Verification link has expired. Please request a new one.');
+            delete req.session.changeEmailToken;
+            return res.redirect('/user/profile?message=Verification link has expired. Please request a new one.');
         }
 
         // Token is valid! Update the user's email.
         const user = await User.findById(userId);
         if (!user) {
-             return res.redirect('/user/profile?message=User not found');
+            return res.redirect('/user/profile?message=User not found');
         }
 
         user.email = sessionTokenData.newEmail;
@@ -217,7 +217,7 @@ export const verifyChangeEmailLink = async (req, res) => {
         res.redirect('/user/profile?message=Email address updated successfully!');
 
     } catch (error) {
-         console.error("Verify Email Link Error:", error);
-         res.redirect('/user/profile?message=An error occurred during verification.');
+        console.error("Verify Email Link Error:", error);
+        res.redirect('/user/profile?message=An error occurred during verification.');
     }
 };

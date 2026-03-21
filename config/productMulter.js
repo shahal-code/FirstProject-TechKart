@@ -6,7 +6,7 @@ const storage = new CloudinaryStorage({
     cloudinary,
     params: {
         folder: "techkart/products",
-        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+        allowed_formats: ["avif", "jpg", "jpeg", "png", "webp"],
     },
 });
 

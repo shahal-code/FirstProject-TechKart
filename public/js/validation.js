@@ -111,11 +111,13 @@ if (productForm) {
             isValid = false;
         }
 
-        if (typeof selectedFiles !== 'undefined' && selectedFiles.length < 4) {
+        const totalImages = (typeof selectedFiles !== 'undefined' ? selectedFiles.length : 0) + (window.existingImageCount || 0);
+        
+        if (totalImages < 4) {
             Swal.fire({
                 icon: 'error',
                 title: 'Not enough images!',
-                text: 'Please upload at least 4 images for the product.',
+                text: 'Product must have at least 4 images in total.',
                 background: '#11151F',
                 color: '#fff',
                 confirmButtonColor: '#0055ff'

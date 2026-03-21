@@ -69,7 +69,26 @@ router.delete("/deleteCategory/:id", adminAuth.isAdminLoggedIn, CategoryControll
 // Product
 router.get("/product", adminAuth.isAdminLoggedIn, ProductController.loadProducts);
 router.get("/addProduct", adminAuth.isAdminLoggedIn, ProductController.getAddProductPage);
-router.post("/product/add", adminAuth.isAdminLoggedIn, uploadProduct.array('images', 5), ProductController.addProduct);
+router.post("/product/add", adminAuth.isAdminLoggedIn, (req, res, next) => {
+  uploadProduct.array('images', 5)(req, res, (err) => {
+    if (err) {
+      console.error("Multer Upload Error:", err);
+      // Send a clear string message to avoid [object Object]
+      return res.status(400).send(`Image Upload Error: ${err.message || "Unknown error during upload"}`);
+    }
+    next();
+  });
+}, ProductController.addProduct);
+router.get("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.getEditProductPage);
+router.post("/product/edit/:id", adminAuth.isAdminLoggedIn, (req, res, next) => {
+  uploadProduct.array('images', 5)(req, res, (err) => {
+    if (err) {
+      console.error("Multer Edit Upload Error:", err);
+      return res.status(400).send(`Image Upload Error: ${err.message || "Unknown error during upload"}`);
+    }
+    next();
+  });
+}, ProductController.updateProduct);
 router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductController.deleteProduct);
 
 export default router;
