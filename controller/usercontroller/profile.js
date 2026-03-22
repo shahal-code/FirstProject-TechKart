@@ -1,5 +1,5 @@
 import * as ProfileService from "../../services/user/profileService.js";
-import { validatePassword, validateEmail } from '../../utils/validation.js';
+import { validateChangePasswordData, validateEmail } from '../../utils/validation.js';
 import { sendVerificationLink } from '../../config/nodemailer.js';
 import crypto from 'crypto';
 
@@ -77,10 +77,8 @@ export const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
         const userId = req.session.user;
-
-        const validationError = validatePassword(newPassword);
-        if (validationError) return res.status(400).json({ success: false, message: validationError });
-        if (newPassword !== confirmPassword) return res.status(400).json({ success: false, message: "New passwords do not match" });
+        const errors = validateChangePasswordData(req.body);
+        if (errors) return res.status(400).json({ success: false, errors });
 
         await ProfileService.changePassword(userId, currentPassword, newPassword);
         res.json({ success: true, message: "Password updated successfully", redirect: "/user/profile" });

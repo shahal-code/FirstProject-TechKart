@@ -37,7 +37,20 @@ document.getElementById('changePasswordForm').addEventListener('submit', async f
             }, 1500);
         } else {
             messageContainer.classList.add('bg-red-500/10', 'text-red-500', 'border-red-500/20');
-            messageContainer.innerHTML = `<span class="material-symbols-outlined align-middle mr-2">error</span> ${result.message}`;
+            if (result.errors && result.errors.length > 0) {
+                messageContainer.innerHTML = `
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center font-bold mb-1">
+                            <span class="material-symbols-outlined align-middle mr-2">error</span>
+                            Validation Failed
+                        </div>
+                        <ul class="list-disc list-inside ml-7 text-xs space-y-1">
+                            ${result.errors.map(err => `<li>${err}</li>`).join('')}
+                        </ul>
+                    </div>`;
+            } else {
+                messageContainer.innerHTML = `<span class="material-symbols-outlined align-middle mr-2">error</span> ${result.message || 'Validation failed'}`;
+            }
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }

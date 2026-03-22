@@ -1,7 +1,7 @@
 import * as AuthService from "../../services/user/authService.js";
 import {
-    validateSignup,
-    validateLogin,
+    validateSignupData,
+    validateLoginData,
     validateEmail,
     validateOtp,
     validatePassword
@@ -10,8 +10,10 @@ import {
 export const loadlogin = async (req, res) => {
     try {
         const message = req.query.message || null;
+        const errors = req.session.validationErrors || null;
+        delete req.session.validationErrors;
         const email = req.query.email || null;
-        res.render("user/auth/login", { message, email });
+        res.render("user/auth/login", { message, errors, email });
     } catch (error) {
         console.error("Error loading login page:", error.message);
         res.status(500).send("Internal Server Error");
@@ -21,8 +23,11 @@ export const loadlogin = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const validationError = validateLogin(req.body);
-        if (validationError) return res.redirect(303, `/user/login?message=${encodeURIComponent(validationError)}&email=${encodeURIComponent(email)}`);
+        const errors = validateLoginData(req.body);
+        if (errors) {
+            req.session.validationErrors = errors;
+            return res.redirect(303, `/user/login?email=${encodeURIComponent(email)}`);
+        }
 
         const user = await AuthService.login(email, password);
         req.session.user = user._id;
@@ -40,9 +45,11 @@ export const login = async (req, res) => {
 export const loadsignup = async (req, res) => {
     try {
         const message = req.query.message || null;
+        const errors = req.session.validationErrors || null;
+        delete req.session.validationErrors;
         const fullname = req.query.fullname || null;
         const email = req.query.email || null;
-        res.render("user/auth/signup", { message, fullname, email });
+        res.render("user/auth/signup", { message, errors, fullname, email });
     } catch (error) {
         console.error("Error loading signup page:", error.message);
         res.status(500).send("Internal Server Error");
@@ -52,8 +59,11 @@ export const loadsignup = async (req, res) => {
 export const signup = async (req, res) => {
     const { fullname, email, password } = req.body;
     try {
-        const validationError = validateSignup(req.body);
-        if (validationError) return res.redirect(303, `/user/signup?message=${encodeURIComponent(validationError)}&fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}`);
+        const errors = validateSignupData(req.body);
+        if (errors) {
+            req.session.validationErrors = errors;
+            return res.redirect(303, `/user/signup?fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}`);
+        }
 
         const { userData, otp, otpExpiry } = await AuthService.prepareSignup(fullname, email, password);
         
