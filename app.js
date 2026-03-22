@@ -7,6 +7,8 @@ import passport from "passport";
 import './config/passport.js';
 import session from "express-session";
 import User from "./models/userModel.js";
+import * as ErrorHandler from "./middleware/errorHandler.js";
+
 const app = express();
 
 connectDB();
@@ -33,8 +35,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
 app.use(async (req, res, next) => {
   try {
     res.locals.user = req.session.user ? await User.findById(req.session.user) : null;
@@ -47,18 +47,15 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Final error handler to catch any missed errors and prevent [object Object] output
-app.use((err, req, res, next) => {
-  console.error("Global Error Caught:");
-  console.error(err);
-  res.status(err.status || 500).send(err.message || "An internal server error occurred.");
-});
-
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
+
+// Error Handling Middleware
+app.use(ErrorHandler.notFound);
+app.use(ErrorHandler.globalErrorHandler);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
