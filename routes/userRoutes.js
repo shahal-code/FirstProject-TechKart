@@ -91,6 +91,8 @@ router.post('/address/edit/:id', userAuth.isAuthenticated, Address.editAddress);
 router.get('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.get('/delete-address/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.delete('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
+
+router.get('/address/set-default/:id', userAuth.isAuthenticated, Address.setDefaultAddress);
 router.get('/settings', userAuth.isAuthenticated);
 
 router.get('/logout', userAuth.isAuthenticated, usercontroller.isLogout);

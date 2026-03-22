@@ -13,7 +13,7 @@ export const getProfile = async (userId) => {
  * Update user profile info.
  */
 export const updateProfile = async (userId, updateData) => {
-    return await User.findByIdAndUpdate(userId, updateData, { new: true });
+    return await User.findByIdAndUpdate(userId, updateData, { returnDocument: 'after' });
 };
 
 /**

@@ -98,7 +98,7 @@ export const updateCategory = async (id, categoryData) => {
             description,
             url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
         },
-        { new: true }
+        { returnDocument: 'after' }
     );
 
     if (!updatedCategory) {

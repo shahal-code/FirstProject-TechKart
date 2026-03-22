@@ -48,7 +48,7 @@ export const load_editAddress = async (req, res) => {
 export const editAddress = async (req, res) => {
     try {
         const { id } = req.params;
-        await AddressService.updateAddress(id, req.body);
+        await AddressService.updateAddress(id, req.session.user, req.body);
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error editing address:", error.message);
@@ -68,5 +68,13 @@ export const deleteAddress = async (req, res) => {
 };
 
 export const setDefaultAddress = async (req, res) => {
-    // Logic for setting default address
+    try {
+        const { id } = req.params;
+        const userId = req.session.user;
+        await AddressService.setDefaultAddress(userId, id);
+        res.redirect("/user/address");
+    } catch (error) {
+        console.error("Error setting default address:", error.message);
+        res.status(500).send("Internal Server Error");
+    }
 };
