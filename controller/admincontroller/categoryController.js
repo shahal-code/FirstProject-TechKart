@@ -1,5 +1,4 @@
-import Category from "../../models/categoryModel.js";
-import Product from "../../models/productModel.js";
+import * as CategoryService from "../../services/admin/categoryService.js";
 
 // Load Category Page
 export const categoryInfo = async (req, res) => {
@@ -8,49 +7,22 @@ export const categoryInfo = async (req, res) => {
     const limit = 4;
     const search = req.query.search || "";
 
-    // Build search query
     const query = {};
     if (search) {
       query.name = { $regex: search, $options: "i" };
     }
 
-    // Fetch categories with pagination and descending sort
-    const categories = await Category.find(query)
-      .sort({ created_at: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    const totalCategories = await Category.countDocuments(query);
-    const totalPages = Math.ceil(totalCategories / limit);
-
-    // Calculate summary stats for the cards
-    const totalCount = await Category.countDocuments();
-    const newestCategory = await Category.findOne().sort({ created_at: -1 });
-
-    // Get product counts for each category
-    const categoriesWithCounts = await Promise.all(
-      categories.map(async (category) => {
-        const productCount = await Product.countDocuments({ category_id: category._id });
-        return {
-          ...category.toObject(),
-          productCount
-        };
-      })
-    );
+    const { categories, totalCategories, totalPages } = await CategoryService.getAllCategories(query, page, limit);
+    const stats = await CategoryService.getCategoryStats();
 
     res.render("admin/category/category", {
-      categories: categoriesWithCounts,
+      categories,
       page,
       totalPages,
       totalCategories,
       search,
       activePage: "category",
-      stats: {
-        total: totalCount,
-        addedQuarter: 0, // You can add logic for this later
-        newestName: newestCategory ? newestCategory.name : "N/A",
-        newestDate: newestCategory ? newestCategory.created_at : null,
-      }
+      stats
     });
 
   } catch (error) {
@@ -74,31 +46,13 @@ export const getAddCategoryPage = async (req, res) => {
 // Add New Category
 export const addCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
-
-    // Check if category already exists
-    const existingCategory = await Category.findOne({
-      name: { $regex: new RegExp(`^${name}$`, 'i') }
-    });
-
-    if (existingCategory) {
-      return res.status(400).json({ error: "Category already exists" });
-    }
-
-    // Create new category
-    const newCategory = new Category({
-      name,
-      description,
-      url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
-      is_blocked: false
-    });
-
-    await newCategory.save();
+    const { message } = await CategoryService.createCategory(req.body);
     res.status(201).json({ message: "Category added successfully" });
-
   } catch (error) {
     console.error("Error adding category:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(error.message === "Category already exists" ? 400 : 500).json({ 
+        error: error.message || "Internal Server Error" 
+    });
   }
 };
 
@@ -106,14 +60,7 @@ export const addCategory = async (req, res) => {
 export const toggleCategoryStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const category = await Category.findById(id);
-
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
-
-    category.is_blocked = !category.is_blocked;
-    await category.save();
+    const category = await CategoryService.toggleCategoryStatus(id);
 
     res.status(200).json({
       message: `Category ${category.is_blocked ? 'blocked' : 'unblocked'} successfully`,
@@ -122,7 +69,9 @@ export const toggleCategoryStatus = async (req, res) => {
 
   } catch (error) {
     console.error("Error toggling category status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(error.message === "Category not found" ? 404 : 500).json({ 
+        error: error.message || "Internal Server Error" 
+    });
   }
 };
 
@@ -130,7 +79,7 @@ export const toggleCategoryStatus = async (req, res) => {
 export const getEditCategoryPage = async (req, res) => {
   try {
     const { id } = req.params;
-    const category = await Category.findById(id);
+    const category = await CategoryService.getCategoryById(id);
 
     if (!category) {
       return res.redirect("/admin/category");
@@ -150,37 +99,14 @@ export const getEditCategoryPage = async (req, res) => {
 export const editCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
-
-    // Check if another category with the same name exists
-    const existingCategory = await Category.findOne({
-      name: { $regex: new RegExp(`^${name}$`, 'i') },
-      _id: { $ne: id }
-    });
-
-    if (existingCategory) {
-      return res.status(400).json({ error: "Category name already exists" });
-    }
-
-    const updatedCategory = await Category.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-        url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
-      },
-      { new: true }
-    );
-
-    if (!updatedCategory) {
-      return res.status(404).json({ error: "Category not found" });
-    }
-
+    await CategoryService.updateCategory(id, req.body);
     res.status(200).json({ message: "Category updated successfully" });
-
   } catch (error) {
     console.error("Error editing category:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    const status = error.message === "Category not found" ? 404 : (error.message === "Category name already exists" ? 400 : 500);
+    res.status(status).json({ 
+        error: error.message || "Internal Server Error" 
+    });
   }
 };
 
@@ -188,15 +114,12 @@ export const editCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedCategory = await Category.findByIdAndDelete(id);
-
-    if (!deletedCategory) {
-      return res.status(404).json({ error: "Category not found" });
-    }
-
+    await CategoryService.deleteCategory(id);
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     console.error("Error deleting category:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(error.message === "Category not found" ? 404 : 500).json({ 
+        error: error.message || "Internal Server Error" 
+    });
   }
 };

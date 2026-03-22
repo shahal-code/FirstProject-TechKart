@@ -1,12 +1,11 @@
+import * as DashboardService from "../../services/admin/dashboardService.js";
+
 export const loadDashboard = async (req, res) => {
   try {
-    res.render("admin/dashboard", {
-      activePage: "dashboard",
-      pageTitle: "Global Overview",
-      pageSubtitle: "Real-time Admin Statistics"
-    });
+    const stats = await DashboardService.getDashboardStats();
+    res.render("admin/dashboard", stats);
   } catch (error) {
-    console.log(error.message);
+    console.error("Error loading dashboard:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
