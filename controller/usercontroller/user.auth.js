@@ -75,7 +75,8 @@ export const load_otp = async (req, res) => {
     try {
         if (!req.session.userData && !req.session.resetEmail) return res.redirect(303, "/user/signup");
         const message = req.query.message || null;
-        res.render("user/auth/otp", { message, actionUrl: "/user/otp", resendUrl: "/user/resend-otp" });
+        const expiresIn = Math.max(0, Math.floor((req.session.otpExpiry - Date.now()) / 1000));
+        res.render("user/auth/otp", { message, actionUrl: "/user/otp", resendUrl: "/user/resend-otp", expiresIn });
     } catch (error) {
         console.error("Error loading OTP page:", error.message);
         res.status(500).send("Internal Server Error");

@@ -43,12 +43,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // OTP Timer logic
-    let count = 59;
     const timerElement = document.getElementById('timer');
     const resendBtn = document.getElementById('resendBtn');
     const timerText = document.getElementById('timerText');
+    let count = timerText ? parseInt(timerText.getAttribute('data-expires-in')) : 15;
 
     if (timerElement && resendBtn && timerText) {
+        // Initial set to avoid delay
+        let initialSeconds = count < 10 ? '0' + count : count;
+        timerElement.innerHTML = `00:${initialSeconds}`;
+        
+        if (count <= 0) {
+            timerElement.innerHTML = "00:00";
+            resendBtn.disabled = false;
+            resendBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+            timerText.style.display = 'none';
+            return;
+        }
+
         const countdown = setInterval(() => {
             if (count <= 0) {
                 clearInterval(countdown);
