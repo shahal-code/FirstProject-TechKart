@@ -70,6 +70,18 @@ export const updateProduct = async (id, productData, files) => {
     }
 
     let images = product.images;
+    
+    // Handle image removal
+    if (productData.removedImages) {
+        const removed = Array.isArray(productData.removedImages) 
+            ? productData.removedImages 
+            : [productData.removedImages];
+            
+        images = images.filter(img => !removed.includes(img));
+        console.log("Images after removal:", images.length);
+    }
+
+    // Add new images
     if (files && files.length > 0) {
         const newImages = files.map(file => file.path);
         images = images.concat(newImages);

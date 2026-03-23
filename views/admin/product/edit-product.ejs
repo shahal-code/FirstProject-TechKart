@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>TechKart Admin - Edit Product</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -62,155 +67,218 @@
 <body class="flex min-h-screen bg-[#0D0D0D]">
     <%- include('../../partials/admin/sidebar') %>
 
-    <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
-        <%- include('../../partials/admin/header') %>
+        <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
+            <%- include('../../partials/admin/header') %>
 
-        <div class="p-8 lg:p-12 max-w-7xl mx-auto w-full">
-            <!-- Header Area -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold tracking-tight mb-1">Edit Product</h2>
-                    <p class="text-sm text-slate-500 font-medium tracking-tight">Modify entry: <span class="text-primary"><%= product.name %></span></p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button type="submit" form="productForm"
-                        class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-3.5 rounded-full font-bold text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(0,85,255,0.4)]">
-                        <span class="material-symbols-outlined text-sm">save</span>
-                        UPDATE PRODUCT
-                    </button>
-                </div>
-            </div>
-
-            <!-- Form section -->
-            <form id="productForm" action="/admin/product/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <!-- Left Column (General Information & Tech Specs) -->
-                <div class="xl:col-span-2 space-y-8">
-                    
-                    <!-- General Info Card -->
-                    <div class="form-card">
-                        <div class="flex items-center gap-3 mb-8">
-                            <span class="material-symbols-outlined text-slate-400">info</span>
-                            <h3 class="text-lg font-bold">General Information</h3>
+                <div class="p-8 lg:p-12 max-w-7xl mx-auto w-full">
+                    <!-- Header Area -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold tracking-tight mb-1">Edit Product</h2>
+                            <p class="text-sm text-slate-500 font-medium tracking-tight">Modify entry: <span
+                                    class="text-primary">
+                                    <%= product.name %>
+                                </span></p>
                         </div>
+                        <div class="flex items-center gap-4">
+                            <button type="submit" form="productForm"
+                                class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-3.5 rounded-full font-bold text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(0,85,255,0.4)]">
+                                <span class="material-symbols-outlined text-sm">save</span>
+                                UPDATE PRODUCT
+                            </button>
+                        </div>
+                    </div>
 
-                        <div class="space-y-6">
-                            <div>
-                                <label class="input-label">Product Name</label>
-                                <input type="text" id="productName" name="name" value="<%= product.name %>" class="input-field" placeholder="e.g. TechKart Ultra X">
-                                <p id="nameError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                            </div>
-                            
-                            <div>
-                                <label class="input-label">Product Description</label>
-                                <textarea id="productDesc" name="description" rows="5" class="input-field resize-none rounded-3xl" placeholder="..."><%= product.description %></textarea>
-                                <p id="descError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                            </div>
+                    <!-- Form section -->
+                    <form id="productForm" action="/admin/product/edit/<%= product._id %>" method="POST"
+                        enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        <!-- Left Column (General Information & Tech Specs) -->
+                        <div class="xl:col-span-2 space-y-8">
 
-                            <div class="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label class="input-label">Price (USD)</label>
-                                    <div class="relative">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-                                        <input type="number" id="productPrice" name="price" step="0.01" value="<%= product.variants[0]?.price || 0 %>" class="input-field pl-8" placeholder="2499">
+                            <!-- General Info Card -->
+                            <div class="form-card">
+                                <div class="flex items-center gap-3 mb-8">
+                                    <span class="material-symbols-outlined text-slate-400">info</span>
+                                    <h3 class="text-lg font-bold">General Information</h3>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="input-label">Product Name</label>
+                                        <input type="text" id="productName" name="name" value="<%= product.name %>"
+                                            class="input-field" placeholder="e.g. TechKart Ultra X">
+                                        <p id="nameError" class="text-rose-500 text-xs mt-1 hidden"></p>
                                     </div>
-                                    <p id="priceError" class="text-rose-500 text-xs mt-1 hidden"></p>
+
+                                    <div>
+                                        <label class="input-label">Product Description</label>
+                                        <textarea id="productDesc" name="description" rows="5"
+                                            class="input-field resize-none rounded-3xl"
+                                            placeholder="..."><%= product.description %></textarea>
+                                        <p id="descError" class="text-rose-500 text-xs mt-1 hidden"></p>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="input-label">Price (USD)</label>
+                                            <div class="relative">
+                                                <span
+                                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                                <input type="number" id="productPrice" name="price" step="0.01"
+                                                    value="<%= product.variants[0]?.price || 0 %>"
+                                                    class="input-field pl-8" placeholder="2499">
+                                            </div>
+                                            <p id="priceError" class="text-rose-500 text-xs mt-1 hidden"></p>
+                                        </div>
+                                        <div>
+                                            <label class="input-label">Category</label>
+                                            <select id="productCategory" name="category_id"
+                                                class="input-field appearance-none cursor-pointer">
+                                                <% categories.forEach(cat=> { %>
+                                                    <option value="<%= cat._id %>" <%=product.category_id &&
+                                                        product.category_id._id.toString()===cat._id.toString()
+                                                        ? 'selected' : '' %>><%= cat.name %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
+                                            <p id="categoryError" class="text-rose-500 text-xs mt-1 hidden"></p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="input-label">Category</label>
-                                    <select id="productCategory" name="category_id" class="input-field appearance-none cursor-pointer">
-                                        <% categories.forEach(cat => { %>
-                                            <option value="<%= cat._id %>" <%= product.category_id && product.category_id._id.toString() === cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
+                            </div>
+
+                            <!-- Tech Specs Card -->
+                            <div class="form-card relative">
+                                <div class="flex items-center gap-3 mb-8">
+                                    <span class="material-symbols-outlined text-slate-400">tune</span>
+                                    <h3 class="text-lg font-bold">Technical Specs</h3>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                                    <div>
+                                        <label class="input-label">Size</label>
+                                        <input type="text" id="productSize" name="size"
+                                            value="<%= product.variants[0]?.size || '' %>" class="input-field"
+                                            placeholder="e.g. 14 inch">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">RAM</label>
+                                        <input type="text" id="productRam" name="ram"
+                                            value="<%= product.variants[0]?.ram || '' %>" class="input-field"
+                                            placeholder="e.g. 32GB DDR5">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">Processor</label>
+                                        <input type="text" id="productProcessor" name="processor"
+                                            value="<%= product.variants[0]?.processor || '' %>" class="input-field"
+                                            placeholder="e.g. Intel Core i9-13900H">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">Storage</label>
+                                        <input type="text" id="productStorage" name="storage"
+                                            value="<%= product.variants[0]?.storage || '' %>" class="input-field"
+                                            placeholder="e.g. 1TB NVMe Gen4">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">GPU</label>
+                                        <input type="text" id="productGpu" name="gpu"
+                                            value="<%= product.variants[0]?.gpu || '' %>" class="input-field"
+                                            placeholder="e.g. NVIDIA RTX 4080">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">SKU</label>
+                                        <input type="text" id="productSku" name="sku"
+                                            value="<%= product.variants[0]?.sku || '' %>" class="input-field"
+                                            placeholder="AUTO-GENERATED">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Column (Media) -->
+                        <div class="space-y-8">
+                            <!-- Current Images -->
+                            <div class="form-card">
+                                <div class="flex items-center gap-3 mb-8">
+                                    <span class="material-symbols-outlined text-slate-400">collections</span>
+                                    <h3 class="text-lg font-bold">Existing Images</h3>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <% product.images.forEach((img, i)=> { %>
+                                        <div
+                                            class="relative group aspect-square rounded-2xl overflow-hidden border border-white/5 bg-input-bg">
+                                            <img src="<%= img %>" class="w-full h-full object-cover rounded-2xl" id="existing-img-<%= i %>" />
+                                            <!-- Overlay with Actions -->
+                                            <div class="absolute inset-0 bg-black/60 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                <button type="button" onclick="startCroppingExisting('<%= img %>', <%= i %>)" class="w-10 h-10 rounded-full bg-primary/20 hover:bg-primary/40 text-primary flex items-center justify-center transition-colors" title="Crop this image">
+                                                    <span class="material-symbols-outlined text-xl">crop</span>
+                                                </button>
+                                                <button type="button" onclick="deleteExistingImage('<%= img %>', <%= i %>)" class="w-10 h-10 rounded-full bg-rose-500/20 hover:bg-rose-500/40 text-rose-500 flex items-center justify-center transition-colors" title="Remove this image">
+                                                    <span class="material-symbols-outlined text-xl">delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                         <% }) %>
-                                    </select>
-                                    <p id="categoryError" class="text-rose-500 text-xs mt-1 hidden"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-card">
+                                <div class="flex items-center gap-3 mb-8">
+                                    <span class="material-symbols-outlined text-slate-400">add_a_photo</span>
+                                    <h3 class="text-lg font-bold">Add More Images</h3>
+                                </div>
+
+                                <label for="imageUpload" class="upload-zone mb-6">
+                                    <div
+                                        class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                        <span
+                                            class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
+                                    </div>
+                                    <p class="font-bold text-white mb-2 text-center text-sm">Upload new images</p>
+                                    <input type="file" id="imageUpload" name="images" multiple accept="image/*"
+                                        class="hidden" onchange="previewImages(event)">
+                                </label>
+
+                                <!-- New Images Preview Zone -->
+                                <div id="imagePreviewContainer" class="bg-input-bg rounded-2xl p-4 flex flex-col gap-2">
+                                    <p
+                                        class="text-[10px] text-slate-500 uppercase font-bold tracking-widest text-center px-4 py-2">
+                                        New Selection Preview</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Tech Specs Card -->
-                    <div class="form-card relative">
-                        <div class="flex items-center gap-3 mb-8">
-                            <span class="material-symbols-outlined text-slate-400">tune</span>
-                            <h3 class="text-lg font-bold">Technical Specs</h3>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
-                            <div>
-                                <label class="input-label">Size</label>
-                                <input type="text" id="productSize" name="size" value="<%= product.variants[0]?.size || '' %>" class="input-field" placeholder="e.g. 14 inch">
-                            </div>
-                            <div>
-                                <label class="input-label">RAM</label>
-                                <input type="text" id="productRam" name="ram" value="<%= product.variants[0]?.ram || '' %>" class="input-field" placeholder="e.g. 32GB DDR5">
-                            </div>
-                            <div>
-                                <label class="input-label">Processor</label>
-                                <input type="text" id="productProcessor" name="processor" value="<%= product.variants[0]?.processor || '' %>" class="input-field" placeholder="e.g. Intel Core i9-13900H">
-                            </div>
-                            <div>
-                                <label class="input-label">Storage</label>
-                                <input type="text" id="productStorage" name="storage" value="<%= product.variants[0]?.storage || '' %>" class="input-field" placeholder="e.g. 1TB NVMe Gen4">
-                            </div>
-                            <div>
-                                <label class="input-label">GPU</label>
-                                <input type="text" id="productGpu" name="gpu" value="<%= product.variants[0]?.gpu || '' %>" class="input-field" placeholder="e.g. NVIDIA RTX 4080">
-                            </div>
-                            <div>
-                              <label class="input-label">SKU</label>
-                              <input type="text" id="productSku" name="sku" value="<%= product.variants[0]?.sku || '' %>" class="input-field" placeholder="AUTO-GENERATED">
-                          </div>
-                        </div>
-                    </div>
-
+                    </form>
                 </div>
+        </main>
 
-                <!-- Right Column (Media) -->
-                <div class="space-y-8">
-                    <!-- Current Images -->
-                    <div class="form-card">
-                        <div class="flex items-center gap-3 mb-8">
-                            <span class="material-symbols-outlined text-slate-400">collections</span>
-                            <h3 class="text-lg font-bold">Existing Images</h3>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <% product.images.forEach((img, i) => { %>
-                                <div class="relative group aspect-square rounded-2xl overflow-hidden border border-white/5 bg-input-bg">
-                                    <img src="<%= img %>" class="w-full h-full object-cover rounded-2xl" />
-                                    <!-- Optional: Add delete button for images here -->
-                                </div>
-                            <% }) %>
-                        </div>
-                    </div>
-
-                    <div class="form-card">
-                        <div class="flex items-center gap-3 mb-8">
-                            <span class="material-symbols-outlined text-slate-400">add_a_photo</span>
-                            <h3 class="text-lg font-bold">Add More Images</h3>
-                        </div>
-
-                        <label for="imageUpload" class="upload-zone mb-6">
-                            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                                <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
-                            </div>
-                            <p class="font-bold text-white mb-2 text-center text-sm">Upload new images</p>
-                            <input type="file" id="imageUpload" name="images" multiple accept="image/*" class="hidden" onchange="previewImages(event)">
-                        </label>
-
-                        <!-- New Images Preview Zone -->
-                        <div id="imagePreviewContainer" class="bg-input-bg rounded-2xl p-4 flex flex-col gap-2">
-                           <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest text-center px-4 py-2">New Selection Preview</p>
-                        </div>
-                    </div>
+        <script>
+            window.existingImageCount = <%= product.images.length %>;
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+        <script src="/js/admin/product/edit.js"></script>
+        <script src="/js/validation.js?v=2"></script>
+    <!-- Cropper Modal -->
+    <div id="cropperModal" class="fixed inset-0 z-[999] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#11151F] w-full max-w-2xl rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold">Crop Image</h3>
+                    <p class="text-xs text-slate-500 font-medium">Square crop for product display</p>
                 </div>
-            </form>
+                <button type="button" onclick="closeCropper()" class="text-slate-400 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 max-h-[60vh] overflow-hidden flex items-center justify-center bg-black/20">
+                <img id="cropperImage" src="" alt="To crop" class="max-w-full">
+            </div>
+            <div class="p-6 border-t border-white/5 flex items-center justify-end gap-4">
+                <button type="button" onclick="closeCropper()" class="px-6 py-2.5 rounded-full text-sm font-bold text-slate-400 hover:text-white transition-colors">CANCEL</button>
+                <button type="button" onclick="cropImage()" class="px-8 py-2.5 rounded-full text-sm font-bold bg-[#0055ff] hover:bg-[#0044cc] text-white transition-all shadow-lg">CROP & SAVE</button>
+            </div>
         </div>
-    </main>
-
-    <script>
-        window.existingImageCount = <%= product.images.length %>;
-    </script>
-    <script src="/js/admin/product/edit.js"></script>
-    <script src="/js/validation.js?v=2"></script>
+    </div>
 </body>
+
 </html>
