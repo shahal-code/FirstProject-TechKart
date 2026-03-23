@@ -1,3 +1,7 @@
+import * as ProductService from "../../services/user/productServices.js";
+
+
+
 export const LandingOrHome_load = async (req, res) => {
     try {
         res.render("user/home/home", { path: "/" });
@@ -36,7 +40,8 @@ export const AboutPage_load = async (req, res) => {
 
 export const ShopPage_load = async (req, res) => {
     try {
-        res.render("user/home/shop", { path: "/user/shop" });
+        const { products, categories } = await ProductService.getShopData();
+        res.render("user/home/shop", { path: "/user/shop", products, categories });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -52,10 +57,10 @@ export const page_404 = async (req, res) => {
     }
 };
 
-export const Settings = async(req,res)=>{
-    try{
+export const Settings = async (req, res) => {
+    try {
         res.render("views/settings");
-    }catch(error){
+    } catch (error) {
         console.log(error.message);
         res.status(500).send("internal server Eroor");
     }

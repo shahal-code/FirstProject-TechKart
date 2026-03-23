@@ -63,20 +63,20 @@ export const createProduct = async (productData, files) => {
  */
 export const updateProduct = async (id, productData, files) => {
     const { name, description, category_id, price, size, ram, processor, storage, gpu, stock, sku } = productData;
-    
+
     const product = await Product.findById(id);
     if (!product) {
         throw new Error("Product not found");
     }
 
     let images = product.images;
-    
+
     // Handle image removal
     if (productData.removedImages) {
-        const removed = Array.isArray(productData.removedImages) 
-            ? productData.removedImages 
+        const removed = Array.isArray(productData.removedImages)
+            ? productData.removedImages
             : [productData.removedImages];
-            
+
         images = images.filter(img => !removed.includes(img));
         console.log("Images after removal:", images.length);
     }
