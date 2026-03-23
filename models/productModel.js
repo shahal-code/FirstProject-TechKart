@@ -32,7 +32,15 @@ const productSchema = new mongoose.Schema({
     images: [{ 
         type: String, 
         required: true 
-    }]
+    }],
+    is_blocked: { 
+        type: Boolean, 
+        default: false 
+    },
+    is_unlisted: { 
+        type: Boolean, 
+        default: false 
+    }
 }, { timestamps: true });
 
 const Product = mongoose.model("Product", productSchema);
