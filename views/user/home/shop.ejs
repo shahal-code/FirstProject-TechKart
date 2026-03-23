@@ -258,16 +258,31 @@
                                 <div
                                     class="flex flex-wrap items-center justify-between gap-6 mb-10 pb-6 border-b border-white/5">
                                     <div class="flex items-center gap-4">
-                                        <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active
-                                            Filters:</span>
-                                        <div class="flex gap-2">
-                                            <div
-                                                class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
-                                                Gaming
-                                                <span
-                                                    class="material-symbols-outlined text-xs cursor-pointer">close</span>
+                                        <% if (query.search || query.category) { %>
+                                            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active Filters:</span>
+                                            <div class="flex flex-wrap gap-2">
+                                                <% if (query.search) { %>
+                                                    <div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                        Search: <%= query.search %>
+                                                        <a href="/user/shop?<%= new URLSearchParams({...query, search: '', page: 1}).toString() %>" class="material-symbols-outlined text-xs cursor-pointer">close</a>
+                                                    </div>
+                                                <% } %>
+                                                
+                                                <% if (query.category) { %>
+                                                    <% const activeCat = categories.find(c => c._id.toString() === query.category) %>
+                                                    <% if (activeCat) { %>
+                                                        <div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                            <%= activeCat.name %>
+                                                            <a href="/user/shop?<%= new URLSearchParams({...query, category: '', page: 1}).toString() %>" class="material-symbols-outlined text-xs cursor-pointer">close</a>
+                                                        </div>
+                                                    <% } %>
+                                                <% } %>
+
+                                                <a href="/user/shop" class="text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest ml-2 underline">Clear All</a>
                                             </div>
-                                        </div>
+                                        <% } else { %>
+                                            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Showing all products</span>
+                                        <% } %>
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Sort

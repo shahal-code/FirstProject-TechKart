@@ -11,17 +11,17 @@
                 </div>
                 <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading">TECHKART</h2>
             </div>
-            <label class="hidden md:flex flex-col flex-1 max-w-md !h-10">
+            <form action="/user/shop" method="GET" class="hidden md:flex flex-col flex-1 max-w-md !h-10">
                 <div
                     class="flex w-full flex-1 items-stretch rounded-full h-full bg-white/5 border border-white/10 overflow-hidden focus-within:border-primary transition-colors">
                     <div class="text-gray-500 flex items-center justify-center pl-4">
                         <span class="material-symbols-outlined text-xl">search</span>
                     </div>
-                    <input
+                    <input name="search"
                         class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 h-full placeholder:text-gray-500 px-4 pl-2 text-sm font-normal text-white"
-                        placeholder="Search for premium tech..." value="" />
+                        placeholder="Search for premium tech..." value="<%= locals.query?.search || '' %>" />
                 </div>
-            </label>
+            </form>
         </div>
         <div class="flex items-center gap-4 md:gap-8">
             <nav class="hidden lg:flex items-center gap-8">
@@ -107,13 +107,13 @@
 
         <div class="mt-auto pt-6 border-t border-white/10">
             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 px-4">Search Catalog</p>
-            <div class="relative mb-6">
+            <form action="/user/shop" method="GET" class="relative mb-6">
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
-                <input
+                <input name="search"
                     class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-xs text-white focus:outline-none focus:border-primary transition-all focus:bg-white/[0.08]"
-                    placeholder="Search product..." />
-            </div>
+                    placeholder="Search product..." value="<%= locals.query?.search || '' %>" />
+            </form>
             <div class="flex items-center justify-between px-2">
                 <p class="text-[8px] text-gray-600 uppercase tracking-widest font-bold">TechKart Premium © 2024</p>
                 <div class="flex gap-2">
