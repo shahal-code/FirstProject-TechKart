@@ -72,3 +72,22 @@ export const Settings = async (req, res) => {
         res.status(500).send("internal server Eroor");
     }
 }
+export const ProductDetails_load = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const data = await ProductService.getProductDetails(productId);
+
+        if (!data) {
+            return res.status(404).render('user/404');
+        }
+
+        res.render('user/home/productDetails', {
+            ...data,
+            user: req.session.user || null,
+            path: '/user/product'
+        });
+    } catch (error) {
+        console.error("Error loading product details:", error);
+        res.status(500).send("Server Error");
+    }
+}
