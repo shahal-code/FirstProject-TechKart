@@ -88,7 +88,7 @@
                     </div>
 
                     <!-- Form section -->
-                    <form id="productForm" action="/admin/product/add" method="POST" enctype="multipart/form-data"
+                    <form id="productForm" action="/admin/product/add" method="POST"
                         class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                         <!-- Left Column (General Information & Tech Specs) -->
                         <div class="xl:col-span-2 space-y-8">
@@ -141,88 +141,20 @@
                                             </select>
                                             <p id="categoryError" class="text-rose-500 text-xs mt-1 hidden"></p>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Tech Specs Card -->
                             <div class="form-card relative">
-                                <div class="flex items-center gap-3 mb-8">
-                                    <span class="material-symbols-outlined text-slate-400">tune</span>
-                                    <h3 class="text-lg font-bold">Technical Specs</h3>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-x-8 gap-y-6">
-                                    <div>
-                                        <label class="input-label">Size</label>
-                                        <input type="text" id="productSize" name="size" class="input-field"
-                                            placeholder="e.g. 14 inch">
-                                        <p id="sizeError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">RAM</label>
-                                        <input type="text" id="productRam" name="ram" class="input-field"
-                                            placeholder="e.g. 32GB DDR5">
-                                        <p id="ramError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Processor</label>
-                                        <input type="text" id="productProcessor" name="processor" class="input-field"
-                                            placeholder="e.g. Intel Core i9-13900H">
-                                        <p id="processorError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Storage</label>
-                                        <input type="text" id="productStorage" name="storage" class="input-field"
-                                            placeholder="e.g. 1TB NVMe Gen4">
-                                        <p id="storageError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">GPU</label>
-                                        <input type="text" id="productGpu" name="gpu" class="input-field"
-                                            placeholder="e.g. NVIDIA RTX 4080">
-                                        <p id="gpuError" class="text-rose-500 text-xs mt-1 hidden"></p>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
-                        <!-- Right Column (Media) -->
+                        <!-- Right Column (Media - Placeholder info) -->
                         <div class="space-y-8">
-                            <div class="form-card">
-                                <div class="flex items-center gap-3 mb-8">
-                                    <span class="material-symbols-outlined text-slate-400">image</span>
-                                    <h3 class="text-lg font-bold">Product Media</h3>
+                            <div class="form-card bg-primary/5 border-primary/20">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <span class="material-symbols-outlined text-primary">info</span>
+                                    <h3 class="text-lg font-bold text-white">Next Step</h3>
                                 </div>
-
-                                <label for="imageUpload" class="upload-zone mb-6">
-                                    <div
-                                        class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                                        <span
-                                            class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
-                                    </div>
-                                    <p class="font-bold text-white mb-2 text-center">Click to upload product images</p>
-                                    <p class="text-[11px] text-slate-500 font-medium">PNG, JPG up to 10MB (Minimum 4
-                                        images)</p>
-                                    <input type="file" id="imageUpload" name="images" multiple accept="image/*"
-                                        class="hidden" onchange="previewImages(event)">
-                                </label>
-
-                                <!-- Preview Zone -->
-                                <div id="imagePreviewContainer"
-                                    class="bg-input-bg rounded-2xl p-4 flex flex-col gap-2 mb-6">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                                            <span
-                                                class="material-symbols-outlined text-slate-500">image_not_supported</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-sm text-slate-300">Preview Mode</p>
-                                            <p class="text-xs text-slate-500">No file selected</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    After creating this base product, you will be redirected to the **Manage Variants** page to add colors, technical specs (RAM, GPU), and variant-specific images.
+                                </p>
                             </div>
                         </div>
                     </form>

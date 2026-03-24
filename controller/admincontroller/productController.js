@@ -47,11 +47,64 @@ export const getAddProductPage = async (req, res) => {
 // Add New Product via POST
 export const addProduct = async (req, res) => {
     try {
-        await ProductService.createProduct(req.body, req.files);
-        res.redirect("/admin/product");
+        const newProduct = await ProductService.createProduct(req.body);
+        res.redirect(`/admin/product/manage-variants/${newProduct._id}`);
     } catch (error) {
         console.error("Error adding product:", error);
         res.status(400).send(`Error: ${error.message}`);
+    }
+};
+
+// Manage Variants Page
+export const getManageVariantsPage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await ProductService.getProductById(id);
+        if (!product) return res.redirect("/admin/product");
+
+        res.render("admin/product/manage-variants", {
+            product,
+            activePage: "products"
+        });
+    } catch (error) {
+        console.error("Error loading manage variants page:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+// Add Variant
+export const addVariant = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await ProductService.addVariant(id, req.body, req.files);
+        res.redirect(`/admin/product/manage-variants/${id}`);
+    } catch (error) {
+        console.error("Error adding variant:", error);
+        res.status(400).send(`Error: ${error.message}`);
+    }
+};
+
+// Update Variant
+export const updateVariant = async (req, res) => {
+    try {
+        const { id, variantId } = req.params;
+        await ProductService.updateVariant(id, variantId, req.body, req.files);
+        res.redirect(`/admin/product/manage-variants/${id}`);
+    } catch (error) {
+        console.error("Error updating variant:", error);
+        res.status(400).send(`Error: ${error.message}`);
+    }
+};
+
+// Delete Variant
+export const deleteVariant = async (req, res) => {
+    try {
+        const { id, variantId } = req.params;
+        await ProductService.deleteVariant(id, variantId);
+        res.status(200).json({ message: "Variant deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting variant:", error);
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -77,15 +130,15 @@ export const getEditProductPage = async (req, res) => {
     }
 };
 
-// Update Product
+// Update Product Info
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        await ProductService.updateProduct(id, req.body, req.files);
+        await ProductService.updateProduct(id, req.body);
         res.redirect("/admin/product");
     } catch (error) {
         console.error("Error updating product:", error);
-        res.status(error.message === "Product not found" ? 404 : 400).send(`Error: ${error.message}`);
+        res.status(400).send(`Error: ${error.message}`);
     }
 };
 

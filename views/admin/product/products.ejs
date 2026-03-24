@@ -127,7 +127,9 @@
                                 <tr class="hover:bg-white/5 transition-colors group">
                                     <td class="px-6 py-4">
                                         <div class="w-12 h-12 rounded-xl bg-[#151923] border border-white/5 flex items-center justify-center overflow-hidden">
-                                            <% if(p.images && p.images.length > 0) { %>
+                                            <% if(p.variants && p.variants.length > 0 && p.variants[0].images && p.variants[0].images.length > 0) { %>
+                                                <img src="<%= p.variants[0].images[0] %>" class="w-full h-full object-cover">
+                                            <% } else if(p.images && p.images.length > 0) { %>
                                                 <img src="<%= p.images[0] %>" class="w-full h-full object-cover">
                                             <% } else { %>
                                                 <div class="w-8 h-6 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-sm opacity-50"></div>
@@ -142,8 +144,12 @@
                                         <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20"><%= p.category_id ? p.category_id.name : 'Unknown' %></span>
                                     </td>
                                     <td class="px-6 py-4 font-bold">$<%= p.variants[0]?.price || 0 %></td>
-                                    <td class="px-6 py-4 text-right space-x-2">
-                                        <button onclick="window.location.href='/admin/product/edit/<%= p._id %>'" class="text-primary hover:text-primary/80 transition-colors">
+                                    <td class="px-6 py-4 text-right space-x-3 flex items-center justify-end">
+                                        <a href="/admin/product/manage-variants/<%= p._id %>" class="text-[10px] font-bold text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20 transition-all uppercase tracking-widest flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-[14px]">layers</span>
+                                            VARIANTS
+                                        </a>
+                                        <button onclick="window.location.href='/admin/product/edit/<%= p._id %>'" class="text-slate-400 hover:text-white transition-colors">
                                             <span class="material-symbols-outlined text-lg">edit</span>
                                         </button>
                                         <button onclick="confirmDelete('<%= p._id %>')" class="text-rose-500 hover:text-rose-400 transition-colors">

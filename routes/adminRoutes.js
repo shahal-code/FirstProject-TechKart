@@ -69,26 +69,15 @@ router.delete("/deleteCategory/:id", adminAuth.isAdminLoggedIn, CategoryControll
 // Product
 router.get("/product", adminAuth.isAdminLoggedIn, ProductController.loadProducts);
 router.get("/addProduct", adminAuth.isAdminLoggedIn, ProductController.getAddProductPage);
-router.post("/product/add", adminAuth.isAdminLoggedIn, (req, res, next) => {
-  uploadProduct.array('images', 5)(req, res, (err) => {
-    if (err) {
-      console.error("Multer Upload Error:", err);
-      // Send a clear string message to avoid [object Object]
-      return res.status(400).send(`Image Upload Error: ${err.message || "Unknown error during upload"}`);
-    }
-    next();
-  });
-}, ProductController.addProduct);
+router.post("/product/add", adminAuth.isAdminLoggedIn, ProductController.addProduct); // No images here
+
+router.get("/product/manage-variants/:id", adminAuth.isAdminLoggedIn, ProductController.getManageVariantsPage);
+router.post("/product/:id/variants/add", adminAuth.isAdminLoggedIn, uploadProduct.array('images', 5), ProductController.addVariant);
+router.post("/product/:id/variants/edit/:variantId", adminAuth.isAdminLoggedIn, uploadProduct.array('images', 5), ProductController.updateVariant);
+router.delete("/product/:id/variants/delete/:variantId", adminAuth.isAdminLoggedIn, ProductController.deleteVariant);
+
 router.get("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.getEditProductPage);
-router.post("/product/edit/:id", adminAuth.isAdminLoggedIn, (req, res, next) => {
-  uploadProduct.array('images', 5)(req, res, (err) => {
-    if (err) {
-      console.error("Multer Edit Upload Error:", err);
-      return res.status(400).send(`Image Upload Error: ${err.message || "Unknown error during upload"}`);
-    }
-    next();
-  });
-}, ProductController.updateProduct);
+router.post("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.updateProduct); // No images here
 router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductController.deleteProduct);
 
 export default router;

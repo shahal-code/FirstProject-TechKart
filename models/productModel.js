@@ -6,9 +6,15 @@ const productVariantSchema = new mongoose.Schema({
     ram: { type: String },
     gpu: { type: String },
     storage: { type: String },
+    color: { type: String },
     price: { type: Number, required: true },
     stock: { type: Number, required: true, default: 0 },
-    sku: { type: String, required: true }
+    images: [{ 
+        type: String, 
+        required: true 
+    }],
+    sku: { type: String, required: true },
+    is_blocked: { type: Boolean, default: false }
 }, { timestamps: true });
 
 const productSchema = new mongoose.Schema({
@@ -28,11 +34,16 @@ const productSchema = new mongoose.Schema({
     material: { 
         type: String 
     },
-    variants: [productVariantSchema],
-    images: [{ 
-        type: String, 
-        required: true 
+    highlights: [{ 
+        type: String 
     }],
+    specifications: {
+        display: { type: String },
+        battery: { type: String },
+        weight: { type: String },
+        os: { type: String }
+    },
+    variants: [productVariantSchema],
     is_blocked: { 
         type: Boolean, 
         default: false 
