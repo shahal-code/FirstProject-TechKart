@@ -49,6 +49,30 @@ const getShopData = async (queryParams) => {
         }
     }
 
+    if (queryParams.gpu) {
+        if (Array.isArray(queryParams.gpu)) {
+            query["variants.gpu"] = { $in: queryParams.gpu };
+        } else {
+            query["variants.gpu"] = queryParams.gpu;
+        }
+    }
+
+    if (queryParams.storage) {
+        if (Array.isArray(queryParams.storage)) {
+            query["variants.storage"] = { $in: queryParams.storage };
+        } else {
+            query["variants.storage"] = queryParams.storage;
+        }
+    }
+
+    if (queryParams.size) {
+        if (Array.isArray(queryParams.size)) {
+            query["variants.size"] = { $in: queryParams.size };
+        } else {
+            query["variants.size"] = queryParams.size;
+        }
+    }
+
     let sortOrder = {};
     if (sort === "priceLow") {
         sortOrder = { "variants.price": 1 };
