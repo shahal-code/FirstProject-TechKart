@@ -98,8 +98,8 @@
                         </div>
                         
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Description</label>
-                            <textarea id="categoryDescription" name="description" required class="input-field w-full h-40 resize-none" placeholder="Provide a detailed description of this category..."></textarea>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Purpose</label>
+                            <textarea id="categoryPurpose" name="purpose" required class="input-field w-full h-40 resize-none" placeholder="Provide a detailed purpose of this category..."></textarea>
                         </div>
                         
                         <div class="pt-6 flex gap-4">
@@ -123,13 +123,13 @@
         document.getElementById('addCategoryForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('categoryName').value;
-            const description = document.getElementById('categoryDescription').value;
+            const purpose = document.getElementById('categoryPurpose').value;
 
             try {
                 const response = await fetch('/admin/addCategory', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, description })
+                    body: JSON.stringify({ name, purpose })
                 });
 
                 const data = await response.json();
