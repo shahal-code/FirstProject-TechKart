@@ -54,20 +54,23 @@
                     </div>
                 </div>
 
-                <!-- Quick Badges -->
                 <div class="flex flex-wrap gap-2">
-                    <div id="badge-gpu" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">developer_board</span>
-                        <%= product.variants[0]?.gpu || 'NVIDIA RTX' %>
-                    </div>
-                    <div id="badge-ram" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">memory</span>
-                        <%= product.variants[0]?.ram || 'DDR5' %>
-                    </div>
-                    <div id="badge-storage" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">database</span>
-                        <%= product.variants[0]?.storage || 'NVMe SSD' %>
-                    </div>
+                    <% if (product.highlights && product.highlights.length > 0) { %>
+                        <% product.highlights.forEach(h => { %>
+                            <div class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                                <%= h %>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div id="badge-gpu" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                            <span class="material-symbols-outlined text-sm">developer_board</span>
+                            <%= product.variants[0]?.gpu || 'NVIDIA RTX' %>
+                        </div>
+                        <div id="badge-ram" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                            <span class="material-symbols-outlined text-sm">memory</span>
+                            <%= product.variants[0]?.ram || 'DDR5' %>
+                        </div>
+                    <% } %>
                 </div>
 
                 <p id="displayDesc" class="text-slate-400 leading-relaxed text-sm max-w-xl font-medium">
@@ -181,9 +184,9 @@
                     <div>
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Processor</h4>
                         <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight">
-                            <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-End CPU' %>
+                            <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-Performance' %>
                         </p>
-                        <p class="text-xs text-slate-500 font-medium">Turbo Boost up to 5.8 GHz<br>Optimal Thermals</p>
+                        <p class="text-xs text-slate-500 font-medium">Next-gen architecture<br>Optimal Thermals</p>
                     </div>
                 </div>
 
@@ -194,8 +197,8 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Graphics</h4>
-                        <p id="spec-gpu" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.gpu || 'NVIDIA GeForce' %></p>
-                        <p class="text-xs text-slate-500 font-medium">Real-time Ray Tracing<br>DLSS 3.5 Support</p>
+                        <p id="spec-gpu" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.gpu || 'Integrated' %></p>
+                        <p class="text-xs text-slate-500 font-medium">Advanced Rendering<br>Power Efficient</p>
                     </div>
                 </div>
 
@@ -206,8 +209,8 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Display</h4>
-                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.display || '4K Mini-LED' %></p>
-                        <p class="text-xs text-slate-500 font-medium">240Hz Refresh Rate<br>100% DCI-P3 Color</p>
+                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.display || 'Standard Display' %></p>
+                        <p class="text-xs text-slate-500 font-medium">High Resolution<br>Immersive View</p>
                     </div>
                 </div>
 
@@ -218,8 +221,8 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Battery Life</h4>
-                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.battery || '99.9Wh High-Density' %></p>
-                        <p class="text-xs text-slate-500 font-medium">Up to 12 Hours Use<br>Fast Charging Support</p>
+                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.battery || 'Long-lasting' %></p>
+                        <p class="text-xs text-slate-500 font-medium">Optimized Battery<br>Fast Charging Support</p>
                     </div>
                 </div>
             </div>
