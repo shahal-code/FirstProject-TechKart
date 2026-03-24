@@ -107,10 +107,10 @@
 
                                 <div>
                                     <label
-                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Purpose</label>
-                                    <textarea id="categoryPurpose" name="purpose" required
-                                        class="input-field w-full h-40 resize-none"
-                                        placeholder="Provide a detailed purpose..."><%= category.purpose %></textarea>
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Description</label>
+                                    <textarea id="categoryDescription" name="description" required
+                                        class="input-field w-full h-16 resize-none"
+                                        placeholder="Provide a detailed description..."><%= category.description %></textarea>
                                 </div>
 
                                 <div class="pt-6 flex gap-4">
@@ -139,13 +139,13 @@
                 e.preventDefault();
                 const id = document.getElementById('categoryId').value;
                 const name = document.getElementById('categoryName').value;
-                const purpose = document.getElementById('categoryPurpose').value;
+                const description = document.getElementById('categoryDescription').value;
 
                 try {
                     const response = await fetch(`/admin/editCategory/${id}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, purpose })
+                        body: JSON.stringify({ name, description })
                     });
 
                     const data = await response.json();

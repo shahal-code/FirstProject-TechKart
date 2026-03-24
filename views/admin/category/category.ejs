@@ -99,25 +99,25 @@
                                 manage your catalog</p>
                         </div>
                         <div class="flex items-center gap-6">
-                        <form action="/admin/category" method="GET" class="flex items-center gap-3">
-                            <div class="relative group">
-                                <span
-                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors text-xl">search</span>
-                                <input name="search" type="text" placeholder="Search categories..."
-                                    value="<%= typeof search !== 'undefined' ? search : '' %>"
-                                    class="!bg-white/5 border border-white/10 rounded-full py-2 pl-4 pr-10 text-sm w-64 focus:outline-none focus:border-primary text-white placeholder:text-slate-500" />
-                            </div>
-                            <button type="submit"
-                                class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-primary/20">
-                                Search
-                            </button>
-                            <% if (typeof search !=='undefined' && search) { %>
-                                <button type="button" onclick="window.location.href='/admin/category'"
-                                    class="bg-white/5 hover:bg-white/10 text-slate-400 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/10">
-                                    Clear
+                            <form action="/admin/category" method="GET" class="flex items-center gap-3">
+                                <div class="relative group">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors text-xl">search</span>
+                                    <input name="search" type="text" placeholder="Search categories..."
+                                        value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                        class="!bg-white/5 border border-white/10 rounded-full py-2 pl-4 pr-10 text-sm w-64 focus:outline-none focus:border-primary text-white placeholder:text-slate-500" />
+                                </div>
+                                <button type="submit"
+                                    class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-primary/20">
+                                    Search
                                 </button>
-                                <% } %>
-                        </form>
+                                <% if (typeof search !=='undefined' && search) { %>
+                                    <button type="button" onclick="window.location.href='/admin/category'"
+                                        class="bg-white/5 hover:bg-white/10 text-slate-400 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/10">
+                                        Clear
+                                    </button>
+                                    <% } %>
+                            </form>
                             <div class="h-8 w-[1px] bg-white/10"></div>
                             <button onclick="window.location.href='/admin/addCategory'"
                                 class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(0,85,255,0.3)]">
@@ -220,13 +220,15 @@
                                                             </p>
                                                             <p
                                                                 class="text-[10px] text-slate-500 uppercase tracking-wider">
-                                                                <%= category.purpose %>
+                                                                <%= category.description %>
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="px-8 py-5 text-center">
-                                                    <span class="font-display font-medium text-lg"><%= category.productCount || 0 %></span>
+                                                    <span class="font-display font-medium text-lg">
+                                                        <%= category.productCount || 0 %>
+                                                    </span>
                                                 </td>
                                                 <td class="px-8 py-5">
                                                     <span
@@ -236,7 +238,8 @@
                                                 </td>
                                                 <td class="px-8 py-5 text-right">
                                                     <div class="flex items-center justify-end gap-3">
-                                                        <button onclick="window.location.href='/admin/editCategory/<%= category._id %>'"
+                                                        <button
+                                                            onclick="window.location.href='/admin/editCategory/<%= category._id %>'"
                                                             class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
                                                             <span class="material-symbols-outlined text-lg">edit</span>
                                                         </button>
@@ -247,10 +250,10 @@
                                                                 <%= !category.is_blocked ? 'block' : 'check_circle' %>
                                                             </span>
                                                         </button>
-                                                        <button
-                                                            onclick="deleteCategory('<%= category._id %>')"
+                                                        <button onclick="deleteCategory('<%= category._id %>')"
                                                             class="p-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all">
-                                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                                            <span
+                                                                class="material-symbols-outlined text-lg">delete</span>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -308,10 +311,9 @@
                         </div>
                         <div>
                             <label
-                                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Purpose</label>
-                            <textarea id="categoryDescription" name="purpose" required
-                                class="input-field w-full resize-none h-32"
-                                placeholder="Brief purpose..."></textarea>
+                                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Description</label>
+                            <textarea id="categoryDescription" name="description" required
+                                class="input-field w-full resize-none h-16" placeholder="Brief description..."></textarea>
                         </div>
                         <div class="pt-4 flex justify-end gap-3">
                             <button type="button" onclick="closeModal()"

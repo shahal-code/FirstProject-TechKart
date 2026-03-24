@@ -55,7 +55,7 @@ export const getCategoryById = async (id) => {
  * Create a new category.
  */
 export const createCategory = async (categoryData) => {
-    const { name, purpose } = categoryData;
+    const { name, description } = categoryData;
 
     // Check if category already exists
     const existingCategory = await Category.findOne({
@@ -68,7 +68,7 @@ export const createCategory = async (categoryData) => {
 
     const newCategory = new Category({
         name,
-        purpose,
+        description,
         url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
         is_blocked: false
     });
@@ -80,7 +80,7 @@ export const createCategory = async (categoryData) => {
  * Update an existing category.
  */
 export const updateCategory = async (id, categoryData) => {
-    const { name, purpose } = categoryData;
+    const { name, description } = categoryData;
 
     const existingCategory = await Category.findOne({
         name: { $regex: new RegExp(`^${name}$`, 'i') },
@@ -95,7 +95,7 @@ export const updateCategory = async (id, categoryData) => {
         id,
         {
             name,
-            purpose,
+            description,
             url_slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
         },
         { returnDocument: 'after' }
