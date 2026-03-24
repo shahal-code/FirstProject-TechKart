@@ -200,26 +200,14 @@
                                             <span class="w-8 h-px bg-primary/40"></span>
                                         </h3>
                                         <div class="space-y-4">
-                                            <label class="flex items-center gap-3 group cursor-pointer">
-                                                <input class="size-4" type="checkbox" />
-                                                <span
-                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">64GB</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 group cursor-pointer">
-                                                <input class="size-4" type="checkbox" />
-                                                <span
-                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">32GB</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 group cursor-pointer">
-                                                <input class="size-4" type="checkbox" />
-                                                <span
-                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">16GB</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 group cursor-pointer">
-                                                <input class="size-4" type="checkbox" />
-                                                <span
-                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">8GB</span>
-                                            </label>
+                                            <% ['64GB', '32GB', '16GB', '8GB'].forEach(ram => { %>
+                                                <label class="flex items-center gap-3 group cursor-pointer">
+                                                    <input class="size-4" type="checkbox" name="ram" value="<%= ram %>" 
+                                                        <%= (Array.isArray(query.ram) ? query.ram.includes(ram) : query.ram === ram) ? 'checked' : '' %>
+                                                        onchange="this.form.submit()" />
+                                                    <span class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors"><%= ram %></span>
+                                                </label>
+                                            <% }) %>
                                         </div>
                                     </div>
 
@@ -342,7 +330,7 @@
                                                             </h3>
                                                         </a>
                                                         <span class="text-primary font-bold text-2xl">$<%=
-                                                                product.variants[0].price %></span>
+                                                                product.variants[0]?.price || '0' %></span>
                                                     </div>
                                                     <p class="text-gray-400 text-sm mb-8 leading-relaxed">
                                                         <%= product.description %>

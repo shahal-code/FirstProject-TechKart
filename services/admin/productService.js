@@ -55,6 +55,7 @@ export const addVariant = async (productId, variantData, files) => {
 
     const newVariant = {
         ...variantData,
+        processorBrand: variantData.processorBrand,
         images,
         sku: variantData.sku || "SKU-" + Date.now()
     };
@@ -91,6 +92,7 @@ export const updateVariant = async (productId, variantId, variantData, files) =>
     product.variants[variantIndex] = {
         ...product.variants[variantIndex].toObject(),
         ...variantData,
+        processorBrand: variantData.processorBrand || product.variants[variantIndex].processorBrand,
         images
     };
 
@@ -121,7 +123,9 @@ export const updateProduct = async (id, productData) => {
     product.description = description;
     product.category_id = category_id;
     product.material = material;
-    product.highlights = highlights ? highlights.split(',').map(h => h.trim()) : [];
+    if (highlights) {
+        product.highlights = Array.isArray(highlights) ? highlights : highlights.split(',').map(h => h.trim());
+    }
     product.specifications = { display, battery, weight, os };
 
     return await product.save();

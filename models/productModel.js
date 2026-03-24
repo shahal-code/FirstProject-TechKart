@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const productVariantSchema = new mongoose.Schema({
     size: { type: String },
+    processorBrand: { type: String, enum: ['Intel', 'AMD'] },
     processor: { type: String },
     ram: { type: String },
     gpu: { type: String },

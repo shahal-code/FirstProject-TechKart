@@ -89,7 +89,7 @@
                         <div class="flex flex-wrap gap-3">
                             <% rams.forEach(ram => { %>
                                 <button onclick="updateSelection('ram', '<%= ram %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0].ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
                                     data-type="ram" data-value="<%= ram %>">
                                     <%= ram %>
                                 </button>
@@ -104,7 +104,7 @@
                         <div class="flex flex-wrap gap-3">
                             <% sizes.forEach(size => { %>
                                 <button onclick="updateSelection('size', '<%= size %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0].size === size ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
                                     data-type="size" data-value="<%= size %>">
                                     <%= size %>
                                 </button>
@@ -119,7 +119,7 @@
                         <div class="flex flex-wrap gap-3">
                             <% colors.forEach(color => { %>
                                 <button onclick="updateSelection('color', '<%= color %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0].color === color ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
                                     data-type="color" data-value="<%= color %>">
                                     <%= color %>
                                 </button>
@@ -180,7 +180,9 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Processor</h4>
-                        <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.processor || 'High-End CPU' %></p>
+                        <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight">
+                            <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-End CPU' %>
+                        </p>
                         <p class="text-xs text-slate-500 font-medium">Turbo Boost up to 5.8 GHz<br>Optimal Thermals</p>
                     </div>
                 </div>
@@ -227,7 +229,7 @@
     <%- include('../../partials/user/footer') %>
 
     <script>
-        const variants = <%- JSON.stringify(product.variants) %>;
+        const variants = <%- JSON.stringify(product.variants || []) %>;
         let selectedFilters = {
             ram: variants[0]?.ram,
             size: variants[0]?.size,

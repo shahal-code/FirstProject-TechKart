@@ -35,7 +35,18 @@ const getShopData = async (queryParams) => {
     }
 
     if (queryParams.processor) {
-        query["variants.processor"] = { $regex: queryParams.processor, $options: "i" };
+        query["$or"] = [
+            { "variants.processor": { $regex: queryParams.processor, $options: "i" } },
+            { "variants.processorBrand": { $regex: queryParams.processor, $options: "i" } }
+        ];
+    }
+    
+    if (queryParams.ram) {
+        if (Array.isArray(queryParams.ram)) {
+            query["variants.ram"] = { $in: queryParams.ram };
+        } else {
+            query["variants.ram"] = queryParams.ram;
+        }
     }
 
     let sortOrder = {};
