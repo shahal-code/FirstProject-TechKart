@@ -38,7 +38,8 @@
     <style type="text/tailwindcss">
         body {
             font-family: 'Space Grotesk', sans-serif;
-            @apply bg-background-dark text-white;
+            background-color: #0d0d0d;
+            color: #ffffff;
         }
         .glass-morphism {
             background: rgba(23, 33, 54, 0.6);
@@ -47,7 +48,21 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .input-field {
-            @apply bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-slate-600;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            box-shadow: 0 0 0 1px #0055ff;
+            border-color: #0055ff;
+        }
+        .input-field::placeholder {
+            color: #475569;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
