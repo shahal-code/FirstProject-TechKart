@@ -37,6 +37,10 @@
         .text-primary {
             color: #3b82f6;
         }
+
+        .FILL {
+            font-variation-settings: 'FILL' 1;
+        }
     </style>
 </head>
 
@@ -70,136 +74,144 @@
                             </div>
                             <% }) %>
                     </div>
-                    <div id="badge-ram"
-                        class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">memory</span>
-                        <%= product.variants[0]?.ram || 'DDR5' %>
-                    </div>
-                    <div id="badge-storage"
-                        class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">database</span>
-                        <%= product.variants[0]?.storage || 'SSD' %>
-                    </div>
                 </div>
                 <!-- Right: Info -->
-                <div class="space-y-10">
-                    <div class="space-y-2">
-                        <h1 class="text-6xl font-black premium-heading tracking-tighter leading-none">
+                <div class="space-y-8">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-primary/20">
+                                New Arrival
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <div class="flex text-amber-400">
+                                    <span class="material-symbols-outlined text-sm FILL">star</span>
+                                    <span class="material-symbols-outlined text-sm FILL">star</span>
+                                    <span class="material-symbols-outlined text-sm FILL">star</span>
+                                    <span class="material-symbols-outlined text-sm FILL">star</span>
+                                    <span class="material-symbols-outlined text-sm">star</span>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">(128 Reviews)</span>
+                            </div>
+                        </div>
+                        <h1 class="text-6xl font-black premium-heading tracking-tighter leading-[1.1] text-white">
                             <%= product.name %>
                         </h1>
-                        <div class="flex items-center gap-6">
-                            <span id="displayPrice" class="text-4xl font-bold text-primary tracking-tight">$<%=
-                                    (product.variants && product.variants.length> 0) ? product.variants[0].price : '0'
-                                    %></span>
+                        <div class="flex items-baseline gap-6">
+                            <span id="displayPrice" class="text-5xl font-bold text-[#3b82f6] tracking-tight">
+                                $<%= (product.variants && product.variants.length > 0) ? product.variants[0].price : '0' %>
+                            </span>
+                            <% if(product.variants && product.variants.length > 0 && product.variants[0].oldPrice) { %>
+                                <span class="text-2xl text-slate-600 line-through font-medium tracking-tight">
+                                    $<%= product.variants[0].oldPrice %>
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">developer_board</span>
+                                <span id="badge-gpu-meta"><%= product.variants[0]?.gpu || 'RTX 4090' %></span>
+                            </span>
+                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">memory</span>
+                                <span id="badge-ram-meta"><%= product.variants[0]?.ram || '64GB DDR5' %></span>
+                            </span>
+                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">storage</span>
+                                <span id="badge-storage-meta"><%= product.variants[0]?.storage || '2TB NVMe' %></span>
+                            </span>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-2">
-                        <% if (product.highlights && product.highlights.length> 0) { %>
-                            <% product.highlights.forEach(h=> { %>
-                                <div
-                                    class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                                    <%= h %>
-                                </div>
-                                <% }) %>
-                                    <% } else { %>
-                                        <div id="badge-gpu"
-                                            class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">developer_board</span>
-                                            <%= product.variants[0]?.gpu || 'NVIDIA RTX' %>
-                                        </div>
-                                        <div id="badge-ram"
-                                            class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">memory</span>
-                                            <%= product.variants[0]?.ram || 'DDR5' %>
-                                        </div>
-                                        <% } %>
-                    </div>
 
                     <p id="displayDesc" class="text-slate-400 leading-relaxed text-sm max-w-xl font-medium">
                         <%= product.description %>
                     </p>
 
-                    <!-- Selectors -->
-                    <div class="space-y-8 pt-4">
+                    <!-- Selectors Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 pt-4">
 
                             <% 
-                            // Extract unique options
+                            // Extract unique options from variants
                             const rams = [...new Set(product.variants.map(v => v.ram))].filter(Boolean);
                             const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
-                            const gpus = [...new Set(product.variants.map(v => v.gpu))].filter(Boolean);
+                            const storages = [...new Set(product.variants.map(v => v.storage))].filter(Boolean);
                             const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
                             const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
                             %>
 
-                            <% if(rams.length> 0) { %>
+                            <% if(rams.length > 0) { %>
                                 <div class="space-y-3">
-                                    <label
-                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
-                                        RAM</label>
-                                    <div class="flex flex-wrap gap-3">
-                                        <% rams.forEach(ram=> { %>
+                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select RAM</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <% rams.forEach(ram => { %>
                                             <button onclick="updateSelection('ram', '<%= ram %>')"
-                                                class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                 data-type="ram" data-value="<%= ram %>">
                                                 <%= ram %>
                                             </button>
-                                            <% }) %>
+                                        <% }) %>
                                     </div>
                                 </div>
-                                <% } %>
+                            <% } %>
 
-                                    <% if(sizes.length> 0) { %>
-                                        <div class="space-y-3">
-                                            <label
-                                                class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen
-                                                Size</label>
-                                            <div class="flex flex-wrap gap-3">
-                                                <% sizes.forEach(size=> { %>
-                                                    <button onclick="updateSelection('size', '<%= size %>')"
-                                                        class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                                        data-type="size" data-value="<%= size %>">
-                                                        <%= size %>
-                                                    </button>
-                                                    <% }) %>
-                                            </div>
-                                        </div>
-                                        <% } %>
 
-                                            <% if(colors.length> 0) { %>
-                                                <div class="space-y-3">
-                                                    <label
-                                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
-                                                        Color</label>
-                                                    <div class="flex flex-wrap gap-3">
-                                                        <% colors.forEach(color=> { %>
-                                                            <button onclick="updateSelection('color', '<%= color %>')"
-                                                                class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                                                data-type="color" data-value="<%= color %>">
-                                                                <%= color %>
-                                                            </button>
-                                                            <% }) %>
-                                                    </div>
-                                                </div>
-                                                <% } %>
+                            <% if(storages.length > 0) { %>
+                                <div class="space-y-3">
+                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Storage (NVMe SSD)</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <% storages.forEach(storage => { %>
+                                            <button onclick="updateSelection('storage', '<%= storage %>')"
+                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.storage === storage ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                data-type="storage" data-value="<%= storage %>">
+                                                <%= storage %>
+                                            </button>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <% if(sizes.length > 0) { %>
+                                <div class="space-y-3">
+                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen Size</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <% sizes.forEach(size => { %>
+                                            <button onclick="updateSelection('size', '<%= size %>')"
+                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                data-type="size" data-value="<%= size %>">
+                                                <%= size %>
+                                            </button>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <% if(colors.length > 0) { %>
+                                <div class="space-y-3 col-span-1">
+                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Color</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <% colors.forEach(color => { %>
+                                            <button onclick="updateSelection('color', '<%= color %>')"
+                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                data-type="color" data-value="<%= color %>">
+                                                <%= color %>
+                                            </button>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% } %>
 
                                                     <!-- Quantity -->
-                                                    <div class="space-y-3">
-                                                        <label
-                                                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
-                                                        <div
-                                                            class="flex items-center gap-1 bg-white/5 w-fit rounded-xl p-1 border border-white/5">
+                                                    <div class="space-y-3 col-span-1 md:col-span-2">
+                                                        <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
+                                                        <div class="flex items-center gap-4 bg-white/5 w-fit rounded-full px-4 py-1.5 border border-white/10 shrink-0">
                                                             <button onclick="updateQty(-1)"
-                                                                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-                                                                <span
-                                                                    class="material-symbols-outlined text-sm">remove</span>
+                                                                class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                                                                <span class="material-symbols-outlined text-[14px]">remove</span>
                                                             </button>
-                                                            <span id="quantity"
-                                                                class="w-12 text-center font-bold text-sm">1</span>
+                                                            <span id="quantity" class="w-4 text-center font-bold text-xs text-white">1</span>
                                                             <button onclick="updateQty(1)"
-                                                                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-                                                                <span
-                                                                    class="material-symbols-outlined text-sm">add</span>
+                                                                class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                                                                <span class="material-symbols-outlined text-[14px]">add</span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -216,15 +228,13 @@
                         </button>
 
                         <div class="flex items-center justify-between px-2 pt-4">
-                            <div
-                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                <span class="material-symbols-outlined text-blue-500 text-sm">local_shipping</span>
-                                Free Express Shipping
+                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span class="material-symbols-outlined text-primary text-sm FILL">verified</span>
+                                Free Shipping
                             </div>
-                            <div
-                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                <span class="material-symbols-outlined text-blue-500 text-sm">verified_user</span>
-                                3 Year Warranty
+                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span class="material-symbols-outlined text-primary text-sm">shield</span>
+                                2-Year Warranty
                             </div>
                         </div>
                     </div>
@@ -234,75 +244,64 @@
             <!-- Rich Specifications Section -->
             <div class="mt-32 space-y-12">
                 <div class="flex items-center gap-6">
-                    <div class="h-px bg-primary w-12"></div>
-                    <h2 class="text-4xl font-black uppercase tracking-tight">Specifications</h2>
+                    <div class="h-px bg-[#3b82f6] w-12 text-white"></div>
+                    <h2 class="text-3xl font-black uppercase tracking-tight text-white">Specifications</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Processor -->
-                    <div
-                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                            <span class="material-symbols-outlined text-primary">memory</span>
+                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                        <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">memory</span>
                         </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Processor</h4>
-                            <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight">
-                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : ''
-                                    %>
-                                    <%= product.variants[0]?.processor || 'High-Performance' %>
+                        <div class="space-y-2">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Processor</h4>
+                            <p id="spec-processor" class="font-bold text-lg text-white leading-tight">
+                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-Performance' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium">Next-gen architecture<br>Optimal Thermals</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Next-gen architecture<br>Optimal Thermals</p>
                         </div>
                     </div>
 
                     <!-- GPU -->
-                    <div
-                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                            <span class="material-symbols-outlined text-primary">grid_view</span>
+                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                        <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">developer_board</span>
                         </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Graphics</h4>
-                            <p id="spec-gpu" class="font-bold text-lg text-white mb-2 leading-tight">
+                        <div class="space-y-2">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Graphics</h4>
+                            <p id="spec-gpu" class="font-bold text-lg text-white leading-tight">
                                 <%= product.variants[0]?.gpu || 'Integrated' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium">Advanced Rendering<br>Power Efficient</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Advanced Rendering<br>175W Max TGP</p>
                         </div>
                     </div>
 
                     <!-- Display -->
-                    <div
-                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                            <span class="material-symbols-outlined text-primary">laptop_mac</span>
+                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                        <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">laptop_mac</span>
                         </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Display</h4>
-                            <p class="font-bold text-lg text-white mb-2 leading-tight">
-                                <%= product.specifications?.display || 'Standard Display' %>
+                        <div class="space-y-2">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Display</h4>
+                            <p class="font-bold text-lg text-white leading-tight">
+                                <%= product.specifications?.display || '16" 4K Mini-LED' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium">High Resolution<br>Immersive View</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">100% DCI-P3 Color<br>240Hz Refresh Rate</p>
                         </div>
                     </div>
 
                     <!-- Battery -->
-                    <div
-                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                            <span class="material-symbols-outlined text-primary">battery_charging_full</span>
+                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                        <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">battery_charging_full</span>
                         </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Battery Life
-                            </h4>
-                            <p class="font-bold text-lg text-white mb-2 leading-tight">
-                                <%= product.specifications?.battery || 'Long-lasting' %>
+                        <div class="space-y-2">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Battery Life</h4>
+                            <p class="font-bold text-lg text-white leading-tight">
+                                <%= product.specifications?.battery || '99.9Wh Density' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium">Optimized Battery<br>Fast Charging Support</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Up to 12 Hours Use<br>330W GaN Fast Charger</p>
                         </div>
                     </div>
                 </div>
@@ -315,6 +314,7 @@
                 const variants = <%- JSON.stringify(product.variants || []) %>;
                 let selectedFilters = {
                     ram: variants[0]?.ram,
+                    storage: variants[0]?.storage,
                     size: variants[0]?.size,
                     color: variants[0]?.color
                 };
@@ -326,6 +326,7 @@
                     // Find the best matching variant
                     const variant = variants.find(v =>
                         (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
+                        (!selectedFilters.storage || v.storage === selectedFilters.storage) &&
                         (!selectedFilters.size || v.size === selectedFilters.size) &&
                         (!selectedFilters.color || v.color === selectedFilters.color)
                     ) || variants.find(v => v[type] === value); // Fallback if exact combo not found
@@ -337,11 +338,11 @@
                     // Update button styles
                     document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
                         if (btn.getAttribute('data-value') === value) {
-                            btn.classList.add('border-primary', 'bg-primary/10', 'text-white');
-                            btn.classList.remove('border-white/5', 'text-slate-500');
+                            btn.classList.add('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
+                            btn.classList.remove('border-white/10', 'text-slate-500');
                         } else {
-                            btn.classList.remove('border-primary', 'bg-primary/10', 'text-white');
-                            btn.classList.add('border-white/5', 'text-slate-500');
+                            btn.classList.remove('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
+                            btn.classList.add('border-white/10', 'text-slate-500');
                         }
                     });
                 }
@@ -351,14 +352,14 @@
                     const priceEl = document.getElementById('displayPrice');
                     if (priceEl) priceEl.textContent = `$${variant.price}`;
 
-                    // Badges
-                    const gpuBadge = document.getElementById('badge-gpu');
-                    const ramBadge = document.getElementById('badge-ram');
-                    const storageBadge = document.getElementById('badge-storage');
-
-                    if (gpuBadge) gpuBadge.innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
-                    if (ramBadge) ramBadge.innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
-                    if (storageBadge) storageBadge.innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
+                    // Meta Badges (below price)
+                    const gpuMeta = document.getElementById('badge-gpu-meta');
+                    const ramMeta = document.getElementById('badge-ram-meta');
+                    const storageMeta = document.getElementById('badge-storage-meta');
+                    
+                    if (gpuMeta) gpuMeta.textContent = variant.gpu;
+                    if (ramMeta) ramMeta.textContent = variant.ram;
+                    if (storageMeta) storageMeta.textContent = variant.storage;
 
                     // Spec Cards
                     const specProc = document.getElementById('spec-processor');

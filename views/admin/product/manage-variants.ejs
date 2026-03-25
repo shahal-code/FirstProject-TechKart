@@ -119,6 +119,9 @@
                                         <h3 class="text-xl font-bold">Variant #<%= index + 1 %> - <%= variant.color || 'Default Color' %></h3>
                                         <div class="flex items-center gap-3">
                                             <span class="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] uppercase font-bold text-slate-400">SKU: <%= variant.sku %></span>
+                                            <button onclick="openEditVariantModal('<%= variant._id %>')" class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+                                                <span class="material-symbols-outlined">edit</span>
+                                            </button>
                                             <button onclick="deleteVariant('<%= variant._id %>')" class="text-rose-500 hover:bg-rose-500/10 p-2 rounded-full transition-colors">
                                                 <span class="material-symbols-outlined">delete</span>
                                             </button>
@@ -180,7 +183,7 @@
         <div class="bg-panel-bg w-full max-w-4xl rounded-[32px] overflow-hidden border border-white/10 shadow-3xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="p-8 border-b border-white/5 flex items-center justify-between">
                 <div>
-                    <h3 class="text-2xl font-bold">Add New Variant</h3>
+                    <h3 id="modalTitle" class="text-2xl font-bold">Add New Variant</h3>
                     <p class="text-xs text-slate-500 font-medium">Configure technical specs and images</p>
                 </div>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
@@ -204,7 +207,7 @@
                     </div>
                     <div>
                         <label class="input-label">Processor Brand</label>
-                        <select name="processorBrand" class="input-field appearance-none cursor-pointer" required>
+                        <select id="processorBrand" name="processorBrand" class="input-field appearance-none cursor-pointer" required onchange="updateProcessorModels()">
                             <option value="" disabled selected>Select Brand</option>
                             <option value="Intel">Intel</option>
                             <option value="AMD">AMD</option>
@@ -212,7 +215,9 @@
                     </div>
                     <div>
                         <label class="input-label">Processor Model</label>
-                        <input type="text" name="processor" class="input-field" placeholder="e.g. i7-14700H" required>
+                        <select id="processorModel" name="processor" class="input-field appearance-none cursor-pointer" required>
+                            <option value="" disabled selected>Select Model</option>
+                        </select>
                     </div>
                     <div>
                         <label class="input-label">RAM</label>
@@ -240,18 +245,24 @@
 
                 <!-- Image Upload for Variant -->
                 <div class="space-y-4">
-                    <label class="input-label">Variant Images (Min 3 required)</label>
+                    <div id="existingImagesContainer" class="hidden space-y-4">
+                        <label class="input-label">Existing Images (Click to remove)</label>
+                        <div id="existingImagesPreview" class="flex flex-wrap gap-4"></div>
+                    </div>
+
+                    <label class="input-label">Upload New Images (Min 3 total required)</label>
                     <label for="variantImageUpload" class="upload-zone">
                         <span class="material-symbols-outlined text-primary text-3xl mb-2">cloud_upload</span>
                         <p class="text-sm font-bold">Click to upload images for this color/variant</p>
                         <input type="file" id="variantImageUpload" name="images" multiple accept="image/*" class="hidden" onchange="previewVariantImages(event)">
                     </label>
                     <div id="variantImagePreview" class="flex flex-wrap gap-4 mt-6"></div>
+                    <div id="removedImagesContainer"></div>
                 </div>
 
                 <div class="pt-6 border-t border-white/5 flex justify-end gap-4">
                     <button type="button" onclick="closeModal()" class="px-8 py-3 rounded-full text-sm font-bold text-slate-400 hover:text-white transition-colors uppercase">Cancel</button>
-                    <button type="submit" class="px-10 py-3 bg-primary hover:bg-primary/90 text-white rounded-full font-bold text-sm tracking-wide shadow-lg uppercase">Create Variant</button>
+                    <button type="submit" id="submitBtn" class="px-10 py-3 bg-primary hover:bg-primary/90 text-white rounded-full font-bold text-sm tracking-wide shadow-lg uppercase">Create Variant</button>
                 </div>
             </form>
         </div>
@@ -275,6 +286,10 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script>
+        const productVariants = <%- JSON.stringify(product.variants) %>;
+        const productId = '<%= product._id %>';
+    </script>
     <script src="/js/admin/product/manage-variants.js"></script>
 </body>
 
