@@ -70,7 +70,7 @@
                             </div>
                             <% }) %>
                     </div>
-                    <div id="badge-storage"
+                    <div id="badge-ram"
                         class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
                         <span class="material-symbols-outlined text-sm">memory</span>
                         <%= product.variants[0]?.ram || 'DDR5' %>
@@ -80,7 +80,6 @@
                         <span class="material-symbols-outlined text-sm">database</span>
                         <%= product.variants[0]?.storage || 'SSD' %>
                     </div>
-                    <% } %>
                 </div>
                 <!-- Right: Info -->
                 <div class="space-y-10">
@@ -124,13 +123,13 @@
                     <!-- Selectors -->
                     <div class="space-y-8 pt-4">
 
-                        <% // Extract unique options const rams=[...new Set(product.variants.map(v=>
-                            v.ram))].filter(Boolean);
+                            <% 
+                            // Extract unique options
+                            const rams = [...new Set(product.variants.map(v => v.ram))].filter(Boolean);
                             const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
                             const gpus = [...new Set(product.variants.map(v => v.gpu))].filter(Boolean);
                             const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
                             const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
-
                             %>
 
                             <% if(rams.length> 0) { %>
@@ -313,7 +312,7 @@
         <%- include('../../partials/user/footer') %>
 
             <script>
-                const variants = <% - JSON.stringify(product.variants || []) %>;
+                const variants = <%- JSON.stringify(product.variants || []) %>;
                 let selectedFilters = {
                     ram: variants[0]?.ram,
                     size: variants[0]?.size,
@@ -349,29 +348,40 @@
 
                 function updateUI(variant) {
                     // Price
-                    document.getElementById('displayPrice').textContent = `$${variant.price}`;
+                    const priceEl = document.getElementById('displayPrice');
+                    if (priceEl) priceEl.textContent = `$${variant.price}`;
 
                     // Badges
-                    document.getElementById('badge-gpu').innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
-                    document.getElementById('badge-ram').innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
-                    document.getElementById('badge-storage').innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
+                    const gpuBadge = document.getElementById('badge-gpu');
+                    const ramBadge = document.getElementById('badge-ram');
+                    const storageBadge = document.getElementById('badge-storage');
+
+                    if (gpuBadge) gpuBadge.innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
+                    if (ramBadge) ramBadge.innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
+                    if (storageBadge) storageBadge.innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
 
                     // Spec Cards
-                    document.getElementById('spec-processor').textContent = variant.processor;
-                    document.getElementById('spec-gpu').textContent = variant.gpu;
+                    const specProc = document.getElementById('spec-processor');
+                    const specGpu = document.getElementById('spec-gpu');
+                    if (specProc) specProc.textContent = variant.processor;
+                    if (specGpu) specGpu.textContent = variant.gpu;
 
                     // Gallery
                     if (variant.images && variant.images.length > 0) {
-                        document.getElementById('mainImage').src = variant.images[0];
+                        const mainImg = document.getElementById('mainImage');
+                        if (mainImg) mainImg.src = variant.images[0];
+                        
                         const thumbGrid = document.querySelector('.grid.grid-cols-4.gap-4');
-                        thumbGrid.innerHTML = '';
-                        variant.images.forEach((img, i) => {
-                            const div = document.createElement('div');
-                            div.className = `glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 ${i === 0 ? 'border-primary' : 'border-transparent'}`;
-                            div.onclick = () => changeImage(img, div);
-                            div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
-                            thumbGrid.appendChild(div);
-                        });
+                        if (thumbGrid) {
+                            thumbGrid.innerHTML = '';
+                            variant.images.forEach((img, i) => {
+                                const div = document.createElement('div');
+                                div.className = `glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 ${i === 0 ? 'border-primary' : 'border-transparent'}`;
+                                div.onclick = () => changeImage(img, div);
+                                div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
+                                thumbGrid.appendChild(div);
+                            });
+                        }
                     }
                 }
 
