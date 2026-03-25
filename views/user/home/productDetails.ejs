@@ -70,6 +70,10 @@
                             <span class="material-symbols-outlined text-sm">memory</span>
                             <%= product.variants[0]?.ram || 'DDR5' %>
                         </div>
+                        <div id="badge-storage" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                            <span class="material-symbols-outlined text-sm">database</span>
+                            <%= product.variants[0]?.storage || 'SSD' %>
+                        </div>
                     <% } %>
                 </div>
 
@@ -82,6 +86,8 @@
                     <% 
                         // Extract unique options
                         const rams = [...new Set(product.variants.map(v => v.ram))].filter(Boolean);
+                        const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
+                        const gpus = [...new Set(product.variants.map(v => v.gpu))].filter(Boolean);
                         const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
                         const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
                     %>
@@ -95,6 +101,37 @@
                                     class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
                                     data-type="ram" data-value="<%= ram %>">
                                     <%= ram %>
+                                </button>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <% if(processors.length > 0) { %>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Processor</label>
+                        <div class="flex flex-wrap gap-3">
+                            <% processors.forEach(proc => { %>
+                                <% const variant = product.variants.find(v => v.processor === proc) %>
+                                <button onclick="updateSelection('processor', '<%= proc %>')" 
+                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.processor === proc ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                    data-type="processor" data-value="<%= proc %>">
+                                    <%= (variant && variant.processorBrand) ? variant.processorBrand + ' ' : '' %><%= proc %>
+                                </button>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <% if(gpus.length > 0) { %>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Graphics</label>
+                        <div class="flex flex-wrap gap-3">
+                            <% gpus.forEach(gpu => { %>
+                                <button onclick="updateSelection('gpu', '<%= gpu %>')" 
+                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.gpu === gpu ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                    data-type="gpu" data-value="<%= gpu %>">
+                                    <%= gpu %>
                                 </button>
                             <% }) %>
                         </div>
@@ -225,6 +262,18 @@
                         <p class="text-xs text-slate-500 font-medium">Optimized Battery<br>Fast Charging Support</p>
                     </div>
                 </div>
+
+                <!-- Storage -->
+                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
+                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <span class="material-symbols-outlined text-primary">storage</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Storage</h4>
+                        <p id="spec-storage" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.storage || 'Fast SSD' %></p>
+                        <p class="text-xs text-slate-500 font-medium">High Speed NVMe<br>Reliable Data</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -235,6 +284,8 @@
         const variants = <%- JSON.stringify(product.variants || []) %>;
         let selectedFilters = {
             ram: variants[0]?.ram,
+            processor: variants[0]?.processor,
+            gpu: variants[0]?.gpu,
             size: variants[0]?.size,
             color: variants[0]?.color
         };
@@ -246,6 +297,8 @@
             // Find the best matching variant
             const variant = variants.find(v => 
                 (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
+                (!selectedFilters.processor || v.processor === selectedFilters.processor) &&
+                (!selectedFilters.gpu || v.gpu === selectedFilters.gpu) &&
                 (!selectedFilters.size || v.size === selectedFilters.size) &&
                 (!selectedFilters.color || v.color === selectedFilters.color)
             ) || variants.find(v => v[type] === value); // Fallback if exact combo not found
@@ -271,13 +324,24 @@
             document.getElementById('displayPrice').textContent = `$${variant.price}`;
             
             // Badges
-            document.getElementById('badge-gpu').innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
-            document.getElementById('badge-ram').innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
-            document.getElementById('badge-storage').innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
-
+            const badgeGpu = document.getElementById('badge-gpu');
+            if (badgeGpu) badgeGpu.innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
+            
+            const badgeRam = document.getElementById('badge-ram');
+            if (badgeRam) badgeRam.innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
+            
+            const badgeStorage = document.getElementById('badge-storage');
+            if (badgeStorage) badgeStorage.innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
+            
             // Spec Cards
-            document.getElementById('spec-processor').textContent = variant.processor;
-            document.getElementById('spec-gpu').textContent = variant.gpu;
+            const specProc = document.getElementById('spec-processor');
+            if (specProc) specProc.textContent = (variant.processorBrand ? variant.processorBrand + ' ' : '') + variant.processor;
+            
+            const specGpu = document.getElementById('spec-gpu');
+            if (specGpu) specGpu.textContent = variant.gpu;
+
+            const specStorage = document.getElementById('spec-storage');
+            if (specStorage) specStorage.textContent = variant.storage;
 
             // Gallery
             if (variant.images && variant.images.length > 0) {

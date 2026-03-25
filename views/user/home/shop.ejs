@@ -193,51 +193,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- GPU Filter -->
-                                    <div class="filter-section">
-                                        <h3 class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
-                                            Graphics (GPU)
-                                            <span class="w-8 h-px bg-primary/40"></span>
-                                        </h3>
-                                        <div class="space-y-4">
-                                            <!-- NVIDIA Group -->
-                                            <div class="space-y-3">
-                                                <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('nvidia-sub')">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">NVIDIA GeForce</span>
-                                                    </div>
-                                                    <span id="nvidia-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
-                                                </div>
-                                                <div id="nvidia-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
-                                                    <% ['RTX 4090', 'RTX 4080', 'RTX 4070', 'RTX 4060', 'RTX 4050', 'RTX 3050'].forEach(gpu => { %>
-                                                        <label class="flex items-center gap-3 group cursor-pointer">
-                                                            <input class="size-3.5" type="checkbox" name="gpu" value="<%= gpu %>" <%= (Array.isArray(query.gpu) ? query.gpu.includes(gpu) : query.gpu === gpu) ? 'checked' : '' %> />
-                                                            <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors"><%= gpu %></span>
-                                                        </label>
-                                                    <% }) %>
-                                                </div>
-                                            </div>
-                                            <!-- AMD Group -->
-                                            <div class="space-y-3">
-                                                <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('amd-gpu-sub')">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">AMD Radeon</span>
-                                                    </div>
-                                                    <span id="amd-gpu-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
-                                                </div>
-                                                <div id="amd-gpu-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
-                                                    <% ['RX 7900', 'RX 7800', 'RX 7700', 'RX 7600'].forEach(gpu => { %>
-                                                        <label class="flex items-center gap-3 group cursor-pointer">
-                                                            <input class="size-3.5" type="checkbox" name="gpu" value="<%= gpu %>" <%= (Array.isArray(query.gpu) ? query.gpu.includes(gpu) : query.gpu === gpu) ? 'checked' : '' %> />
-                                                            <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors"><%= gpu %></span>
-                                                        </label>
-                                                    <% }) %>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <!-- RAM Filter -->
                                     <div class="filter-section">
@@ -264,55 +219,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Storage Filter -->
-                                    <div class="filter-section">
-                                        <h3 class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
-                                            Storage
-                                            <span class="w-8 h-px bg-primary/40"></span>
-                                        </h3>
-                                        <div class="space-y-3">
-                                            <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('storage-sub')">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                    <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">SSD Capacity</span>
-                                                </div>
-                                                <span id="storage-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
-                                            </div>
-                                            <div id="storage-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
-                                                <% ['4TB', '2TB', '1TB', '512GB', '256GB'].forEach(storage => { %>
-                                                    <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="storage" value="<%= storage %>" <%= (Array.isArray(query.storage) ? query.storage.includes(storage) : query.storage === storage) ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors"><%= storage %></span>
-                                                    </label>
-                                                <% }) %>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <!-- Size Filter -->
-                                    <div class="filter-section">
-                                        <h3 class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
-                                            Display Size
-                                            <span class="w-8 h-px bg-primary/40"></span>
-                                        </h3>
-                                        <div class="space-y-3">
-                                            <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('size-sub')">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                    <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">Screen Size</span>
-                                                </div>
-                                                <span id="size-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
-                                            </div>
-                                            <div id="size-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
-                                                <% ['17"', '16"', '15"', '14"', '13"'].forEach(size => { %>
-                                                    <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="size" value="<%= size %>" <%= (Array.isArray(query.size) ? query.size.includes(size) : query.size === size) ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors"><%= size %></span>
-                                                    </label>
-                                                <% }) %>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div class="filter-section">
                                         <h3
@@ -395,7 +302,7 @@
                                                     <% }) %>
                                                 <% } %>
 
-                                                <% ['processor', 'gpu', 'ram', 'storage', 'size'].forEach(filterKey => { %>
+                                                <% ['processor', 'ram'].forEach(filterKey => { %>
                                                     <% if (query[filterKey]) { %>
                                                         <% const vals = Array.isArray(query[filterKey]) ? query[filterKey] : [query[filterKey]] %>
                                                         <% vals.forEach(v => { %>

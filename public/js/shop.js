@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // 2. Multi-select filters
-        ['category', 'processor', 'gpu', 'ram', 'storage', 'size'].forEach(filterName => {
+        ['category', 'processor', 'ram'].forEach(filterName => {
             searchParams.delete(filterName); // Clear existing
             const values = getCheckedValues(filterName);
             values.forEach(val => searchParams.append(filterName, val));
