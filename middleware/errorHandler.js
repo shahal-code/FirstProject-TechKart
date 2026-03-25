@@ -14,18 +14,15 @@ export const globalErrorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode);
 
-    // Handle other errors (500)
-    console.error("Error Handler Caught:", err.message);
-    try {
-        res.render("error/500", {
-            title: "500 - Internal Server Error",
-            message: process.env.NODE_ENV === 'production' ? "Something went wrong" : err.message,
-            stack: process.env.NODE_ENV === 'production' ? null : err.stack
+    console.error("Error Caught:", err.message);
+
+    if (statusCode === 404) {
+        return res.render("error/404", {
+            title: "404 - Not Found",
+            message: err.message
         });
-    } catch (renderError) {
-        // Fallback if 500 view is missing
-        res.status(500).send("<h1>500 - Internal Server Error</h1><p>" + 
-            (process.env.NODE_ENV === 'production' ? "Something went wrong" : err.message) + 
-            "</p>");
     }
+
+    // Default simple 500 response (no view)
+    res.status(500).send(`<h1>500 - Internal Server Error</h1><p>${process.env.NODE_ENV === 'production' ? "Something went wrong" : err.message}</p>`);
 };

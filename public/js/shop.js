@@ -8,16 +8,16 @@ document.addEventListener('DOMContentLoaded', function () {
         return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
     }
 
-    window.toggleProcessorGroup = function(id) {
+    window.toggleProcessorGroup = function (id) {
         const sub = document.getElementById(id);
         const icon = document.getElementById(id + '-icon');
         if (!sub || !icon) return;
-        
+
         const isHidden = sub.classList.contains('hidden');
-        
+
         // Toggle the sub-menu
         sub.classList.toggle('hidden');
-        
+
         // Rotate the icon
         if (isHidden) {
             icon.classList.add('rotate-180');

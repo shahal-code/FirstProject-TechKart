@@ -120,7 +120,9 @@
                                             <% categories.forEach(cat=> { %>
                                                 <label class="flex items-center gap-3 group cursor-pointer">
                                                     <input class="size-4" type="checkbox" name="category"
-                                                        value="<%= cat._id %>" <%= (Array.isArray(query.category) ? query.category.includes(cat._id.toString()) : query.category === cat._id.toString()) ? 'checked' : '' %> />
+                                                        value="<%= cat._id %>" <%=(Array.isArray(query.category) ?
+                                                        query.category.includes(cat._id.toString()) :
+                                                        query.category===cat._id.toString()) ? 'checked' : '' %> />
                                                     <span
                                                         class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">
                                                         <%= cat.name %>
@@ -139,54 +141,103 @@
                                         <div class="space-y-4">
                                             <!-- Intel Group -->
                                             <div class="space-y-3">
-                                                <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('intel-sub')">
+                                                <div class="flex items-center justify-between group cursor-pointer"
+                                                    onclick="toggleProcessorGroup('intel-sub')">
                                                     <div class="flex items-center gap-3">
-                                                        <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">Intel Core</span>
+                                                        <div
+                                                            class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors">
+                                                        </div>
+                                                        <span
+                                                            class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">Intel
+                                                            Core</span>
                                                     </div>
-                                                    <span id="intel-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
+                                                    <span id="intel-sub-icon"
+                                                        class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
                                                 </div>
-                                                <div id="intel-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
+                                                <div id="intel-sub"
+                                                    class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="i3" <%= (Array.isArray(query.processor) ? query.processor.includes('i3') : query.processor === 'i3') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core i3</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="i3" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('i3') : query.processor==='i3' )
+                                                            ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core
+                                                            i3</span>
                                                     </label>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="i5" <%= (Array.isArray(query.processor) ? query.processor.includes('i5') : query.processor === 'i5') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core i5</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="i5" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('i5') : query.processor==='i5' )
+                                                            ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core
+                                                            i5</span>
                                                     </label>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="i7" <%= (Array.isArray(query.processor) ? query.processor.includes('i7') : query.processor === 'i7') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core i7</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="i7" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('i7') : query.processor==='i7' )
+                                                            ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core
+                                                            i7</span>
                                                     </label>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="i9" <%= (Array.isArray(query.processor) ? query.processor.includes('i9') : query.processor === 'i9') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core i9</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="i9" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('i9') : query.processor==='i9' )
+                                                            ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Core
+                                                            i9</span>
                                                     </label>
                                                 </div>
                                             </div>
 
                                             <!-- AMD Group -->
                                             <div class="space-y-3">
-                                                <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('amd-sub')">
+                                                <div class="flex items-center justify-between group cursor-pointer"
+                                                    onclick="toggleProcessorGroup('amd-sub')">
                                                     <div class="flex items-center gap-3">
-                                                        <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">AMD Ryzen</span>
+                                                        <div
+                                                            class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors">
+                                                        </div>
+                                                        <span
+                                                            class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">AMD
+                                                            Ryzen</span>
                                                     </div>
-                                                    <span id="amd-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
+                                                    <span id="amd-sub-icon"
+                                                        class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
                                                 </div>
-                                                <div id="amd-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
+                                                <div id="amd-sub"
+                                                    class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="Ryzen 5" <%= (Array.isArray(query.processor) ? query.processor.includes('Ryzen 5') : query.processor === 'Ryzen 5') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen 5</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="Ryzen 5" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('Ryzen 5') :
+                                                            query.processor==='Ryzen 5' ) ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen
+                                                            5</span>
                                                     </label>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="Ryzen 7" <%= (Array.isArray(query.processor) ? query.processor.includes('Ryzen 7') : query.processor === 'Ryzen 7') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen 7</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="Ryzen 7" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('Ryzen 7') :
+                                                            query.processor==='Ryzen 7' ) ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen
+                                                            7</span>
                                                     </label>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="processor" value="Ryzen 9" <%= (Array.isArray(query.processor) ? query.processor.includes('Ryzen 9') : query.processor === 'Ryzen 9') ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen 9</span>
+                                                        <input class="size-3.5" type="checkbox" name="processor"
+                                                            value="Ryzen 9" <%=(Array.isArray(query.processor) ?
+                                                            query.processor.includes('Ryzen 9') :
+                                                            query.processor==='Ryzen 9' ) ? 'checked' : '' %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">Ryzen
+                                                            9</span>
                                                     </label>
                                                 </div>
                                             </div>
@@ -196,25 +247,38 @@
 
                                     <!-- RAM Filter -->
                                     <div class="filter-section">
-                                        <h3 class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                                        <h3
+                                            class="text-white text-[10px] font-black uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
                                             Memory (RAM)
                                             <span class="w-8 h-px bg-primary/40"></span>
                                         </h3>
                                         <div class="space-y-3">
-                                            <div class="flex items-center justify-between group cursor-pointer" onclick="toggleProcessorGroup('ram-sub')">
+                                            <div class="flex items-center justify-between group cursor-pointer"
+                                                onclick="toggleProcessorGroup('ram-sub')">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors"></div>
-                                                    <span class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">Capacity</span>
+                                                    <div
+                                                        class="size-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors">
+                                                    </div>
+                                                    <span
+                                                        class="text-sm font-bold text-gray-300 group-hover:text-white uppercase tracking-wider">Capacity</span>
                                                 </div>
-                                                <span id="ram-sub-icon" class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
+                                                <span id="ram-sub-icon"
+                                                    class="material-symbols-outlined text-gray-500 group-hover:text-white transition-transform duration-300">keyboard_arrow_down</span>
                                             </div>
-                                            <div id="ram-sub" class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
-                                                <% ['64GB', '32GB', '16GB', '8GB'].forEach(ram => { %>
+                                            <div id="ram-sub"
+                                                class="ml-5 space-y-3 hidden border-l border-white/5 pl-4 py-1">
+                                                <% ['64GB', '32GB' , '16GB' , '8GB' ].forEach(ram=> { %>
                                                     <label class="flex items-center gap-3 group cursor-pointer">
-                                                        <input class="size-3.5" type="checkbox" name="ram" value="<%= ram %>" <%= (Array.isArray(query.ram) ? query.ram.includes(ram) : query.ram === ram) ? 'checked' : '' %> />
-                                                        <span class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors"><%= ram %></span>
+                                                        <input class="size-3.5" type="checkbox" name="ram"
+                                                            value="<%= ram %>" <%=(Array.isArray(query.ram) ?
+                                                            query.ram.includes(ram) : query.ram===ram) ? 'checked' : ''
+                                                            %> />
+                                                        <span
+                                                            class="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">
+                                                            <%= ram %>
+                                                        </span>
                                                     </label>
-                                                <% }) %>
+                                                    <% }) %>
                                             </div>
                                         </div>
                                     </div>
@@ -231,7 +295,8 @@
                                             <label class="flex items-center gap-3 group cursor-pointer">
                                                 <input
                                                     class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
-                                                    name="price" type="radio" value="under1000" <%= query.price === 'under1000' ? 'checked' : '' %> />
+                                                    name="price" type="radio" value="under1000"
+                                                    <%=query.price==='under1000' ? 'checked' : '' %> />
                                                 <span
                                                     class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Under
                                                     $1,000</span>
@@ -239,7 +304,8 @@
                                             <label class="flex items-center gap-3 group cursor-pointer">
                                                 <input
                                                     class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
-                                                    name="price" type="radio" value="1000-2000" <%= query.price === '1000-2000' ? 'checked' : '' %> />
+                                                    name="price" type="radio" value="1000-2000"
+                                                    <%=query.price==='1000-2000' ? 'checked' : '' %> />
                                                 <span
                                                     class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">$1,000
                                                     - $2,000</span>
@@ -247,7 +313,8 @@
                                             <label class="flex items-center gap-3 group cursor-pointer">
                                                 <input
                                                     class="size-4 rounded-full border-white/10 bg-white/5 text-primary focus:ring-primary"
-                                                    name="price" type="radio" value="over2000" <%= query.price === 'over2000' ? 'checked' : '' %> />
+                                                    name="price" type="radio" value="over2000"
+                                                    <%=query.price==='over2000' ? 'checked' : '' %> />
                                                 <span
                                                     class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Over
                                                     $2,000</span>
@@ -280,45 +347,68 @@
                                     class="flex flex-wrap items-center justify-between gap-6 mb-10 pb-6 border-b border-white/5">
                                     <div class="flex items-center gap-4">
                                         <% if (query.search || query.category) { %>
-                                            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active Filters:</span>
+                                            <span
+                                                class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active
+                                                Filters:</span>
                                             <div class="flex flex-wrap gap-2">
                                                 <% if (query.search) { %>
-                                                    <div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                    <div
+                                                        class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
                                                         Search: <%= query.search %>
-                                                        <a href="/user/shop?<%= new URLSearchParams({...query, search: '', page: 1}).toString() %>" class="material-symbols-outlined text-xs cursor-pointer">close</a>
+                                                            <a href="/user/shop?<%= new URLSearchParams({...query, search: '', page: 1}).toString() %>"
+                                                                class="material-symbols-outlined text-xs cursor-pointer">close</a>
                                                     </div>
-                                                <% } %>
-                                                
-                                                <% if (query.category) { %>
-                                                    <% const catArr = Array.isArray(query.category) ? query.category : [query.category] %>
-                                                    <% catArr.forEach(cId => { %>
-                                                        <% const activeCat = categories.find(c => c._id.toString() === cId) %>
-                                                        <% if (activeCat) { %>
-                                                            <div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
-                                                                <%= activeCat.name %>
-                                                                <a href="/user/shop?<%= new URLSearchParams({...query, category: catArr.filter(x => x !== cId), page: 1}).toString() %>" class="material-symbols-outlined text-xs cursor-pointer">close</a>
-                                                            </div>
-                                                        <% } %>
-                                                    <% }) %>
-                                                <% } %>
-
-                                                <% ['processor', 'ram'].forEach(filterKey => { %>
-                                                    <% if (query[filterKey]) { %>
-                                                        <% const vals = Array.isArray(query[filterKey]) ? query[filterKey] : [query[filterKey]] %>
-                                                        <% vals.forEach(v => { %>
-                                                            <div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
-                                                                <%= filterKey.toUpperCase() %>: <%= v %>
-                                                                <a href="/user/shop?<%= new URLSearchParams({...query, [filterKey]: vals.filter(x => x !== v), page: 1}).toString() %>" class="material-symbols-outlined text-xs cursor-pointer">close</a>
-                                                            </div>
-                                                        <% }) %>
                                                     <% } %>
-                                                <% }) %>
 
-                                                <a href="/user/shop" class="text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest ml-2 underline">Clear All</a>
+                                                        <% if (query.category) { %>
+                                                            <% const catArr=Array.isArray(query.category) ?
+                                                                query.category : [query.category] %>
+                                                                <% catArr.forEach(cId=> { %>
+                                                                    <% const activeCat=categories.find(c=>
+                                                                        c._id.toString() === cId) %>
+                                                                        <% if (activeCat) { %>
+                                                                            <div
+                                                                                class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                                                <%= activeCat.name %>
+                                                                                    <a href="/user/shop?<%= new URLSearchParams({...query, category: catArr.filter(x => x !== cId), page: 1}).toString() %>"
+                                                                                        class="material-symbols-outlined text-xs cursor-pointer">close</a>
+                                                                            </div>
+                                                                            <% } %>
+                                                                                <% }) %>
+                                                                                    <% } %>
+
+                                                                                        <% ['processor', 'ram' , 'price'
+                                                                                            ].forEach(filterKey=> { %>
+                                                                                            <% if (query[filterKey]) {
+                                                                                                %>
+                                                                                                <% const
+                                                                                                    vals=Array.isArray(query[filterKey])
+                                                                                                    ? query[filterKey] :
+                                                                                                    [query[filterKey]]
+                                                                                                    %>
+                                                                                                    <% vals.forEach(v=>
+                                                                                                        { %>
+                                                                                                        <div
+                                                                                                            class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                                                                            <%= filterKey.toUpperCase()
+                                                                                                                %>: <%=
+                                                                                                                    v %>
+                                                                                                                    <a href="/user/shop?<%= new URLSearchParams({...query, [filterKey]: vals.filter(x => x !== v), page: 1}).toString() %>"
+                                                                                                                        class="material-symbols-outlined text-xs cursor-pointer">close</a>
+                                                                                                        </div>
+                                                                                                        <% }) %>
+                                                                                                            <% } %>
+                                                                                                                <% }) %>
+
+                                                                                                                    <a href="/user/shop"
+                                                                                                                        class="text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest ml-2 underline">Clear
+                                                                                                                        All</a>
                                             </div>
-                                        <% } else { %>
-                                            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Showing all products</span>
-                                        <% } %>
+                                            <% } else { %>
+                                                <span
+                                                    class="text-xs font-bold text-gray-500 uppercase tracking-widest">Showing
+                                                    all products</span>
+                                                <% } %>
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Sort
@@ -342,7 +432,8 @@
                                         <% products.forEach(product=> { %>
                                             <div
                                                 class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
-                                                <a href="/user/product/<%= product._id %>" class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
+                                                <a href="/user/product/<%= product._id %>"
+                                                    class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
                                                     <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
                                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
                                                 </a>
@@ -379,42 +470,42 @@
 
                                 <!-- Pagination -->
                                 <div class="flex justify-center mt-20 gap-2">
-                                    <% 
-                                        const getPageUrl = (p) => {
-                                            const params = new URLSearchParams();
-                                            Object.keys(query).forEach(key => {
-                                                if (key === 'page') return;
-                                                const val = query[key];
-                                                if (Array.isArray(val)) {
-                                                    val.forEach(v => params.append(key, v));
-                                                } else if (val) {
-                                                    params.set(key, val);
-                                                }
-                                            });
-                                            params.set('page', p);
-                                            return '/user/shop?' + params.toString();
+                                    <% const getPageUrl=(p)=> {
+                                        const params = new URLSearchParams();
+                                        Object.keys(query).forEach(key => {
+                                        if (key === 'page') return;
+                                        const val = query[key];
+                                        if (Array.isArray(val)) {
+                                        val.forEach(v => params.append(key, v));
+                                        } else if (val) {
+                                        params.set(key, val);
+                                        }
+                                        });
+                                        params.set('page', p);
+                                        return '/user/shop?' + params.toString();
                                         };
-                                    %>
-                                    <% if (currentPage > 1) { %>
-                                        <a href="<%= getPageUrl(currentPage - 1) %>"
-                                            class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
-                                            <span class="material-symbols-outlined">chevron_left</span>
-                                        </a>
-                                    <% } %>
- 
-                                    <% for(let i = 1; i <= totalPages; i++) { %>
-                                        <a href="<%= getPageUrl(i) %>"
-                                            class="size-12 flex items-center justify-center rounded-full <%= currentPage == i ? 'bg-primary text-white font-bold' : 'border border-white/10 text-white font-bold hover:border-primary hover:text-primary' %> text-xs">
-                                            <%= i %>
-                                        </a>
-                                    <% } %>
- 
-                                    <% if (currentPage < totalPages) { %>
-                                        <a href="<%= getPageUrl(parseInt(currentPage) + 1) %>"
-                                            class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
-                                            <span class="material-symbols-outlined">chevron_right</span>
-                                        </a>
-                                    <% } %>
+                                        %>
+                                        <% if (currentPage> 1) { %>
+                                            <a href="<%= getPageUrl(currentPage - 1) %>"
+                                                class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
+                                                <span class="material-symbols-outlined">chevron_left</span>
+                                            </a>
+                                            <% } %>
+
+                                                <% for(let i=1; i <=totalPages; i++) { %>
+                                                    <a href="<%= getPageUrl(i) %>"
+                                                        class="size-12 flex items-center justify-center rounded-full <%= currentPage == i ? 'bg-primary text-white font-bold' : 'border border-white/10 text-white font-bold hover:border-primary hover:text-primary' %> text-xs">
+                                                        <%= i %>
+                                                    </a>
+                                                    <% } %>
+
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <a href="<%= getPageUrl(parseInt(currentPage) + 1) %>"
+                                                                class="size-12 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-primary hover:text-primary transition-all">
+                                                                <span
+                                                                    class="material-symbols-outlined">chevron_right</span>
+                                                            </a>
+                                                            <% } %>
                                 </div>
                             </div>
                         </div>

@@ -1,377 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= product.name %> | TechKart</title>
+    <title>
+        <%= product.name %> | TechKart
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;700;900&display=swap');
-        
-        body { font-family: 'Outfit', sans-serif; background-color: #050505; color: #fff; }
-        .premium-heading { letter-spacing: -0.02em; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .bg-primary { background-color: #3b82f6; } /* Tailwind blue-500 */
-        .text-primary { color: #3b82f6; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #050505;
+            color: #fff;
+        }
+
+        .premium-heading {
+            letter-spacing: -0.02em;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .bg-primary {
+            background-color: #3b82f6;
+        }
+
+        /* Tailwind blue-500 */
+        .text-primary {
+            color: #3b82f6;
+        }
     </style>
 </head>
+
 <body class="min-h-screen">
     <%- include('../../partials/user/header') %>
 
-    <main class="container mx-auto px-6 py-20 mt-10 max-w-7xl">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
-            <!-- Left: Gallery -->
-            <div class="space-y-8">
-                <div class="glass-card aspect-[16/10] rounded-[32px] overflow-hidden relative shadow-2xl">
-                    <% if(product.variants && product.variants.length > 0 && product.variants[0].images && product.variants[0].images.length > 0) { %>
-                        <img id="mainImage" src="<%= product.variants[0].images[0] %>" class="w-full h-full object-cover transition-all duration-700" />
-                    <% } else if(product.images && product.images.length > 0) { %>
-                        <img id="mainImage" src="<%= product.images[0] %>" class="w-full h-full object-cover transition-all duration-700" />
-                    <% } %>
-                </div>
-                <div class="grid grid-cols-4 gap-4">
-                    <% 
-                       let displayImages = (product.variants && product.variants.length > 0 && product.variants[0].images) 
-                                           ? product.variants[0].images 
-                                           : (product.images || []);
-                       displayImages.forEach((img, index) => { 
-                    %>
-                        <div class="glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 <%= index === 0 ? 'border-primary' : 'border-transparent' %>" 
-                             onclick="changeImage('<%= img %>', this)">
-                            <img src="<%= img %>" class="w-full h-full object-cover" />
-                        </div>
-                    <% }) %>
-                </div>
-            </div>
-
-            <!-- Right: Info -->
-            <div class="space-y-10">
-                <div class="space-y-2">
-                    <h1 class="text-6xl font-black premium-heading tracking-tighter leading-none"><%= product.name %></h1>
-                    <div class="flex items-center gap-6">
-                        <span id="displayPrice" class="text-4xl font-bold text-primary tracking-tight">$<%= (product.variants && product.variants.length > 0) ? product.variants[0].price : '0' %></span>
+        <main class="container mx-auto px-6 py-20 mt-10 max-w-7xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
+                <!-- Left: Gallery -->
+                <div class="space-y-8">
+                    <div class="glass-card aspect-[16/10] rounded-[32px] overflow-hidden relative shadow-2xl">
+                        <% if(product.variants && product.variants.length> 0 && product.variants[0].images &&
+                            product.variants[0].images.length > 0) { %>
+                            <img id="mainImage" src="<%= product.variants[0].images[0] %>"
+                                class="w-full h-full object-cover transition-all duration-700" />
+                            <% } else if(product.images && product.images.length> 0) { %>
+                                <img id="mainImage" src="<%= product.images[0] %>"
+                                    class="w-full h-full object-cover transition-all duration-700" />
+                                <% } %>
                     </div>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                    <% if (product.highlights && product.highlights.length > 0) { %>
-                        <% product.highlights.forEach(h => { %>
-                            <div class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                                <%= h %>
+                    <div class="grid grid-cols-4 gap-4">
+                        <% let displayImages=(product.variants && product.variants.length> 0 &&
+                            product.variants[0].images)
+                            ? product.variants[0].images
+                            : (product.images || []);
+                            displayImages.forEach((img, index) => {
+                            %>
+                            <div class="glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 <%= index === 0 ? 'border-primary' : 'border-transparent' %>"
+                                onclick="changeImage('<%= img %>', this)">
+                                <img src="<%= img %>" class="w-full h-full object-cover" />
                             </div>
-                        <% }) %>
-                    <% } else { %>
-                        <div id="badge-gpu" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                            <span class="material-symbols-outlined text-sm">developer_board</span>
-                            <%= product.variants[0]?.gpu || 'NVIDIA RTX' %>
-                        </div>
-                        <div id="badge-ram" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                            <span class="material-symbols-outlined text-sm">memory</span>
-                            <%= product.variants[0]?.ram || 'DDR5' %>
-                        </div>
-                        <div id="badge-storage" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
-                            <span class="material-symbols-outlined text-sm">database</span>
-                            <%= product.variants[0]?.storage || 'SSD' %>
-                        </div>
+                            <% }) %>
+                    </div>
+                    <div id="badge-storage"
+                        class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                        <span class="material-symbols-outlined text-sm">memory</span>
+                        <%= product.variants[0]?.ram || 'DDR5' %>
+                    </div>
+                    <div id="badge-storage"
+                        class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                        <span class="material-symbols-outlined text-sm">database</span>
+                        <%= product.variants[0]?.storage || 'SSD' %>
+                    </div>
                     <% } %>
                 </div>
-
-                <p id="displayDesc" class="text-slate-400 leading-relaxed text-sm max-w-xl font-medium">
-                    <%= product.description %>
-                </p>
-
-                <!-- Selectors -->
-                <div class="space-y-8 pt-4">
-                    <% 
-                        // Extract unique options
-                        const rams = [...new Set(product.variants.map(v => v.ram))].filter(Boolean);
-                        const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
-                        const gpus = [...new Set(product.variants.map(v => v.gpu))].filter(Boolean);
-                        const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
-                        const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
-                    %>
-
-                    <% if(rams.length > 0) { %>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select RAM</label>
-                        <div class="flex flex-wrap gap-3">
-                            <% rams.forEach(ram => { %>
-                                <button onclick="updateSelection('ram', '<%= ram %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                    data-type="ram" data-value="<%= ram %>">
-                                    <%= ram %>
-                                </button>
-                            <% }) %>
+                <!-- Right: Info -->
+                <div class="space-y-10">
+                    <div class="space-y-2">
+                        <h1 class="text-6xl font-black premium-heading tracking-tighter leading-none">
+                            <%= product.name %>
+                        </h1>
+                        <div class="flex items-center gap-6">
+                            <span id="displayPrice" class="text-4xl font-bold text-primary tracking-tight">$<%=
+                                    (product.variants && product.variants.length> 0) ? product.variants[0].price : '0'
+                                    %></span>
                         </div>
                     </div>
-                    <% } %>
 
-                    <% if(processors.length > 0) { %>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Processor</label>
-                        <div class="flex flex-wrap gap-3">
-                            <% processors.forEach(proc => { %>
-                                <% const variant = product.variants.find(v => v.processor === proc) %>
-                                <button onclick="updateSelection('processor', '<%= proc %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.processor === proc ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                    data-type="processor" data-value="<%= proc %>">
-                                    <%= (variant && variant.processorBrand) ? variant.processorBrand + ' ' : '' %><%= proc %>
-                                </button>
-                            <% }) %>
-                        </div>
+                    <div class="flex flex-wrap gap-2">
+                        <% if (product.highlights && product.highlights.length> 0) { %>
+                            <% product.highlights.forEach(h=> { %>
+                                <div
+                                    class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                                    <%= h %>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div id="badge-gpu"
+                                            class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                                            <span class="material-symbols-outlined text-sm">developer_board</span>
+                                            <%= product.variants[0]?.gpu || 'NVIDIA RTX' %>
+                                        </div>
+                                        <div id="badge-ram"
+                                            class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-400">
+                                            <span class="material-symbols-outlined text-sm">memory</span>
+                                            <%= product.variants[0]?.ram || 'DDR5' %>
+                                        </div>
+                                        <% } %>
                     </div>
-                    <% } %>
 
-                    <% if(gpus.length > 0) { %>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Graphics</label>
-                        <div class="flex flex-wrap gap-3">
-                            <% gpus.forEach(gpu => { %>
-                                <button onclick="updateSelection('gpu', '<%= gpu %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.gpu === gpu ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                    data-type="gpu" data-value="<%= gpu %>">
-                                    <%= gpu %>
-                                </button>
-                            <% }) %>
-                        </div>
+                    <p id="displayDesc" class="text-slate-400 leading-relaxed text-sm max-w-xl font-medium">
+                        <%= product.description %>
+                    </p>
+
+                    <!-- Selectors -->
+                    <div class="space-y-8 pt-4">
+
+                        <% // Extract unique options const rams=[...new Set(product.variants.map(v=>
+                            v.ram))].filter(Boolean);
+                            const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
+                            const gpus = [...new Set(product.variants.map(v => v.gpu))].filter(Boolean);
+                            const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
+                            const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
+
+                            %>
+
+                            <% if(rams.length> 0) { %>
+                                <div class="space-y-3">
+                                    <label
+                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
+                                        RAM</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <% rams.forEach(ram=> { %>
+                                            <button onclick="updateSelection('ram', '<%= ram %>')"
+                                                class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                                data-type="ram" data-value="<%= ram %>">
+                                                <%= ram %>
+                                            </button>
+                                            <% }) %>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if(sizes.length> 0) { %>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen
+                                                Size</label>
+                                            <div class="flex flex-wrap gap-3">
+                                                <% sizes.forEach(size=> { %>
+                                                    <button onclick="updateSelection('size', '<%= size %>')"
+                                                        class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                                        data-type="size" data-value="<%= size %>">
+                                                        <%= size %>
+                                                    </button>
+                                                    <% }) %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                            <% if(colors.length> 0) { %>
+                                                <div class="space-y-3">
+                                                    <label
+                                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
+                                                        Color</label>
+                                                    <div class="flex flex-wrap gap-3">
+                                                        <% colors.forEach(color=> { %>
+                                                            <button onclick="updateSelection('color', '<%= color %>')"
+                                                                class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
+                                                                data-type="color" data-value="<%= color %>">
+                                                                <%= color %>
+                                                            </button>
+                                                            <% }) %>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+
+                                                    <!-- Quantity -->
+                                                    <div class="space-y-3">
+                                                        <label
+                                                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
+                                                        <div
+                                                            class="flex items-center gap-1 bg-white/5 w-fit rounded-xl p-1 border border-white/5">
+                                                            <button onclick="updateQty(-1)"
+                                                                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                                                                <span
+                                                                    class="material-symbols-outlined text-sm">remove</span>
+                                                            </button>
+                                                            <span id="quantity"
+                                                                class="w-12 text-center font-bold text-sm">1</span>
+                                                            <button onclick="updateQty(1)"
+                                                                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                                                                <span
+                                                                    class="material-symbols-outlined text-sm">add</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                     </div>
-                    <% } %>
 
-                    <% if(sizes.length > 0) { %>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen Size</label>
-                        <div class="flex flex-wrap gap-3">
-                            <% sizes.forEach(size => { %>
-                                <button onclick="updateSelection('size', '<%= size %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                    data-type="size" data-value="<%= size %>">
-                                    <%= size %>
-                                </button>
-                            <% }) %>
-                        </div>
-                    </div>
-                    <% } %>
+                    <div class="space-y-4 pt-4 border-t border-white/5">
+                        <button
+                            class="w-full py-5 bg-primary text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-blue-600 transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                            Add to Cart
+                        </button>
+                        <button
+                            class="w-full py-5 border border-white/10 text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/5 transition-all">
+                            Buy Now
+                        </button>
 
-                    <% if(colors.length > 0) { %>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Color</label>
-                        <div class="flex flex-wrap gap-3">
-                            <% colors.forEach(color => { %>
-                                <button onclick="updateSelection('color', '<%= color %>')" 
-                                    class="option-btn px-6 py-2.5 rounded-xl border-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-primary bg-primary/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20' %>"
-                                    data-type="color" data-value="<%= color %>">
-                                    <%= color %>
-                                </button>
-                            <% }) %>
-                        </div>
-                    </div>
-                    <% } %>
-
-                    <!-- Quantity -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
-                        <div class="flex items-center gap-1 bg-white/5 w-fit rounded-xl p-1 border border-white/5">
-                            <button onclick="updateQty(-1)" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-                                <span class="material-symbols-outlined text-sm">remove</span>
-                            </button>
-                            <span id="quantity" class="w-12 text-center font-bold text-sm">1</span>
-                            <button onclick="updateQty(1)" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-                                <span class="material-symbols-outlined text-sm">add</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-4 pt-4 border-t border-white/5">
-                    <button class="w-full py-5 bg-primary text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-blue-600 transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                        Add to Cart
-                    </button>
-                    <button class="w-full py-5 border border-white/10 text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/5 transition-all">
-                        Buy Now
-                    </button>
-                    
-                    <div class="flex items-center justify-between px-2 pt-4">
-                        <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            <span class="material-symbols-outlined text-blue-500 text-sm">local_shipping</span>
-                            Free Express Shipping
-                        </div>
-                        <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            <span class="material-symbols-outlined text-blue-500 text-sm">verified_user</span>
-                            3 Year Warranty
+                        <div class="flex items-center justify-between px-2 pt-4">
+                            <div
+                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span class="material-symbols-outlined text-blue-500 text-sm">local_shipping</span>
+                                Free Express Shipping
+                            </div>
+                            <div
+                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span class="material-symbols-outlined text-blue-500 text-sm">verified_user</span>
+                                3 Year Warranty
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Rich Specifications Section -->
-        <div class="mt-32 space-y-12">
-            <div class="flex items-center gap-6">
-                <div class="h-px bg-primary w-12"></div>
-                <h2 class="text-4xl font-black uppercase tracking-tight">Specifications</h2>
+            <!-- Rich Specifications Section -->
+            <div class="mt-32 space-y-12">
+                <div class="flex items-center gap-6">
+                    <div class="h-px bg-primary w-12"></div>
+                    <h2 class="text-4xl font-black uppercase tracking-tight">Specifications</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Processor -->
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-primary">memory</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Processor</h4>
+                            <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight">
+                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : ''
+                                    %>
+                                    <%= product.variants[0]?.processor || 'High-Performance' %>
+                            </p>
+                            <p class="text-xs text-slate-500 font-medium">Next-gen architecture<br>Optimal Thermals</p>
+                        </div>
+                    </div>
+
+                    <!-- GPU -->
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-primary">grid_view</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Graphics</h4>
+                            <p id="spec-gpu" class="font-bold text-lg text-white mb-2 leading-tight">
+                                <%= product.variants[0]?.gpu || 'Integrated' %>
+                            </p>
+                            <p class="text-xs text-slate-500 font-medium">Advanced Rendering<br>Power Efficient</p>
+                        </div>
+                    </div>
+
+                    <!-- Display -->
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-primary">laptop_mac</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Display</h4>
+                            <p class="font-bold text-lg text-white mb-2 leading-tight">
+                                <%= product.specifications?.display || 'Standard Display' %>
+                            </p>
+                            <p class="text-xs text-slate-500 font-medium">High Resolution<br>Immersive View</p>
+                        </div>
+                    </div>
+
+                    <!-- Battery -->
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-primary">battery_charging_full</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Battery Life
+                            </h4>
+                            <p class="font-bold text-lg text-white mb-2 leading-tight">
+                                <%= product.specifications?.battery || 'Long-lasting' %>
+                            </p>
+                            <p class="text-xs text-slate-500 font-medium">Optimized Battery<br>Fast Charging Support</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Processor -->
-                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <span class="material-symbols-outlined text-primary">memory</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Processor</h4>
-                        <p id="spec-processor" class="font-bold text-lg text-white mb-2 leading-tight">
-                            <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-Performance' %>
-                        </p>
-                        <p class="text-xs text-slate-500 font-medium">Next-gen architecture<br>Optimal Thermals</p>
-                    </div>
-                </div>
+        </main>
 
-                <!-- GPU -->
-                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <span class="material-symbols-outlined text-primary">grid_view</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Graphics</h4>
-                        <p id="spec-gpu" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.gpu || 'Integrated' %></p>
-                        <p class="text-xs text-slate-500 font-medium">Advanced Rendering<br>Power Efficient</p>
-                    </div>
-                </div>
+        <%- include('../../partials/user/footer') %>
 
-                <!-- Display -->
-                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <span class="material-symbols-outlined text-primary">laptop_mac</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Display</h4>
-                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.display || 'Standard Display' %></p>
-                        <p class="text-xs text-slate-500 font-medium">High Resolution<br>Immersive View</p>
-                    </div>
-                </div>
+            <script>
+                const variants = <% - JSON.stringify(product.variants || []) %>;
+                let selectedFilters = {
+                    ram: variants[0]?.ram,
+                    size: variants[0]?.size,
+                    color: variants[0]?.color
+                };
+                let currentQty = 1;
 
-                <!-- Battery -->
-                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <span class="material-symbols-outlined text-primary">battery_charging_full</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Battery Life</h4>
-                        <p class="font-bold text-lg text-white mb-2 leading-tight"><%= product.specifications?.battery || 'Long-lasting' %></p>
-                        <p class="text-xs text-slate-500 font-medium">Optimized Battery<br>Fast Charging Support</p>
-                    </div>
-                </div>
+                function updateSelection(type, value) {
+                    selectedFilters[type] = value;
 
-                <!-- Storage -->
-                <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-primary/30 transition-all duration-500">
-                    <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <span class="material-symbols-outlined text-primary">storage</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Storage</h4>
-                        <p id="spec-storage" class="font-bold text-lg text-white mb-2 leading-tight"><%= product.variants[0]?.storage || 'Fast SSD' %></p>
-                        <p class="text-xs text-slate-500 font-medium">High Speed NVMe<br>Reliable Data</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+                    // Find the best matching variant
+                    const variant = variants.find(v =>
+                        (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
+                        (!selectedFilters.size || v.size === selectedFilters.size) &&
+                        (!selectedFilters.color || v.color === selectedFilters.color)
+                    ) || variants.find(v => v[type] === value); // Fallback if exact combo not found
 
-    <%- include('../../partials/user/footer') %>
+                    if (variant) {
+                        updateUI(variant);
+                    }
 
-    <script>
-        const variants = <%- JSON.stringify(product.variants || []) %>;
-        let selectedFilters = {
-            ram: variants[0]?.ram,
-            processor: variants[0]?.processor,
-            gpu: variants[0]?.gpu,
-            size: variants[0]?.size,
-            color: variants[0]?.color
-        };
-        let currentQty = 1;
-
-        function updateSelection(type, value) {
-            selectedFilters[type] = value;
-            
-            // Find the best matching variant
-            const variant = variants.find(v => 
-                (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
-                (!selectedFilters.processor || v.processor === selectedFilters.processor) &&
-                (!selectedFilters.gpu || v.gpu === selectedFilters.gpu) &&
-                (!selectedFilters.size || v.size === selectedFilters.size) &&
-                (!selectedFilters.color || v.color === selectedFilters.color)
-            ) || variants.find(v => v[type] === value); // Fallback if exact combo not found
-
-            if (variant) {
-                updateUI(variant);
-            }
-
-            // Update button styles
-            document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
-                if (btn.getAttribute('data-value') === value) {
-                    btn.classList.add('border-primary', 'bg-primary/10', 'text-white');
-                    btn.classList.remove('border-white/5', 'text-slate-500');
-                } else {
-                    btn.classList.remove('border-primary', 'bg-primary/10', 'text-white');
-                    btn.classList.add('border-white/5', 'text-slate-500');
+                    // Update button styles
+                    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
+                        if (btn.getAttribute('data-value') === value) {
+                            btn.classList.add('border-primary', 'bg-primary/10', 'text-white');
+                            btn.classList.remove('border-white/5', 'text-slate-500');
+                        } else {
+                            btn.classList.remove('border-primary', 'bg-primary/10', 'text-white');
+                            btn.classList.add('border-white/5', 'text-slate-500');
+                        }
+                    });
                 }
-            });
-        }
 
-        function updateUI(variant) {
-            // Price
-            document.getElementById('displayPrice').textContent = `$${variant.price}`;
-            
-            // Badges
-            const badgeGpu = document.getElementById('badge-gpu');
-            if (badgeGpu) badgeGpu.innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
-            
-            const badgeRam = document.getElementById('badge-ram');
-            if (badgeRam) badgeRam.innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
-            
-            const badgeStorage = document.getElementById('badge-storage');
-            if (badgeStorage) badgeStorage.innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
-            
-            // Spec Cards
-            const specProc = document.getElementById('spec-processor');
-            if (specProc) specProc.textContent = (variant.processorBrand ? variant.processorBrand + ' ' : '') + variant.processor;
-            
-            const specGpu = document.getElementById('spec-gpu');
-            if (specGpu) specGpu.textContent = variant.gpu;
+                function updateUI(variant) {
+                    // Price
+                    document.getElementById('displayPrice').textContent = `$${variant.price}`;
 
-            const specStorage = document.getElementById('spec-storage');
-            if (specStorage) specStorage.textContent = variant.storage;
+                    // Badges
+                    document.getElementById('badge-gpu').innerHTML = `<span class="material-symbols-outlined text-sm">grid_view</span> ${variant.gpu}`;
+                    document.getElementById('badge-ram').innerHTML = `<span class="material-symbols-outlined text-sm">memory</span> ${variant.ram}`;
+                    document.getElementById('badge-storage').innerHTML = `<span class="material-symbols-outlined text-sm">database</span> ${variant.storage}`;
 
-            // Gallery
-            if (variant.images && variant.images.length > 0) {
-                document.getElementById('mainImage').src = variant.images[0];
-                const thumbGrid = document.querySelector('.grid.grid-cols-4.gap-4');
-                thumbGrid.innerHTML = '';
-                variant.images.forEach((img, i) => {
-                    const div = document.createElement('div');
-                    div.className = `glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 ${i === 0 ? 'border-primary' : 'border-transparent'}`;
-                    div.onclick = () => changeImage(img, div);
-                    div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
-                    thumbGrid.appendChild(div);
-                });
-            }
-        }
+                    // Spec Cards
+                    document.getElementById('spec-processor').textContent = variant.processor;
+                    document.getElementById('spec-gpu').textContent = variant.gpu;
 
-        function updateQty(delta) {
-            currentQty = Math.max(1, currentQty + delta);
-            document.getElementById('quantity').textContent = currentQty;
-        }
+                    // Gallery
+                    if (variant.images && variant.images.length > 0) {
+                        document.getElementById('mainImage').src = variant.images[0];
+                        const thumbGrid = document.querySelector('.grid.grid-cols-4.gap-4');
+                        thumbGrid.innerHTML = '';
+                        variant.images.forEach((img, i) => {
+                            const div = document.createElement('div');
+                            div.className = `glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 ${i === 0 ? 'border-primary' : 'border-transparent'}`;
+                            div.onclick = () => changeImage(img, div);
+                            div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
+                            thumbGrid.appendChild(div);
+                        });
+                    }
+                }
 
-        function changeImage(src, thumb) {
-            document.getElementById('mainImage').src = src;
-            document.querySelectorAll('.thumbnails').forEach(t => {
-                t.classList.remove('border-primary');
-                t.classList.add('border-transparent');
-            });
-            thumb.classList.add('border-primary');
-            thumb.classList.remove('border-transparent');
-        }
-    </script>
+                function updateQty(delta) {
+                    currentQty = Math.max(1, currentQty + delta);
+                    document.getElementById('quantity').textContent = currentQty;
+                }
+
+                function changeImage(src, thumb) {
+                    document.getElementById('mainImage').src = src;
+                    document.querySelectorAll('.thumbnails').forEach(t => {
+                        t.classList.remove('border-primary');
+                        t.classList.add('border-transparent');
+                    });
+                    thumb.classList.add('border-primary');
+                    thumb.classList.remove('border-transparent');
+                }
+            </script>
 </body>
+
 </html>
