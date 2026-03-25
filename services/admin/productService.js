@@ -31,13 +31,18 @@ export const getProductById = async (id) => {
  * Create a new base product.
  */
 export const createProduct = async (productData) => {
-    const { name, description, category_id } = productData;
+    const { name, description, category_id, price } = productData;
 
     const newProduct = new Product({
         name,
         description,
         category_id,
-        variants: [] // Variants added later
+        variants: price ? [{
+            price: parseFloat(price),
+            sku: `SKU-${Date.now()}`,
+            images: [], // Images will be added in Manage Variants
+            stock: 0
+        }] : []
     });
 
     return await newProduct.save();
@@ -114,7 +119,7 @@ export const deleteVariant = async (productId, variantId) => {
  * Update an existing base product info.
  */
 export const updateProduct = async (id, productData) => {
-    const { name, description, category_id, material, highlights, display, battery, weight, os } = productData;
+    const { name, description, category_id, display, battery, price } = productData;
 
     const product = await Product.findById(id);
     if (!product) throw new Error("Product not found");
@@ -122,11 +127,19 @@ export const updateProduct = async (id, productData) => {
     product.name = name;
     product.description = description;
     product.category_id = category_id;
-    product.material = material;
-    if (highlights) {
-        product.highlights = Array.isArray(highlights) ? highlights : highlights.split(',').map(h => h.trim());
+    
+    // Update specifications
+    product.specifications = { 
+        display, 
+        battery,
+        weight: product.specifications?.weight,
+        os: product.specifications?.os
+    };
+
+    // Update primary variant price if it exists
+    if (price && product.variants.length > 0) {
+        product.variants[0].price = parseFloat(price);
     }
-    product.specifications = { display, battery, weight, os };
 
     return await product.save();
 };

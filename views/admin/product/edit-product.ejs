@@ -159,6 +159,17 @@
 
                                     <div class="grid grid-cols-2 gap-6">
                                         <div>
+                                            <label class="input-label">Price (USD)</label>
+                                            <div class="relative">
+                                                <span
+                                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                                <input type="number" id="productPrice" name="price" step="0.01"
+                                                    value="<%= product.variants && product.variants.length > 0 ? product.variants[0].price : '' %>"
+                                                    class="input-field pl-8" placeholder="2499">
+                                            </div>
+                                            <p id="priceError" class="text-rose-500 text-xs mt-1 hidden"></p>
+                                        </div>
+                                        <div>
                                             <label class="input-label">Category</label>
                                             <select id="productCategory" name="category_id"
                                                 class="input-field appearance-none cursor-pointer">
@@ -171,27 +182,13 @@
                                             </select>
                                             <p id="categoryError" class="text-rose-500 text-xs mt-1 hidden"></p>
                                         </div>
-                                        <div>
-                                            <label class="input-label">Material</label>
-                                            <input type="text" id="productMaterial" name="material" 
-                                                value="<%= product.material || '' %>"
-                                                class="input-field" placeholder="e.g. Aluminum / Carbon Fiber">
-                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label class="input-label">Key Highlights (Comma separated)</label>
-                                        <input type="text" id="productHighlights" name="highlights"
-                                            value="<%= product.highlights ? product.highlights.join(', ') : '' %>"
-                                            class="input-field" placeholder="e.g. 120Hz Display, Long Battery, RGB Keyboard">
-                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Tech Specs Card -->
                             <div class="form-card relative">
                                 <div class="flex items-center gap-3 mb-8">
-                                    <span class="material-symbols-outlined text-slate-400">specifications</span>
                                     <h3 class="text-lg font-bold">Base Specifications</h3>
                                 </div>
 
@@ -205,16 +202,6 @@
                                         <label class="input-label">Battery Rating</label>
                                         <input type="text" name="battery" value="<%= product.specifications?.battery || '' %>" 
                                             class="input-field" placeholder="e.g. 70Wh Lithium-Polymer">
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Operating System</label>
-                                        <input type="text" name="os" value="<%= product.specifications?.os || '' %>" 
-                                            class="input-field" placeholder="e.g. Windows 11 Home">
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Weight</label>
-                                        <input type="text" name="weight" value="<%= product.specifications?.weight || '' %>" 
-                                            class="input-field" placeholder="e.g. 1.6kg">
                                     </div>
                                 </div>
                             </div>

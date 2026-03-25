@@ -70,61 +70,6 @@ if (productForm) {
             isValid = false;
         }
 
-        // Validate Tech Specs
-        const size = document.getElementById('productSize').value.trim();
-        if(!size) {
-            document.getElementById('sizeError').textContent = 'Please enter a size.';
-            document.getElementById('sizeError').classList.remove('hidden');
-            document.getElementById('sizeError').classList.add('error-text');
-            isValid = false;
-        }
-
-        const ram = document.getElementById('productRam').value.trim();
-        if(!ram) {
-            document.getElementById('ramError').textContent = 'Please enter RAM details (or "N/A").';
-            document.getElementById('ramError').classList.remove('hidden');
-            document.getElementById('ramError').classList.add('error-text');
-            isValid = false;
-        }
-
-        const processor = document.getElementById('productProcessor').value.trim();
-        if(!processor) {
-            document.getElementById('processorError').textContent = 'Please enter Processor details (or "N/A").';
-            document.getElementById('processorError').classList.remove('hidden');
-            document.getElementById('processorError').classList.add('error-text');
-            isValid = false;
-        }
-
-        const storage = document.getElementById('productStorage').value.trim();
-        if(!storage) {
-            document.getElementById('storageError').textContent = 'Please enter storage details (or "N/A").';
-            document.getElementById('storageError').classList.remove('hidden');
-            document.getElementById('storageError').classList.add('error-text');
-            isValid = false;
-        }
-
-        const gpu = document.getElementById('productGpu').value.trim();
-        if(!gpu) {
-            document.getElementById('gpuError').textContent = 'Please enter GPU details (or "N/A").';
-            document.getElementById('gpuError').classList.remove('hidden');
-            document.getElementById('gpuError').classList.add('error-text');
-            isValid = false;
-        }
-
-        const totalImages = (typeof selectedFiles !== 'undefined' ? selectedFiles.length : 0) + (window.existingImageCount || 0);
-        
-        if (totalImages < 4) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Not enough images!',
-                text: 'Product must have at least 4 images in total.',
-                background: '#11151F',
-                color: '#fff',
-                confirmButtonColor: '#0055ff'
-            });
-            isValid = false;
-        }
-
         if(!isValid) {
             e.preventDefault();
         }
