@@ -286,9 +286,15 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script id="product-variants-data" type="application/json">
+        <%- JSON.stringify(product.variants) %>
+    </script>
+    <script id="last-variant-data" type="application/json">
+        <%- JSON.stringify(lastVariant || null) %>
+    </script>
     <script>
-        const productVariants = <%- JSON.stringify(product.variants) %>;
-        const lastVariant = <%- JSON.stringify(lastVariant || null) %>;
+        const productVariants = JSON.parse(document.getElementById('product-variants-data').textContent);
+        const lastVariant = JSON.parse(document.getElementById('last-variant-data').textContent);
         const productId = '<%= product._id %>';
     </script>
     <script src="/js/admin/product/manage-variants.js"></script>

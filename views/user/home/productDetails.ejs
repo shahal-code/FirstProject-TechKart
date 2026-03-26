@@ -61,6 +61,7 @@
             .img-zoom-container:hover #mainImage {
                 transform: none !important;
             }
+
             .img-zoom-container {
                 cursor: default;
             }
@@ -71,25 +72,45 @@
 <body class="min-h-screen">
     <%- include('../../partials/user/header') %>
 
-        <main class="container mx-auto px-6 py-20 mt-10 max-w-7xl">
+        <main class="container mx-auto px-6 py-10 mt-10 max-w-7xl">
+            <!-- Breadcrumbs -->
+            <nav
+                class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-8 overflow-x-auto whitespace-nowrap pb-2 scrollbar-none">
+                <a href="/" class="hover:text-primary transition-colors">Home</a>
+                <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                <a href="/user/shop" class="hover:text-primary transition-colors">Shop</a>
+                <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                <a href="/user/shop?category=<%= product.category_id._id %>"
+                    class="hover:text-primary transition-colors">
+                    <%= product.category_id.name %>
+                </a>
+                <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                <span class="text-white">
+                    <%= product.name %>
+                </span>
+            </nav>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
                 <!-- Left: Gallery -->
                 <div class="space-y-8">
-                    <div class="img-zoom-container glass-card aspect-[16/10] rounded-[32px] overflow-hidden relative shadow-2xl" id="mainImageContainer">
+                    <div class="img-zoom-container glass-card aspect-[16/10] rounded-[32px] overflow-hidden relative shadow-2xl"
+                        id="mainImageContainer">
                         <% if(product.variants && product.variants.length> 0 && product.variants[0].images &&
                             product.variants[0].images.length > 0) { %>
                             <img id="mainImage" src="<%= product.variants[0].images[0] %>"
                                 class="w-full h-full object-cover" />
                             <% } else if(product.images && product.images.length> 0) { %>
-                                <img id="mainImage" src="<%= product.images[0] %>"
-                                    class="w-full h-full object-cover" />
+                                <img id="mainImage" src="<%= product.images[0] %>" class="w-full h-full object-cover" />
                                 <% } %>
                     </div>
                     <div class="grid grid-cols-4 gap-4">
-                        <% let displayImages=(product.variants && product.variants.length> 0 &&
-                            product.variants[0].images)
-                            ? product.variants[0].images
-                            : (product.images || []);
+                        <% let displayImages=[]; if (product.variants && product.variants.length> 0 &&
+                            product.variants[0].images) {
+                            displayImages = product.variants[0].images;
+                            } else {
+                            displayImages = product.images || [];
+                            }
+
                             displayImages.forEach((img, index) => {
                             %>
                             <div class="glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 <%= index === 0 ? 'border-primary' : 'border-transparent' %>"
@@ -103,45 +124,79 @@
                 <div class="space-y-8">
                     <div class="space-y-4">
                         <div class="flex items-center gap-4">
-                            <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-primary/20">
+                            <span
+                                class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-primary/20">
                                 New Arrival
                             </span>
-                            <div class="flex items-center gap-1.5">
+                            <div class="flex items-center gap-2">
                                 <div class="flex text-amber-400">
                                     <span class="material-symbols-outlined text-sm FILL">star</span>
                                     <span class="material-symbols-outlined text-sm FILL">star</span>
                                     <span class="material-symbols-outlined text-sm FILL">star</span>
                                     <span class="material-symbols-outlined text-sm FILL">star</span>
-                                    <span class="material-symbols-outlined text-sm">star</span>
+                                    <span class="material-symbols-outlined text-sm FILL">star_half</span>
                                 </div>
-                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">(128 Reviews)</span>
+                                <span class="text-[11px] font-black text-white">4.9</span>
+                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">(128
+                                    Reviews)</span>
                             </div>
                         </div>
                         <h1 class="text-6xl font-black premium-heading tracking-tighter leading-[1.1] text-white">
                             <%= product.name %>
                         </h1>
-                        <div class="flex items-baseline gap-6">
-                            <span id="displayPrice" class="text-5xl font-bold text-[#3b82f6] tracking-tight">
-                                ₹<%= (product.variants && product.variants.length > 0) ? product.variants[0].price : '0' %>
-                            </span>
-                            <% if(product.variants && product.variants.length > 0 && product.variants[0].oldPrice) { %>
-                                <span class="text-2xl text-slate-600 line-through font-medium tracking-tight">
-                                    ₹<%= product.variants[0].oldPrice %>
+                        <div class="flex items-center gap-6">
+                            <div class="flex items-baseline gap-4">
+                                <span id="displayPrice" class="text-5xl font-bold text-white tracking-tight">
+                                    ₹<%= (product.variants && product.variants.length> 0) ? product.variants[0].price :
+                                        '0' %>
                                 </span>
-                            <% } %>
+                                <% if(product.variants && product.variants.length> 0 && product.variants[0].oldPrice) {
+                                    %>
+                                    <span id="displayOldPrice"
+                                        class="text-2xl text-slate-600 line-through font-medium tracking-tight">
+                                        ₹<%= product.variants[0].oldPrice %>
+                                    </span>
+                                    <% } %>
+                            </div>
+                            <div id="discount-badge"
+                                class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-lg border border-emerald-500/20">
+                                Save 15%
+                            </div>
+                        </div>
+
+                        <!-- Stock Info -->
+                        <div class="flex items-center gap-2 py-2">
+                            <div id="stock-dot"
+                                class="w-2 h-2 rounded-full <%= (product.variants[0]?.stock > 10) ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : (product.variants[0]?.stock > 0 ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]') %> animate-pulse">
+                            </div>
+                            <span id="stock-status"
+                                class="text-[10px] font-bold uppercase tracking-[0.2em] <%= (product.variants[0]?.stock > 10) ? 'text-emerald-500' : (product.variants[0]?.stock > 0 ? 'text-amber-500' : 'text-rose-500') %>">
+                                <%= (product.variants[0]?.stock> 10) ? 'In Stock' : (product.variants[0]?.stock > 0 ?
+                                    `Only ${product.variants[0].stock} Left` : 'Out of Stock') %>
+                            </span>
                         </div>
                         <div class="flex flex-wrap gap-2 pt-2">
-                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">developer_board</span>
-                                <span id="badge-gpu-meta"><%= product.variants[0]?.gpu || 'RTX 4090' %></span>
+                            <span
+                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <span
+                                    class="material-symbols-outlined text-[12px] text-[#3b82f6]">developer_board</span>
+                                <span id="badge-gpu-meta">
+                                    <%= product.variants[0]?.gpu || 'RTX 4090' %>
+                                </span>
                             </span>
-                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <span
+                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">memory</span>
-                                <span id="badge-ram-meta"><%= product.variants[0]?.ram || '64GB DDR5' %></span>
+                                <span id="badge-ram-meta">
+                                    <%= product.variants[0]?.ram || '64GB DDR5' %>
+                                </span>
                             </span>
-                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <span
+                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">storage</span>
-                                <span id="badge-storage-meta"><%= product.variants[0]?.storage || '2TB NVMe' %></span>
+                                <span id="badge-storage-meta">
+                                    <%= product.variants[0]?.storage || '2TB NVMe' %>
+                                </span>
                             </span>
                         </div>
                     </div>
@@ -154,91 +209,104 @@
                     <!-- Selectors Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 pt-4">
 
-                            <% 
-                            // Extract unique options from variants
-                            const rams = [...new Set(product.variants.map(v => v.ram))].filter(Boolean);
+                        <% 
+                            // Extract unique options from variants 
+                            const rams = [...new Set(product.variants.map(v=> v.ram))].filter(Boolean);
                             const processors = [...new Set(product.variants.map(v => v.processor))].filter(Boolean);
                             const storages = [...new Set(product.variants.map(v => v.storage))].filter(Boolean);
                             const sizes = [...new Set(product.variants.map(v => v.size))].filter(Boolean);
                             const colors = [...new Set(product.variants.map(v => v.color))].filter(Boolean);
                             %>
 
-                            <% if(rams.length > 0) { %>
+                            <% if(rams.length> 0) { %>
                                 <div class="space-y-3">
-                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select RAM</label>
+                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
+                                        RAM</label>
                                     <div class="flex flex-wrap gap-2">
-                                        <% rams.forEach(ram => { %>
+                                        <% rams.forEach(ram=> { %>
                                             <button onclick="updateSelection('ram', '<%= ram %>')"
                                                 class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                 data-type="ram" data-value="<%= ram %>">
                                                 <%= ram %>
                                             </button>
-                                        <% }) %>
+                                            <% }) %>
                                     </div>
                                 </div>
-                            <% } %>
+                                <% } %>
 
 
-                            <% if(storages.length > 0) { %>
-                                <div class="space-y-3">
-                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Storage (NVMe SSD)</label>
-                                    <div class="flex flex-wrap gap-2">
-                                        <% storages.forEach(storage => { %>
-                                            <button onclick="updateSelection('storage', '<%= storage %>')"
-                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.storage === storage ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
-                                                data-type="storage" data-value="<%= storage %>">
-                                                <%= storage %>
-                                            </button>
-                                        <% }) %>
-                                    </div>
-                                </div>
-                            <% } %>
+                                    <% if(storages.length> 0) { %>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Storage
+                                                (NVMe SSD)</label>
+                                            <div class="flex flex-wrap gap-2">
+                                                <% storages.forEach(storage=> { %>
+                                                    <button onclick="updateSelection('storage', '<%= storage %>')"
+                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.storage === storage ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                        data-type="storage" data-value="<%= storage %>">
+                                                        <%= storage %>
+                                                    </button>
+                                                    <% }) %>
+                                            </div>
+                                        </div>
+                                        <% } %>
 
-                            <% if(sizes.length > 0) { %>
-                                <div class="space-y-3">
-                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen Size</label>
-                                    <div class="flex flex-wrap gap-2">
-                                        <% sizes.forEach(size => { %>
-                                            <button onclick="updateSelection('size', '<%= size %>')"
-                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
-                                                data-type="size" data-value="<%= size %>">
-                                                <%= size %>
-                                            </button>
-                                        <% }) %>
-                                    </div>
-                                </div>
-                            <% } %>
-
-                            <% if(colors.length > 0) { %>
-                                <div class="space-y-3 col-span-1">
-                                    <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select Color</label>
-                                    <div class="flex flex-wrap gap-2">
-                                        <% colors.forEach(color => { %>
-                                            <button onclick="updateSelection('color', '<%= color %>')"
-                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
-                                                data-type="color" data-value="<%= color %>">
-                                                <%= color %>
-                                            </button>
-                                        <% }) %>
-                                    </div>
-                                </div>
-                            <% } %>
-
-                                                    <!-- Quantity -->
-                                                    <div class="space-y-3 col-span-1 md:col-span-2">
-                                                        <label class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
-                                                        <div class="flex items-center gap-4 bg-white/5 w-fit rounded-full px-4 py-1.5 border border-white/10 shrink-0">
-                                                            <button onclick="updateQty(-1)"
-                                                                class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
-                                                                <span class="material-symbols-outlined text-[14px]">remove</span>
+                                            <% if(sizes.length> 0) { %>
+                                                <div class="space-y-3">
+                                                    <label
+                                                        class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Screen
+                                                        Size</label>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        <% sizes.forEach(size=> { %>
+                                                            <button onclick="updateSelection('size', '<%= size %>')"
+                                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                                data-type="size" data-value="<%= size %>">
+                                                                <%= size %>
                                                             </button>
-                                                            <span id="quantity" class="w-4 text-center font-bold text-xs text-white">1</span>
-                                                            <button onclick="updateQty(1)"
-                                                                class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
-                                                                <span class="material-symbols-outlined text-[14px]">add</span>
-                                                            </button>
-                                                        </div>
+                                                            <% }) %>
                                                     </div>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if(colors.length> 0) { %>
+                                                        <div class="space-y-3 col-span-1">
+                                                            <label
+                                                                class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Select
+                                                                Color</label>
+                                                            <div class="flex flex-wrap gap-2">
+                                                                <% colors.forEach(color=> { %>
+                                                                    <button
+                                                                        onclick="updateSelection('color', '<%= color %>')"
+                                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                                        data-type="color" data-value="<%= color %>">
+                                                                        <%= color %>
+                                                                    </button>
+                                                                    <% }) %>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+
+                                                            <!-- Quantity -->
+                                                            <div class="space-y-3 col-span-1 md:col-span-2">
+                                                                <label
+                                                                    class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Quantity</label>
+                                                                <div
+                                                                    class="flex items-center gap-4 bg-white/5 w-fit rounded-full px-4 py-1.5 border border-white/10 shrink-0">
+                                                                    <button onclick="updateQty(-1)"
+                                                                        class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                                                                        <span
+                                                                            class="material-symbols-outlined text-[14px]">remove</span>
+                                                                    </button>
+                                                                    <span id="quantity"
+                                                                        class="w-4 text-center font-bold text-xs text-white">1</span>
+                                                                    <button onclick="updateQty(1)"
+                                                                        class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                                                                        <span
+                                                                            class="material-symbols-outlined text-[14px]">add</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                     </div>
 
                     <div class="space-y-4 pt-4 border-t border-white/5">
@@ -252,11 +320,13 @@
                         </button>
 
                         <div class="flex items-center justify-between px-2 pt-4">
-                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <div
+                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                                 <span class="material-symbols-outlined text-primary text-sm FILL">verified</span>
                                 Free Shipping
                             </div>
-                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <div
+                                class="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                                 <span class="material-symbols-outlined text-primary text-sm">shield</span>
                                 2-Year Warranty
                             </div>
@@ -274,21 +344,26 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Processor -->
-                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
                         <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">memory</span>
                         </div>
                         <div class="space-y-2">
                             <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Processor</h4>
                             <p id="spec-processor" class="font-bold text-lg text-white leading-tight">
-                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : '' %><%= product.variants[0]?.processor || 'High-Performance' %>
+                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : ''
+                                    %>
+                                    <%= product.variants[0]?.processor || 'High-Performance' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Next-gen architecture<br>Optimal Thermals</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Next-gen
+                                architecture<br>Optimal Thermals</p>
                         </div>
                     </div>
 
                     <!-- GPU -->
-                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
                         <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">developer_board</span>
                         </div>
@@ -297,12 +372,14 @@
                             <p id="spec-gpu" class="font-bold text-lg text-white leading-tight">
                                 <%= product.variants[0]?.gpu || 'Integrated' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Advanced Rendering<br>175W Max TGP</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Advanced Rendering<br>175W Max
+                                TGP</p>
                         </div>
                     </div>
 
                     <!-- Display -->
-                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
                         <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">laptop_mac</span>
                         </div>
@@ -311,21 +388,25 @@
                             <p class="font-bold text-lg text-white leading-tight">
                                 <%= product.specifications?.display || '16" 4K Mini-LED' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium leading-relaxed">100% DCI-P3 Color<br>240Hz Refresh Rate</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">100% DCI-P3 Color<br>240Hz
+                                Refresh Rate</p>
                         </div>
                     </div>
 
                     <!-- Battery -->
-                    <div class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
+                    <div
+                        class="glass-card p-8 rounded-[32px] space-y-6 group hover:border-[#3b82f6]/30 transition-all duration-500 border border-white/5">
                         <div class="w-14 h-14 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">battery_charging_full</span>
+                            <span
+                                class="material-symbols-outlined text-[#3b82f6] text-2xl FILL">battery_charging_full</span>
                         </div>
                         <div class="space-y-2">
                             <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Battery Life</h4>
                             <p class="font-bold text-lg text-white leading-tight">
                                 <%= product.specifications?.battery || '99.9Wh Density' %>
                             </p>
-                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Up to 12 Hours Use<br>330W GaN Fast Charger</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">Up to 12 Hours Use<br>330W GaN
+                                Fast Charger</p>
                         </div>
                     </div>
                 </div>
@@ -352,12 +433,14 @@
                                     <span class="material-symbols-outlined text-sm FILL">star</span>
                                     <span class="material-symbols-outlined text-sm FILL">star_half</span>
                                 </div>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Based on 128 global ratings</p>
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Based on 128
+                                    global ratings</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <button class="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all">
+
+                    <button
+                        class="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all">
                         Write a Review
                     </button>
                 </div>
@@ -367,7 +450,9 @@
                     <div class="glass-card p-8 rounded-[32px] space-y-6 border border-white/5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">MC</div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                    MC</div>
                                 <div>
                                     <h4 class="text-sm font-bold text-white">Marcus Chen</h4>
                                     <div class="flex text-amber-400">
@@ -379,13 +464,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
+                            <span
+                                class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[10px]">verified</span>
                                 Verified
                             </span>
                         </div>
                         <p class="text-sm text-slate-400 leading-relaxed font-medium italic">
-                            "The build quality is insane. It's easily the most powerful laptop I've ever owned. The 4K screen is a dream for video editing."
+                            "The build quality is insane. It's easily the most powerful laptop I've ever owned. The 4K
+                            screen is a dream for video editing."
                         </p>
                     </div>
 
@@ -393,7 +480,9 @@
                     <div class="glass-card p-8 rounded-[32px] space-y-6 border border-white/5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">SJ</div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                    SJ</div>
                                 <div>
                                     <h4 class="text-sm font-bold text-white">Sarah Jenkins</h4>
                                     <div class="flex text-amber-400">
@@ -405,13 +494,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
+                            <span
+                                class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[10px]">verified</span>
                                 Verified
                             </span>
                         </div>
                         <p class="text-sm text-slate-400 leading-relaxed font-medium italic">
-                            "Absolute beast for gaming. I'm getting steady high FPS on everything at max settings. Worth every single penny."
+                            "Absolute beast for gaming. I'm getting steady high FPS on everything at max settings. Worth
+                            every single penny."
                         </p>
                     </div>
 
@@ -419,7 +510,9 @@
                     <div class="glass-card p-8 rounded-[32px] space-y-6 border border-white/5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">DR</div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                    DR</div>
                                 <div>
                                     <h4 class="text-sm font-bold text-white">David Rodriguez</h4>
                                     <div class="flex text-amber-400">
@@ -431,13 +524,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
+                            <span
+                                class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[10px]">verified</span>
                                 Verified
                             </span>
                         </div>
                         <p class="text-sm text-slate-400 leading-relaxed font-medium italic">
-                            "The thermal management is surprising. It stays much cooler than my previous high-end rigs even during heavy rendering."
+                            "The thermal management is surprising. It stays much cooler than my previous high-end rigs
+                            even during heavy rendering."
                         </p>
                     </div>
                 </div>
@@ -446,120 +541,10 @@
 
         <%- include('../../partials/user/footer') %>
 
-            <script>
-                const variants = <%- JSON.stringify(product.variants || []) %>;
-                let selectedFilters = {
-                    ram: variants[0]?.ram,
-                    storage: variants[0]?.storage,
-                    size: variants[0]?.size,
-                    color: variants[0]?.color
-                };
-                let currentQty = 1;
-
-                function updateSelection(type, value) {
-                    selectedFilters[type] = value;
-
-                    // Find the best matching variant
-                    const variant = variants.find(v =>
-                        (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
-                        (!selectedFilters.storage || v.storage === selectedFilters.storage) &&
-                        (!selectedFilters.size || v.size === selectedFilters.size) &&
-                        (!selectedFilters.color || v.color === selectedFilters.color)
-                    ) || variants.find(v => v[type] === value); // Fallback if exact combo not found
-
-                    if (variant) {
-                        updateUI(variant);
-                    }
-
-                    // Update button styles
-                    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
-                        if (btn.getAttribute('data-value') === value) {
-                            btn.classList.add('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
-                            btn.classList.remove('border-white/10', 'text-slate-500');
-                        } else {
-                            btn.classList.remove('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
-                            btn.classList.add('border-white/10', 'text-slate-500');
-                        }
-                    });
-                }
-
-                function updateUI(variant) {
-                    // Price
-                    const priceEl = document.getElementById('displayPrice');
-                    if (priceEl) priceEl.textContent = `₹${variant.price}`;
-
-                    // Meta Badges (below price)
-                    const gpuMeta = document.getElementById('badge-gpu-meta');
-                    const ramMeta = document.getElementById('badge-ram-meta');
-                    const storageMeta = document.getElementById('badge-storage-meta');
-                    
-                    if (gpuMeta) gpuMeta.textContent = variant.gpu;
-                    if (ramMeta) ramMeta.textContent = variant.ram;
-                    if (storageMeta) storageMeta.textContent = variant.storage;
-
-                    // Spec Cards
-                    const specProc = document.getElementById('spec-processor');
-                    const specGpu = document.getElementById('spec-gpu');
-                    if (specProc) specProc.textContent = variant.processor;
-                    if (specGpu) specGpu.textContent = variant.gpu;
-
-                    // Gallery
-                    if (variant.images && variant.images.length > 0) {
-                        const mainImg = document.getElementById('mainImage');
-                        if (mainImg) mainImg.src = variant.images[0];
-                        
-                        const thumbGrid = document.querySelector('.grid.grid-cols-4.gap-4');
-                        if (thumbGrid) {
-                            thumbGrid.innerHTML = '';
-                            variant.images.forEach((img, i) => {
-                                const div = document.createElement('div');
-                                div.className = `glass-card aspect-square rounded-2xl overflow-hidden cursor-pointer hover:border-primary transition-all duration-300 thumbnails border-2 ${i === 0 ? 'border-primary' : 'border-transparent'}`;
-                                div.onclick = () => changeImage(img, div);
-                                div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
-                                thumbGrid.appendChild(div);
-                            });
-                        }
-                    }
-                }
-
-                function updateQty(delta) {
-                    currentQty = Math.max(1, currentQty + delta);
-                    document.getElementById('quantity').textContent = currentQty;
-                }
-
-                function changeImage(src, thumb) {
-                    document.getElementById('mainImage').src = src;
-                    document.querySelectorAll('.thumbnails').forEach(t => {
-                        t.classList.remove('border-primary');
-                        t.classList.add('border-transparent');
-                    });
-                    thumb.classList.add('border-primary');
-                    thumb.classList.remove('border-transparent');
-                }
-
-                // Modern Image Zoom Logic
-                function setupZoom() {
-                    const container = document.getElementById('mainImageContainer');
-                    const img = document.getElementById('mainImage');
-
-                    if (!container || !img) return;
-
-                    container.addEventListener('mousemove', (e) => {
-                        const { left, top, width, height } = container.getBoundingClientRect();
-                        const x = ((e.pageX - left - window.pageXOffset) / width) * 100;
-                        const y = ((e.pageY - top - window.pageYOffset) / height) * 100;
-
-                        img.style.transformOrigin = `${x}% ${y}%`;
-                    });
-
-                    container.addEventListener('mouseleave', () => {
-                        img.style.transformOrigin = 'center center';
-                    });
-                }
-
-                // Initialize after window loads
-                window.addEventListener('load', setupZoom);
+            <script id="product-variants-json" type="application/json">
+                <%- JSON.stringify(product.variants || []) %>
             </script>
+            <script src="/js/user/productDetails.js"></script>
 </body>
 
 </html>
