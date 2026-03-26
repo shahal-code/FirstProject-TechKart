@@ -25,21 +25,11 @@
         }
     </script>
     <style type="text/tailwindcss">
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            @apply bg-background-dark text-white;
-        }
         .glass-morphism {
             background: rgba(23, 33, 54, 0.6);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .sidebar-item-active {
-            @apply bg-primary/10 text-primary border-r-2 border-primary shadow-[inset_0_0_20px_rgba(0,85,255,0.1)];
-        }
-        .stat-card {
-            @apply glass-morphism rounded-xl p-6 relative overflow-hidden;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
@@ -51,16 +41,10 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
-        .input-field {
-            @apply bg-[#151923] border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-slate-600;
-        }
-        .filter-select {
-            @apply bg-transparent text-sm text-slate-300 font-medium py-2 pr-8 focus:outline-none focus:ring-0 border-none appearance-none cursor-pointer;
-        }
     </style>
 </head>
 
-<body class="flex min-h-screen bg-[#0D0D0D]">
+<body class="flex min-h-screen bg-[#0D0D0D] font-display text-white">
     <%- include('../../partials/admin/sidebar') %>
 
     <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
@@ -83,7 +67,7 @@
             <!-- Stats grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Stat 1 -->
-                <div class="stat-card">
+                <div class="glass-morphism rounded-xl p-6 relative overflow-hidden">
                     <div class="flex justify-between items-start mb-6">
                         <p class="text-xs font-bold text-slate-400">Total Products</p>
                         <span class="material-symbols-outlined text-primary text-xl">inventory_2</span>
@@ -151,6 +135,15 @@
                                         </a>
                                         <button onclick="window.location.href='/admin/product/edit/<%= p._id %>'" class="text-slate-400 hover:text-white transition-colors">
                                             <span class="material-symbols-outlined text-lg">edit</span>
+                                        </button>
+                                        <button 
+                                            class="toggle-block-btn <%= p.is_blocked ? 'text-emerald-500 hover:text-emerald-400' : 'text-amber-500 hover:text-amber-400' %> transition-colors"
+                                            data-id="<%= p._id %>"
+                                            data-name="<%= p.name %>"
+                                            data-blocked="<%= p.is_blocked %>">
+                                            <span class="material-symbols-outlined text-lg pointer-events-none">
+                                                <%= p.is_blocked ? 'lock_open' : 'lock' %>
+                                            </span>
                                         </button>
                                         <button onclick="confirmDelete('<%= p._id %>')" class="text-rose-500 hover:text-rose-400 transition-colors">
                                             <span class="material-symbols-outlined text-lg">delete</span>

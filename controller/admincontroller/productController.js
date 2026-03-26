@@ -160,3 +160,15 @@ export const deleteProduct = async (req, res) => {
         });
     }
 };
+
+// Toggle Product Block Status
+export const toggleBlockProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await ProductService.toggleBlockProduct(id);
+        res.redirect("/admin/product");
+    } catch (error) {
+        console.error("Error toggling product status:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
