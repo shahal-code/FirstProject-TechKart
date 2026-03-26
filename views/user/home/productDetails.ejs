@@ -122,11 +122,11 @@
                         </h1>
                         <div class="flex items-baseline gap-6">
                             <span id="displayPrice" class="text-5xl font-bold text-[#3b82f6] tracking-tight">
-                                $<%= (product.variants && product.variants.length > 0) ? product.variants[0].price : '0' %>
+                                ₹<%= (product.variants && product.variants.length > 0) ? product.variants[0].price : '0' %>
                             </span>
                             <% if(product.variants && product.variants.length > 0 && product.variants[0].oldPrice) { %>
                                 <span class="text-2xl text-slate-600 line-through font-medium tracking-tight">
-                                    $<%= product.variants[0].oldPrice %>
+                                    ₹<%= product.variants[0].oldPrice %>
                                 </span>
                             <% } %>
                         </div>
@@ -486,7 +486,7 @@
                 function updateUI(variant) {
                     // Price
                     const priceEl = document.getElementById('displayPrice');
-                    if (priceEl) priceEl.textContent = `$${variant.price}`;
+                    if (priceEl) priceEl.textContent = `₹${variant.price}`;
 
                     // Meta Badges (below price)
                     const gpuMeta = document.getElementById('badge-gpu-meta');

@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (priceSlider && priceValue) {
         priceSlider.addEventListener('input', (e) => {
-            priceValue.textContent = `$${e.target.value}`;
+            priceValue.textContent = `₹${e.target.value}`;
         });
 
         priceSlider.addEventListener('change', () => {
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         radio.addEventListener('change', () => {
             if (radio.checked && priceSlider) {
                 priceSlider.value = 5000;
-                priceValue.textContent = '$5000';
+                priceValue.textContent = '₹5000';
             }
         });
     });

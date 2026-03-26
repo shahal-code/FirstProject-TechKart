@@ -301,7 +301,7 @@
                                                     <%=query.price==='under1000' ? 'checked' : '' %> />
                                                 <span
                                                     class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Under
-                                                    $1,000</span>
+                                                    ₹1,000</span>
                                             </label>
                                             <label class="flex items-center gap-3 group cursor-pointer">
                                                 <input
@@ -309,8 +309,8 @@
                                                     name="price" type="radio" value="1000-2000"
                                                     <%=query.price==='1000-2000' ? 'checked' : '' %> />
                                                 <span
-                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">$1,000
-                                                    - $2,000</span>
+                                                    class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">₹1,000
+                                                    - ₹2,000</span>
                                             </label>
                                             <label class="flex items-center gap-3 group cursor-pointer">
                                                 <input
@@ -319,14 +319,14 @@
                                                     <%=query.price==='over2000' ? 'checked' : '' %> />
                                                 <span
                                                     class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Over
-                                                    $2,000</span>
+                                                    ₹2,000</span>
                                             </label>
                                         </div>
                                         <div class="mt-8">
                                             <div
                                                 class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 flex justify-between items-center">
                                                 Custom Range
-                                                <span id="priceRangeValue" class="text-primary font-black tracking-normal">$<%= query.maxPrice || '5000' %></span>
+                                                <span id="priceRangeValue" class="text-primary font-black tracking-normal">₹<%= query.maxPrice || '5000' %></span>
                                             </div>
                                             <input
                                                 id="priceRangeSlider"
@@ -334,8 +334,8 @@
                                                 max="5000" min="0" type="range" 
                                                 value="<%= query.maxPrice || '5000' %>" />
                                             <div class="flex justify-between mt-2">
-                                                <span class="text-[10px] text-gray-500 font-bold">$0</span>
-                                                <span class="text-[10px] text-gray-500 font-bold">$5k+</span>
+                                                <span class="text-[10px] text-gray-500 font-bold">₹0</span>
+                                                <span class="text-[10px] text-gray-500 font-bold">₹5k+</span>
                                             </div>
                                         </div>
                                     </div>
@@ -434,7 +434,7 @@
                                                                                                                         <% if (query.maxPrice && !query.price) { %>
                                                                 <div
                                                                     class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
-                                                                    MAX PRICE: $<%= query.maxPrice %>
+                                                                    MAX PRICE: ₹<%= query.maxPrice %>
                                                                         <a href="/user/shop?<%= new URLSearchParams({...query, maxPrice: '', page: 1}).toString() %>"
                                                                             class="material-symbols-outlined text-xs cursor-pointer hover:text-white transition-colors">close</a>
                                                                 </div>
@@ -507,7 +507,7 @@
                                                                 <%= product.name %>
                                                             </h3>
                                                         </a>
-                                                        <span class="text-primary font-bold text-2xl">$<%=
+                                                        <span class="text-primary font-bold text-2xl">₹<%=
                                                                 product.variants[0]?.price || '0' %></span>
                                                     </div>
                                                     <p class="text-gray-400 text-sm mb-8 leading-relaxed">
