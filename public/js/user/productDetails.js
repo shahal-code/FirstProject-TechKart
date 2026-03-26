@@ -150,8 +150,7 @@ function setupZoom() {
 window.addEventListener('load', setupZoom);
 
 // Add to Cart Logic
-async function addToCart(productId) {
-    // Determine the selected variant
+async function handleAddToCart(productId) {
     const variant = variants.find(v =>
         (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
         (!selectedFilters.storage || v.storage === selectedFilters.storage) &&
@@ -160,31 +159,20 @@ async function addToCart(productId) {
     ) || variants[0];
 
     if (!variant) {
-        alert("Please select product options before adding to cart.");
+        Swal.fire({
+            icon: 'info',
+            title: 'Selection Required',
+            text: 'Please select product options before adding to cart.',
+            background: '#0D0D0D',
+            color: '#fff'
+        });
         return;
     }
-
-    try {
-        const response = await fetch('/user/cart/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                productId: productId,
-                variantId: variant._id,
-                quantity: currentQty
-            })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-            // Success feedback
-            alert("Item added to cart successfully!");
-        } else {
-            alert(result.message || "Failed to add to cart");
-        }
-    } catch (error) {
-        console.error("Cart Error:", error);
-        alert("An error occurred. Please try again.");
+    
+    // Call the global function from cartUtils.js
+    if (typeof addToCart === 'function') {
+        await addToCart(productId, variant._id, currentQty);
+    } else {
+        console.error("Global addToCart function not found!");
     }
 }

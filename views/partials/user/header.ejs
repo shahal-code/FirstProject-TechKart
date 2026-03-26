@@ -1,3 +1,6 @@
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <header id="mainHeader"
     class="fixed top-0 z-50 w-full border-b border-white/0 bg-transparent px-4 md:px-10 py-4 transition-all duration-300">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4 md:gap-8">
@@ -36,10 +39,15 @@
                         href="/user/about">ABOUT US</a>
             </nav>
             <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300">
+                <a href="/user/cart"
+                    class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 relative group">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
-                </button>
+                    <% if (locals.cartCount > 0) { %>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 size-4 bg-primary text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D]">
+                            <%= locals.cartCount %>
+                        </span>
+                    <% } %>
+                </a>
                 <% if (locals.user) { %>
                     <a href="/user/profile"
                         class="flex items-center justify-center gap-2 rounded-full h-10 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-[0.15em] hover:shadow-[0_0_25px_-5px_#0055FF] hover:scale-105 transition-all duration-300">
@@ -103,6 +111,11 @@
                 <span class="material-symbols-outlined text-xl">info</span>
                 ABOUT US
             </a>
+            <a href="/user/cart"
+                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                CART
+            </a>
         </div>
 
         <div class="mt-auto pt-6 border-t border-white/10">
@@ -125,4 +138,5 @@
     </div>
 </div>
 
+<script src="/js/utils/cartUtils.js"></script>
 <script src="/js/partials/header.js"></script>

@@ -7,6 +7,7 @@ import passport from "passport";
 import './config/passport.js';
 import session from "express-session";
 import User from "./models/userModel.js";
+import Cart from "./models/cartModel.js";
 import * as ErrorHandler from "./middleware/errorHandler.js";
 
 const app = express();
@@ -37,12 +38,25 @@ app.use(passport.session());
 
 app.use(async (req, res, next) => {
   try {
-    res.locals.user = req.session.user ? await User.findById(req.session.user) : null;
+    const userId = req.session.user;
+    let user = null;
+    let cartCount = 0;
+
+    if (userId) {
+      user = await User.findById(userId);
+      const cart = await Cart.findOne({ userId });
+      if (cart && cart.items) {
+        cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
+      }
+    }
+
+    res.locals.user = user;
+    res.locals.cartCount = cartCount;
     res.locals.loginMethod = req.session.loginMethod || null;
     res.locals.path = req.path;
     next();
   } catch (error) {
-    console.error("MiddleWare Error", error);
+    console.error("Middleware Error", error);
     next();
   }
 });

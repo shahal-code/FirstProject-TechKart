@@ -40,6 +40,14 @@ export const getCartView = async (req, res) => {
 export const addItem = async (req, res) => {
     try {
         const userId = req.session.user;
+        if (!userId) {
+            return res.status(401).json({ 
+                success: false, 
+                message: "Please login to add items to cart",
+                redirect: "/user/login"
+            });
+        }
+        
         const { productId, variantId, quantity } = req.body;
         
         const cart = await cartService.addToCart(userId, productId, variantId, Number(quantity));

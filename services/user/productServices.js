@@ -123,7 +123,15 @@ const getShopData = async (queryParams) => {
     };
 };
 
+async function getFeaturedProducts(limit = 3) {
+    return await Product.find({ is_blocked: { $ne: true } })
+        .populate('category_id')
+        .sort({ createdAt: -1 })
+        .limit(limit);
+}
+
 export {
     getShopData,
-    getProductDetails
+    getProductDetails,
+    getFeaturedProducts
 };

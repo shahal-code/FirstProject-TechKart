@@ -219,80 +219,34 @@
                         <a class="text-primary font-bold text-xs uppercase tracking-[0.2em] border-b-2 border-primary pb-1"
                             href="#">See All</a>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        <div
-                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
-                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
-                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBI0rs7bU8uqm4YT7t2w-6RTUHEn-Q7RHT5mqs_y_H2Q7FyxIDJsYHWkzdfYyTyrGMZiBo7EG9yOHxqdXoiHBZObyeqIq8LyCrhnKuHtPW3mdafOpp4-YBaCOTJcctAoioU-DqeD8PTZoc2oPS9ZavZfQLAmO4mG22hXCTMMsut2dmJuBgW33vMxolPjGSbm_wvpjRxMGRpzKi9zbZ0iahS8MpnXNeDypssuEqMwEWvUqNcbUvfFDUQ0X4PrddwyQdHesElS0RhioIW");'>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                            <% products.forEach(product => { %>
+                            <div class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                <a href="/user/product/<%= product._id %>" class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
+                                    <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
+                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
+                                </a>
+                                <div class="p-8">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <a href="/user/product/<%= product._id %>">
+                                            <h3 class="text-white text-2xl font-black premium-heading uppercase hover:text-primary transition-colors">
+                                                <%= product.name %>
+                                            </h3>
+                                        </a>
+                                        <span class="text-primary font-bold text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
+                                        <%= product.description %>
+                                    </p>
+                                    <button onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
+                                        class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                        <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                        Add to Cart
+                                    </button>
                                 </div>
-                                <div
-                                    class="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    Limited Edition</div>
                             </div>
-                            <div class="p-8">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-white text-2xl font-black premium-heading">STITCH PRO 15</h3>
-                                    <span class="text-primary font-bold text-2xl">₹999</span>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">M2 Chip • 16GB Unified Memory •
-                                    512GB SSD • Super Retina XDR</p>
-                                <button
-                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-                                    Add to Cart
-                                </button>
-                            </div>
+                            <% }) %>
                         </div>
-                        <div
-                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
-                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
-                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpBxnKUHAfu5PhzmdT4GARfKXc9okGBVokED6s67nOEWPHyJ-rQA-2ydnw9odlBfColM5VvVIVvpK4Glnn2L6oxvE8iV6GCX51vPOM5hfiN1WGoijEW10r46jgnmRq6yMKC1LBDXWGdLljTXhms3AzsIxfVv2mH39hqR3iexaMjqg9iWsEUOo_D2JBPKtZRt2hcRKM5bWFQMQ86lJ7KQk-hH44WGJo_vM7oQX5-nkFigJZKwgLL7_h6Ld7Wg8NvDtJHc1NlDfmKz3Z");'>
-                                </div>
-                                <div
-                                    class="absolute top-6 left-6 bg-emerald-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    New Arrival</div>
-                            </div>
-                            <div class="p-8">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-white text-2xl font-black premium-heading">ZENITH ULTRA</h3>
-                                    <span class="text-primary font-bold text-2xl">₹1,249</span>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">OLED 4K Infinity • Core i9 Ultra •
-                                    32GB RAM • Pro Carbon Finish</p>
-                                <button
-                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                        <div
-                            class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
-                            <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden">
-                                <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFOy6Cpvns5F9Q30z9tPB12e5pAjPfVGvbwbpaE9Q39r_LQPWHmSYFotZjGmXLnHDeAZ2K61m87UPZ1Dx4kGPAh3_0HvF2iCjtgWs1R987k_YCDXteMLnFb_mf5mhjrm6NQv0uXzq25oSlpePSfyag0yt84NdAfcb86Cc5l5TGA1o9gXC7I0URtquHYzGaEjiZ3ICnqiHePKSXyArxhAVUK8KyUm0COrEQWqJHm2q_78J7or7e_6k45C1oyV-LcId_JLYaUu1_PLJG");'>
-                                </div>
-                                <div
-                                    class="absolute top-6 left-6 bg-amber-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    Hot Seller</div>
-                            </div>
-                            <div class="p-8">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-white text-2xl font-black premium-heading">FLOW AIR</h3>
-                                    <span class="text-primary font-bold text-2xl">₹799</span>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-8 leading-relaxed">Feather-light Design • 18hr Pro
-                                    Battery • Liquid Cooling Tech</p>
-                                <button
-                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </main>
             <%- include('../../partials/user/footer') %>

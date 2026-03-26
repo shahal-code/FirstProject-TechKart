@@ -4,9 +4,14 @@ import * as ProductService from "../../services/user/productServices.js";
 
 export const LandingOrHome_load = async (req, res) => {
     try {
-        res.render("user/home/home", { path: "/" });
+        const featuredProducts = await ProductService.getFeaturedProducts(3);
+        res.render("user/home/home", { 
+            path: "/",
+            products: featuredProducts,
+            user: req.session.user || null
+        });
     } catch (error) {
-        console.log(error.message);
+        console.log("Error loading home page:", error.message);
         res.status(500).send("Internal Server Error");
     }
 };
