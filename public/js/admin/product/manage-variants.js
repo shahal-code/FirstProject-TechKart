@@ -1,4 +1,7 @@
 let removedImages = [];
+let selectedFiles = [];
+let currentFilesToProcess = [];
+let cropper = null;
 
 const processorModels = {
     'Intel': ['Core i3', 'Core i5', 'Core i7', 'Core i9'],
@@ -166,7 +169,9 @@ function processNextFile() {
 }
 
 function closeCropper() {
-    document.getElementById('cropperModal').classList.add('hidden');
+    const modal = document.getElementById('cropperModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     if (cropper) cropper.destroy();
     if (currentFilesToProcess.length > 0) processNextFile();
 }
@@ -174,6 +179,7 @@ function closeCropper() {
 function cropImage() {
     if (!cropper) return;
     const canvas = cropper.getCroppedCanvas({ width: 800, height: 800 });
+    if (!canvas) return;
     canvas.toBlob((blob) => {
         const file = new File([blob], `variant-${Date.now()}.jpg`, { type: 'image/jpeg' });
         selectedFiles.push(file);
