@@ -27,10 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 3. Get Selected Price
         const checkedPrice = document.querySelector('input[name="price"]:checked');
+        const priceSlider = document.getElementById('priceRangeSlider');
+
         if (checkedPrice) {
             searchParams.set('price', checkedPrice.value);
+            searchParams.delete('maxPrice');
+        } else if (priceSlider && priceSlider.value !== '5000') {
+            searchParams.set('maxPrice', priceSlider.value);
+            searchParams.delete('price');
         } else {
             searchParams.delete('price');
+            searchParams.delete('maxPrice');
         }
 
         // 4. In-Page Search
@@ -84,6 +91,35 @@ document.addEventListener('DOMContentLoaded', function () {
         if (input.name !== 'search') { 
             input.addEventListener('change', window.updateFilters);
         }
+    });
+
+    // Price Range Slider Logic
+    const priceSlider = document.getElementById('priceRangeSlider');
+    const priceValue = document.getElementById('priceRangeValue');
+
+    if (priceSlider && priceValue) {
+        priceSlider.addEventListener('input', (e) => {
+            priceValue.textContent = `$${e.target.value}`;
+        });
+
+        priceSlider.addEventListener('change', () => {
+            // Deselect radio buttons if slider is moved
+            const checkedPrice = document.querySelector('input[name="price"]:checked');
+            if (checkedPrice) {
+                checkedPrice.checked = false;
+            }
+            window.updateFilters();
+        });
+    }
+
+    // Radio buttons reset slider when clicked
+    document.querySelectorAll('input[name="price"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.checked && priceSlider) {
+                priceSlider.value = 5000;
+                priceValue.textContent = '$5000';
+            }
+        });
     });
 
     // Custom Sort Dropdown Logic

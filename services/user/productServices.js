@@ -95,6 +95,11 @@ const getShopData = async (queryParams) => {
         } else if (queryParams.price === "over2000") {
             query["variants.price"] = { $gt: 2000 };
         }
+    } else if (queryParams.maxPrice) {
+        const max = parseInt(queryParams.maxPrice);
+        if (!isNaN(max)) {
+            query["variants.price"] = { $lte: max };
+        }
     }
 
     // 3. Fetch Data with Pagination

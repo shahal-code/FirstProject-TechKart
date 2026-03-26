@@ -324,11 +324,15 @@
                                         </div>
                                         <div class="mt-8">
                                             <div
-                                                class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3">
-                                                Custom Range</div>
+                                                class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 flex justify-between items-center">
+                                                Custom Range
+                                                <span id="priceRangeValue" class="text-primary font-black tracking-normal">$<%= query.maxPrice || '5000' %></span>
+                                            </div>
                                             <input
+                                                id="priceRangeSlider"
                                                 class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
-                                                max="5000" min="0" type="range" />
+                                                max="5000" min="0" type="range" 
+                                                value="<%= query.maxPrice || '5000' %>" />
                                             <div class="flex justify-between mt-2">
                                                 <span class="text-[10px] text-gray-500 font-bold">$0</span>
                                                 <span class="text-[10px] text-gray-500 font-bold">$5k+</span>
@@ -368,7 +372,7 @@
 
                                         <div class="flex items-center gap-4">
                                             <% if (query.search || query.category || query.processor || query.ram ||
-                                                query.price) { %>
+                                                query.price || query.maxPrice) { %>
                                                 <span
                                                     class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">Active
                                                     Filters:</span>
@@ -427,7 +431,15 @@
                                                                                                                 <% } %>
                                                                                                                     <% })
                                                                                                                         %>
-                                                                                                                        <a href="/user/shop"
+                                                                                                                        <% if (query.maxPrice && !query.price) { %>
+                                                                <div
+                                                                    class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] font-bold text-primary uppercase flex items-center gap-2">
+                                                                    MAX PRICE: $<%= query.maxPrice %>
+                                                                        <a href="/user/shop?<%= new URLSearchParams({...query, maxPrice: '', page: 1}).toString() %>"
+                                                                            class="material-symbols-outlined text-xs cursor-pointer hover:text-white transition-colors">close</a>
+                                                                </div>
+                                                            <% } %>
+                                                            <a href="/user/shop"
                                                                                                                             class="text-[10px] font-bold text-gray-500 hover:text-white uppercase tracking-widest ml-2 underline decoration-primary/40 underline-offset-4">Clear
                                                                                                                             All</a>
                                                 </div>
