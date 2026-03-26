@@ -1,3 +1,7 @@
+<% 
+    const activeClasses = "bg-primary/10 text-primary border-r-2 border-primary shadow-[inset_0_0_20px_rgba(0,85,255,0.1)]";
+    const inactiveClasses = "text-slate-400 hover:text-white hover:bg-white/5";
+%>
 <aside id="adminSidebar"
     class="fixed inset-y-0 left-0 lg:static lg:block w-64 border-r border-white/5 flex flex-col glass-morphism z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
     <div class="p-8 flex items-center justify-between gap-3">
@@ -10,42 +14,42 @@
         </button>
     </div>
     <nav class="flex-1 px-4 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'dashboard' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'dashboard' ? activeClasses : inactiveClasses %> transition-all group"
             href="/admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span>
             <span class="font-medium text-sm">Dashboard</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'products' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'products' ? activeClasses : inactiveClasses %> transition-all group"
             href="/admin/product">
             <span class="material-symbols-outlined">inventory_2</span>
             <span class="font-medium text-sm">Products</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'orders' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'orders' ? activeClasses : inactiveClasses %> transition-all group"
             href="#">
             <span class="material-symbols-outlined">shopping_cart</span>
             <span class="font-medium text-sm">Orders</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'customers' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'customers' ? activeClasses : inactiveClasses %> transition-all group"
             href="/admin/users">
             <span class="material-symbols-outlined">group</span>
             <span class="font-medium text-sm">Customers</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'coupons' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'coupons' ? activeClasses : inactiveClasses %> transition-all group"
             href="#">
             <span class="material-symbols-outlined">confirmation_number</span>
             <span class="font-medium text-sm">Coupons</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'reports' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'reports' ? activeClasses : inactiveClasses %> transition-all group"
             href="#">
             <span class="material-symbols-outlined">monitoring</span>
             <span class="font-medium text-sm">Reports</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'category' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'category' ? activeClasses : inactiveClasses %> transition-all group"
             href="/admin/category">
             <span class="material-symbols-outlined">category</span>
             <span class="font-medium text-sm">Category</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'offer' ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5' %> transition-all group"
+        <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'offer' ? activeClasses : inactiveClasses %> transition-all group"
             href="#">
             <span class="material-symbols-outlined">redeem</span>
             <span class="font-medium text-sm">Offer</span>

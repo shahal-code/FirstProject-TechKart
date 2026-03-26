@@ -61,6 +61,13 @@ router.get('/product/:id', userAuth.isBlocked, PageController.ProductDetails_loa
 router.get('/contact', userAuth.isAuthenticated, userAuth.isBlocked, PageController.ContactPage_load);
 router.get('/about', userAuth.isAuthenticated, userAuth.isBlocked, PageController.AboutPage_load);
 
+import * as cartController from "../controller/usercontroller/cartController.js";
+// Cart
+router.get('/cart', userAuth.isAuthenticated, userAuth.isBlocked, cartController.getCartView);
+router.post('/cart/add', userAuth.isAuthenticated, userAuth.isBlocked, cartController.addItem);
+router.post('/cart/update', userAuth.isAuthenticated, userAuth.isBlocked, cartController.updateQuantity);
+router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartController.removeItem);
+
 
 router.get('/dashboard', userAuth.isAuthenticated, PageController.Dashboard_load);
 

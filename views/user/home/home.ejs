@@ -39,7 +39,6 @@
         @layer base {
             body {
                 font-family: 'Inter', sans-serif;
-                @apply bg-[#0D0D0D] text-gray-200 antialiased;
             }
         }
         .glass-card {
@@ -61,7 +60,7 @@
     </style>
 </head>
 
-<body class="dark">
+<body class="dark bg-[#0D0D0D] text-gray-200 antialiased">
     <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
         <div class="layout-container flex h-full grow flex-col">
             <%- include('../../partials/user/header') %>

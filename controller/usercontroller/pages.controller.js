@@ -43,7 +43,7 @@ export const ShopPage_load = async (req, res) => {
         // Pass everything from the URL (?search=xx&sort=yy) to the service
         const data = await ProductService.getShopData(req.query);
 
-        res.render("user/home/shop", {
+        res.render("user/shop/shop", {
             path: "/user/shop",
             ...data, // This spreads products, categories, totalPages, etc.
             query: req.query // Pass query back to EJS to keep search text in input
@@ -81,7 +81,7 @@ export const ProductDetails_load = async (req, res) => {
             return res.status(404).render('user/404');
         }
 
-        res.render('user/home/productDetails', {
+        res.render('user/shop/productDetails', {
             ...data,
             user: req.session.user || null,
             path: '/user/product'
