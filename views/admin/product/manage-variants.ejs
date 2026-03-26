@@ -288,6 +288,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script>
         const productVariants = <%- JSON.stringify(product.variants) %>;
+        const lastVariant = <%- JSON.stringify(lastVariant || null) %>;
         const productId = '<%= product._id %>';
     </script>
     <script src="/js/admin/product/manage-variants.js"></script>

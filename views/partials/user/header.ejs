@@ -11,7 +11,7 @@
                 </div>
                 <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading">TECHKART</h2>
             </div>
-            <form action="/user/shop" method="GET" class="hidden md:flex flex-col flex-1 max-w-md !h-10">
+            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden md:flex flex-col flex-1 max-w-md !h-10' %>">
                 <div
                     class="flex w-full flex-1 items-stretch rounded-full h-full bg-white/5 border border-white/10 overflow-hidden focus-within:border-primary transition-colors">
                     <div class="text-gray-500 flex items-center justify-center pl-4">
@@ -107,7 +107,7 @@
 
         <div class="mt-auto pt-6 border-t border-white/10">
             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 px-4">Search Catalog</p>
-            <form action="/user/shop" method="GET" class="relative mb-6">
+            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible' : 'relative mb-6' %>">
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
                 <input name="search"

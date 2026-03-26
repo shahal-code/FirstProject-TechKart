@@ -8,6 +8,49 @@ document.addEventListener('DOMContentLoaded', function () {
         return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
     }
 
+    // Make updateFilters globally accessible
+    window.updateFilters = function() {
+        const url = new URL(window.location.href);
+        const searchParams = url.searchParams;
+
+        // 1. Get Sort Value
+        if (sortSelect) {
+            searchParams.set('sort', sortSelect.value);
+        }
+
+        // 2. Multi-select filters
+        ['category', 'processor', 'ram'].forEach(filterName => {
+            searchParams.delete(filterName); 
+            const values = getCheckedValues(filterName);
+            values.forEach(val => searchParams.append(filterName, val));
+        });
+
+        // 3. Get Selected Price
+        const checkedPrice = document.querySelector('input[name="price"]:checked');
+        if (checkedPrice) {
+            searchParams.set('price', checkedPrice.value);
+        } else {
+            searchParams.delete('price');
+        }
+
+        // 4. In-Page Search
+        const shopSearch = document.getElementById('shopSearchInput');
+        if (shopSearch) {
+            const searchValue = shopSearch.value.trim();
+            if (searchValue) {
+                searchParams.set('search', searchValue);
+            } else {
+                searchParams.delete('search');
+            }
+        }
+
+        // Reset to page 1 on every filter change
+        searchParams.set('page', 1);
+
+        // Update URL and refresh
+        window.location.search = searchParams.toString();
+    }
+
     window.toggleProcessorGroup = function (id) {
         const sub = document.getElementById(id);
         const icon = document.getElementById(id + '-icon');
@@ -26,55 +69,75 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    function updateFilters() {
-        const url = new URL(window.location.href);
-        const searchParams = url.searchParams;
-
-        // 1. Get Sort Value
-        if (sortSelect) {
-            searchParams.set('sort', sortSelect.value);
-        }
-
-        // 2. Multi-select filters
-        ['category', 'processor', 'ram'].forEach(filterName => {
-            searchParams.delete(filterName); // Clear existing
-            const values = getCheckedValues(filterName);
-            values.forEach(val => searchParams.append(filterName, val));
+    // Initial event listeners
+    const shopSearch = document.getElementById('shopSearchInput');
+    if (shopSearch) {
+        shopSearch.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.updateFilters();
+            }
         });
-
-        // 3. Get Selected Price
-        const checkedPrice = document.querySelector('input[name="price"]:checked');
-        if (checkedPrice) {
-            searchParams.set('price', checkedPrice.value);
-        } else {
-            searchParams.delete('price');
-        }
-
-        // Reset to page 1 on every filter change
-        searchParams.set('page', 1);
-
-        // Update URL and refresh
-        window.location.search = searchParams.toString();
     }
 
-    // Event Listeners
-    if (sortSelect) {
-        sortSelect.addEventListener('change', updateFilters);
-    }
-
-    // Attach to all relevante inputs
+    // Attach to all relevant inputs
     document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
-        if (input.name !== 'search') { // Don't trigger on search input change
-            input.addEventListener('change', updateFilters);
+        if (input.name !== 'search') { 
+            input.addEventListener('change', window.updateFilters);
         }
     });
+
+    // Custom Sort Dropdown Logic
+    window.applySort = function(value) {
+        const url = new URL(window.location.href);
+        const searchParams = url.searchParams;
+        searchParams.set('sort', value);
+        searchParams.set('page', 1);
+        window.location.search = searchParams.toString();
+    };
+
+    const sortDropdownBtn = document.getElementById('sortDropdownBtn');
+    const sortDropdownMenu = document.getElementById('sortDropdownMenu');
+    
+    if (sortDropdownBtn && sortDropdownMenu) {
+        sortDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = sortDropdownMenu.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Show
+                sortDropdownMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    sortDropdownMenu.classList.remove('opacity-0', 'translate-y-2');
+                }, 10);
+                sortDropdownBtn.querySelector('.material-symbols-outlined').classList.add('rotate-180');
+            } else {
+                // Hide
+                sortDropdownMenu.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    sortDropdownMenu.classList.add('hidden');
+                }, 300);
+                sortDropdownBtn.querySelector('.material-symbols-outlined').classList.remove('rotate-180');
+            }
+        });
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!sortDropdownBtn.contains(e.target) && !sortDropdownMenu.contains(e.target)) {
+                sortDropdownMenu.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    sortDropdownMenu.classList.add('hidden');
+                }, 300);
+                sortDropdownBtn.querySelector('.material-symbols-outlined').classList.remove('rotate-180');
+            }
+        });
+    }
 
     // Fix for the "Apply All Filters" button if it exists
     const applyButton = document.querySelector('button.bg-primary');
     if (applyButton && applyButton.textContent.trim().toLowerCase().includes('apply all')) {
         applyButton.addEventListener('click', (e) => {
             e.preventDefault();
-            updateFilters();
+            window.updateFilters();
         });
     }
 });

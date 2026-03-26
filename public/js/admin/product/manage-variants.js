@@ -34,7 +34,16 @@ function openAddVariantModal() {
     document.getElementById('existingImagesContainer').classList.add('hidden');
     document.getElementById('removedImagesContainer').innerHTML = '';
     document.getElementById('variantImagePreview').innerHTML = '';
-    document.getElementById('processorModel').innerHTML = '<option value="" disabled selected>Select Model</option>';
+    // Pre-fill if lastVariant exists
+    if (lastVariant) {
+        form.processorBrand.value = lastVariant.processorBrand || '';
+        updateProcessorModels(lastVariant.processor);
+        form.gpu.value = lastVariant.gpu || '';
+        form.size.value = lastVariant.size || '';
+    } else {
+        document.getElementById('processorModel').innerHTML = '<option value="" disabled selected>Select Model</option>';
+    }
+
     removedImages = [];
     selectedFiles = [];
 

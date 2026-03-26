@@ -62,8 +62,13 @@ export const getManageVariantsPage = async (req, res) => {
         const product = await ProductService.getProductById(id);
         if (!product) return res.redirect("/admin/product");
 
+        const lastVariant = product.variants && product.variants.length > 0 
+            ? product.variants[product.variants.length - 1] 
+            : null;
+
         res.render("admin/product/manage-variants", {
             product,
+            lastVariant,
             activePage: "products"
         });
     } catch (error) {
