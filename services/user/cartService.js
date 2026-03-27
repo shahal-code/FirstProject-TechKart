@@ -12,6 +12,14 @@ export const getCart = async (userId) => {
         cart = await Cart.create({ userId, items: [] });
     }
 
+    // Lazy Cleanup: Filter out products that are blocked
+    const originalItemCount = cart.items.length;
+    cart.items = cart.items.filter(item => item.productId && !item.productId.is_blocked);
+    
+    if (cart.items.length !== originalItemCount) {
+        await cart.save();
+    }
+
     return cart;
 };
 
@@ -26,6 +34,7 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     // Check if product exists and variant is valid
     const product = await Product.findById(productId);
     if (!product) throw new Error("Product not found");
+    if (product.is_blocked) throw new Error("This product is currently unavailable");
 
     const variant = product.variants.id(variantId);
     if (!variant) throw new Error("Variant not found");
