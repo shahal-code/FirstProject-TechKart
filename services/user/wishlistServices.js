@@ -48,3 +48,10 @@ export const removeFromWishlist = async (userId, productId) => {
 
     return wishlist;
 };
+
+// Fetch wishlist product IDs as an array
+export const getWishlistProductIds = async (userId) => {
+    if (!userId) return [];
+    const wishlist = await Wishlist.findOne({ userId });
+    return wishlist ? wishlist.products.map(id => id.toString()) : [];
+};

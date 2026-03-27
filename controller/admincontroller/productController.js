@@ -160,3 +160,18 @@ export const deleteProduct = async (req, res) => {
         });
     }
 };
+
+// Toggle Product Block Status
+export const toggleProductStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await ProductService.toggleProductStatus(id);
+        res.status(200).json({ 
+            message: `Product ${product.is_blocked ? 'blocked' : 'unblocked'} successfully`,
+            is_blocked: product.is_blocked 
+        });
+    } catch (error) {
+        console.error("Error toggling product status:", error);
+        res.status(500).json({ error: error.message });
+    }
+};

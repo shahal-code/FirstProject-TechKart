@@ -78,6 +78,7 @@ router.delete("/product/:id/variants/delete/:variantId", adminAuth.isAdminLogged
 
 router.get("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.getEditProductPage);
 router.post("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.updateProduct); // No images here
+router.post("/product/toggle-status/:id", adminAuth.isAdminLoggedIn, ProductController.toggleProductStatus);
 router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductController.deleteProduct);
 
 export default router;

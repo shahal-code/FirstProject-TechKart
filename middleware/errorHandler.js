@@ -1,6 +1,3 @@
-/**
- * Error handling middleware.
- */
 
 // Middleware to handle 404 Not Found errors
 export const notFound = (req, res, next) => {

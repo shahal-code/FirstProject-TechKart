@@ -42,7 +42,7 @@ export const isAlreadyLoggedIn = async (req, res, next) => {
     }
   }
 
-  // ✅ ALWAYS continue if not redirected
+  //  Always continue if not redirected
   next();
 };
 

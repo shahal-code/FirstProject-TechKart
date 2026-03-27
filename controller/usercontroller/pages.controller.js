@@ -1,14 +1,17 @@
 import * as ProductService from "../../services/user/productServices.js";
+import * as WishlistService from "../../services/user/wishlistServices.js";
 
 
 
 export const LandingOrHome_load = async (req, res) => {
     try {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
+        const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
         res.render("user/home/home", { 
             path: "/",
             products: featuredProducts,
-            user: req.session.user || null
+            user: req.session.user || null,
+            wishlistProductIds
         });
     } catch (error) {
         console.log("Error loading home page:", error.message);
@@ -47,11 +50,13 @@ export const ShopPage_load = async (req, res) => {
     try {
         // Pass everything from the URL (?search=xx&sort=yy) to the service
         const data = await ProductService.getShopData(req.query);
+        const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
 
         res.render("user/shop/shop", {
             path: "/user/shop",
             ...data, // This spreads products, categories, totalPages, etc.
-            query: req.query // Pass query back to EJS to keep search text in input
+            query: req.query, // Pass query back to EJS to keep search text in input
+            wishlistProductIds
         });
     } catch (error) {
         console.log(error.message);
@@ -86,10 +91,13 @@ export const ProductDetails_load = async (req, res) => {
             return res.status(404).render('user/404');
         }
 
+        const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+
         res.render('user/shop/productDetails', {
             ...data,
             user: req.session.user || null,
-            path: '/user/product'
+            path: '/user/product',
+            wishlistProductIds
         });
     } catch (error) {
         console.error("Error loading product details:", error);

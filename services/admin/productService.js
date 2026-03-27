@@ -152,3 +152,14 @@ export const deleteProduct = async (id) => {
     if (!deletedProduct) throw new Error("Product not found");
     return deletedProduct;
 };
+
+/**
+ * Toggle product block status.
+ */
+export const toggleProductStatus = async (id) => {
+    const product = await Product.findById(id);
+    if (!product) throw new Error("Product not found");
+
+    product.is_blocked = !product.is_blocked;
+    return await product.save();
+};

@@ -1,5 +1,6 @@
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
+import Wishlist from "../../models/wishlistModel.js";
 
 // Fetch user's cart
 export const getCart = async (userId) => {
@@ -43,18 +44,27 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
         throw new Error(`Only ${variant.stock} items left in stock`);
     }
 
+    const MAX_QUANTITY_PER_PRODUCT = 5;
+
     // Check if already in cart
     const existingItemIndex = cart.items.findIndex(
         item => item.productId.toString() === productId && item.variantId.toString() === variantId
     );
 
     if (existingItemIndex > -1) {
-        cart.items[existingItemIndex].quantity += quantity;
+        const totalQuantity = cart.items[existingItemIndex].quantity + quantity;
+        if (totalQuantity > MAX_QUANTITY_PER_PRODUCT) {
+            throw new Error(`Maximum quantity per product is ${MAX_QUANTITY_PER_PRODUCT}`);
+        }
         
-        if (cart.items[existingItemIndex].quantity > variant.stock) {
+        if (totalQuantity > variant.stock) {
              throw new Error("Cannot add more than available stock");
         }
+        cart.items[existingItemIndex].quantity = totalQuantity;
     } else {
+        if (quantity > MAX_QUANTITY_PER_PRODUCT) {
+            throw new Error(`Maximum quantity per product is ${MAX_QUANTITY_PER_PRODUCT}`);
+        }
         cart.items.push({
             productId,
             variantId,
@@ -63,6 +73,10 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     }
 
     await cart.save();
+
+    // Remove from wishlist if it exists there
+    await Wishlist.updateOne({ userId }, { $pull: { products: productId } });
+
     return cart;
 };
 
@@ -76,6 +90,12 @@ export const updateQuantity = async (userId, itemId, newQuantity) => {
 
     const product = await Product.findById(item.productId);
     const variant = product.variants.id(item.variantId);
+
+    const MAX_QUANTITY_PER_PRODUCT = 5;
+
+    if (newQuantity > MAX_QUANTITY_PER_PRODUCT) {
+        throw new Error(`Maximum quantity per product is ${MAX_QUANTITY_PER_PRODUCT}`);
+    }
 
     if (newQuantity > variant.stock) {
         throw new Error(`Only ${variant.stock} items left in stock`);

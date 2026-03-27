@@ -15,3 +15,22 @@ function confirmDelete(id) {
         }
     });
 }
+
+function toggleProductStatus(id) {
+    fetch('/admin/product/toggle-status/' + id, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated',
+                    text: data.message,
+                    background: '#11151F',
+                    color: '#fff',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => window.location.reload());
+            }
+        })
+        .catch(err => console.error('Error:', err));
+}

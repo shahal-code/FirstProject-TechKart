@@ -57,28 +57,27 @@
             <div class="flex flex-col lg:flex-row gap-12">
                 <!-- Left Side: Items List -->
                 <div class="flex-1 space-y-4">
-                    <% if (cart && cart.items && cart.items.length > 0) { %>
-                        <% cart.items.forEach(item => { 
+                    <% if (cart && cart.items && cart.items.length> 0) { %>
+                        <% cart.items.forEach(item=> {
                             const product = item.productId;
                             if(product) {
-                                const variant = product.variants.id(item.variantId);
-                                if(variant) {
-                        %>
-                    <!-- Product Item -->
-                    <div
-                        class="glass p-6 rounded-xl flex flex-col sm:flex-row items-center gap-6 group hover:border-primary/50 transition-all duration-300">
-                        <div class="bg-surface-dark rounded-lg size-32 flex-shrink-0 bg-cover bg-center border border-white/5"
-                            style='background-image: url("<%= variant.images[0] %>");'>
-                        </div>
-                        <div class="flex flex-col flex-1 text-center sm:text-left">
-                            <h3 class="text-xl font-bold"><%= product.name %></h3>
-                            <p class="text-white/50 text-sm mt-1">
-                                <% const specs = []; 
-                                   if(variant.ram) specs.push(variant.ram);
-                                   if(variant.storage) specs.push(variant.storage);
-                                   if(variant.color) specs.push(variant.color);
-                                %>
-                                <%= specs.join(', ') %>
+                            const variant = product.variants.id(item.variantId);
+                            if(variant) {
+                            %>
+                            <!-- Product Item -->
+                            <div
+                                class="glass p-6 rounded-xl flex flex-col sm:flex-row items-center gap-6 group hover:border-primary/50 transition-all duration-300">
+                                <div class="bg-surface-dark rounded-lg size-32 flex-shrink-0 bg-cover bg-center border border-white/5"
+                                    style='background-image: url("<%= variant.images[0] %>");'>
+                                </div>
+                                <div class="flex flex-col flex-1 text-center sm:text-left">
+                                    <h3 class="text-xl font-bold">
+                                        <%= product.name %>
+                                    </h3>
+                                    <p class="text-white/50 text-sm mt-1">
+                                        <% const specs=[]; if(variant.ram) specs.push(variant.ram); if(variant.storage)
+                                            specs.push(variant.storage); if(variant.color) specs.push(variant.color); %>
+                                            <%= specs.join(', ') %>
                             </p>
                             <div class="mt-4 flex items-center justify-center sm:justify-start gap-4">
                                 <span class="text-lg font-semibold text-primary">₹<%= variant.price %></span>
@@ -94,26 +93,32 @@
                                 <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-qty="<%= item.quantity %>" data-delta="1"
                                     class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70">+</button>
                             </div>
-                            <button onclick="removeCartItem('<%= item._id %>')" class="p-2 text-white/30 hover:text-red-500 transition-colors">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
-                        </div>
-                    </div>
-                        <% } } }) %>
-                    <% } else { %>
-                        <div class="glass p-12 rounded-xl text-center">
-                            <span class="material-symbols-outlined text-6xl text-white/20 mb-4 block">remove_shopping_cart</span>
-                            <h3 class="text-2xl font-bold mb-2">Your cart is empty</h3>
-                            <p class="text-white/50 mb-6">Looks like you haven't added anything to your cart yet.</p>
-                            <a href="/user/shop" class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all">Start Shopping</a>
-                        </div>
-                    <% } %>
-                    <div class="pt-6">
-                        <a class="inline-flex items-center gap-2 text-primary hover:underline font-medium" href="/user/shop">
-                            <span class="material-symbols-outlined text-sm">arrow_back</span>
-                            Continue Shopping
-                        </a>
-                    </div>
+                            <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
+                                                hover:text-red-500 transition-colors">
+                                                <span class="material-symbols-outlined">delete</span>
+                                                </button>
+                                </div>
+                            </div>
+                            <% } } }) %>
+                                <% } else { %>
+                                    <div class="glass p-12 rounded-xl text-center">
+                                        <span
+                                            class="material-symbols-outlined text-6xl text-white/20 mb-4 block">remove_shopping_cart</span>
+                                        <h3 class="text-2xl font-bold mb-2">Your cart is empty</h3>
+                                        <p class="text-white/50 mb-6">Looks like you haven't added anything to your cart
+                                            yet.</p>
+                                        <a href="/user/shop"
+                                            class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all">Start
+                                            Shopping</a>
+                                    </div>
+                                    <% } %>
+                                        <div class="pt-6">
+                                            <a class="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+                                                href="/user/shop">
+                                                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                                                Continue Shopping
+                                            </a>
+                                        </div>
                 </div>
                 <!-- Right Side: Summary Sidebar -->
                 <div class="w-full lg:w-[400px]">
@@ -165,98 +170,98 @@
         </main>
         <%- include('../partials/user/footer') %>
 
-        <script>
-            function handleQuantityChange(btn) {
-                const itemId = btn.getAttribute('data-id');
-                const currentQuantity = parseInt(btn.getAttribute('data-qty'));
-                const delta = parseInt(btn.getAttribute('data-delta'));
-                const newQuantity = currentQuantity + delta;
-                
-                if (newQuantity >= 1) {
-                    updateCartItem(itemId, newQuantity);
-                }
-            }
+            <script>
+                function handleQuantityChange(btn) {
+                    const itemId = btn.getAttribute('data-id');
+                    const currentQuantity = parseInt(btn.getAttribute('data-qty'));
+                    const delta = parseInt(btn.getAttribute('data-delta'));
+                    const newQuantity = currentQuantity + delta;
 
-            async function updateCartItem(itemId, newQuantity) {
-                if(newQuantity < 1) return;
-                
-                try {
-                    const response = await fetch('/user/cart/update', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ itemId, quantity: newQuantity })
-                    });
-                    
-                    const result = await response.json();
-                    if (result.success) {
-                        window.location.reload();
-                    } else {
+                    if (newQuantity >= 1) {
+                        updateCartItem(itemId, newQuantity);
+                    }
+                }
+
+                async function updateCartItem(itemId, newQuantity) {
+                    if (newQuantity < 1) return;
+
+                    try {
+                        const response = await fetch('/user/cart/update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ itemId, quantity: newQuantity })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.reload();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Update Failed',
+                                text: result.message || 'Failed to update quantity',
+                                background: '#0D0D0D',
+                                color: '#fff'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error updating cart:', error);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Update Failed',
-                            text: result.message || 'Failed to update quantity',
+                            title: 'Error',
+                            text: 'An error occurred while updating the cart.',
                             background: '#0D0D0D',
                             color: '#fff'
                         });
                     }
-                } catch (error) {
-                    console.error('Error updating cart:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while updating the cart.',
+                }
+
+                async function removeCartItem(itemId) {
+                    const confirmResult = await Swal.fire({
+                        title: 'Remove Item?',
+                        text: "Are you sure you want to remove this item from your cart?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0055ff',
+                        cancelButtonColor: '#ef4444',
+                        confirmButtonText: 'Yes, remove it',
                         background: '#0D0D0D',
                         color: '#fff'
                     });
-                }
-            }
 
-            async function removeCartItem(itemId) {
-                const confirmResult = await Swal.fire({
-                    title: 'Remove Item?',
-                    text: "Are you sure you want to remove this item from your cart?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#0055ff',
-                    cancelButtonColor: '#ef4444',
-                    confirmButtonText: 'Yes, remove it',
-                    background: '#0D0D0D',
-                    color: '#fff'
-                });
+                    if (!confirmResult.isConfirmed) return;
 
-                if(!confirmResult.isConfirmed) return;
-                
-                try {
-                    const response = await fetch('/user/cart/remove', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ itemId })
-                    });
-                    
-                    const result = await response.json();
-                    if (result.success) {
-                        window.location.reload();
-                    } else {
+                    try {
+                        const response = await fetch('/user/cart/remove', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ itemId })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.reload();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Removal Failed',
+                                text: result.message || 'Failed to remove item',
+                                background: '#0D0D0D',
+                                color: '#fff'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error removing item:', error);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Removal Failed',
-                            text: result.message || 'Failed to remove item',
+                            title: 'Error',
+                            text: 'An error occurred while removing the item.',
                             background: '#0D0D0D',
                             color: '#fff'
                         });
                     }
-                } catch (error) {
-                    console.error('Error removing item:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while removing the item.',
-                        background: '#0D0D0D',
-                        color: '#fff'
-                    });
                 }
-            }
-        </script>
+            </script>
 </body>
 
 </html>

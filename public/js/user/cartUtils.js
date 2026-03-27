@@ -63,13 +63,26 @@ window.toggleWishlist = async function(event, productId) {
         });
         const data = await response.json();
         if (data.success) {
+            // Visual toggle of the heart icon
+            const btn = event?.currentTarget;
+            if (btn) {
+                const heartIcon = btn.querySelector('.material-symbols-outlined');
+                if (heartIcon) {
+                    if (data.action === 'added') {
+                        heartIcon.style.fontVariationSettings = "'FILL' 1";
+                    } else {
+                        heartIcon.style.fontVariationSettings = "'FILL' 0";
+                    }
+                }
+            }
+
             Swal.fire({
                 icon: data.action === 'added' ? 'success' : 'info',
                 title: 'Wishlist Updated',
                 text: data.message,
                 background: '#0D0D0D',
                 color: '#fff',
-                timer: 2000,
+                timer: 1500,
                 showConfirmButton: false
             });
         } else {

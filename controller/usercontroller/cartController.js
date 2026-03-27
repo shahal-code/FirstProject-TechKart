@@ -5,7 +5,7 @@ export const getCartView = async (req, res) => {
     try {
         const userId = req.session.user;
         const cart = await cartService.getCart(userId);
-        
+
         let subtotal = 0;
         if (cart && cart.items) {
             cart.items.forEach(item => {
@@ -41,15 +41,15 @@ export const addItem = async (req, res) => {
     try {
         const userId = req.session.user;
         if (!userId) {
-            return res.status(401).json({ 
-                success: false, 
+            return res.status(401).json({
+                success: false,
                 message: "Please login to add items to cart",
                 redirect: "/user/login"
             });
         }
-        
+
         const { productId, variantId, quantity } = req.body;
-        
+
         const cart = await cartService.addToCart(userId, productId, variantId, Number(quantity));
         res.status(200).json({ success: true, cart, message: "Item added to cart successfully" });
     } catch (error) {
@@ -62,7 +62,7 @@ export const updateQuantity = async (req, res) => {
     try {
         const userId = req.session.user;
         const { itemId, quantity } = req.body;
-        
+
         const cart = await cartService.updateQuantity(userId, itemId, Number(quantity));
         res.status(200).json({ success: true, cart, message: "Quantity updated" });
     } catch (error) {
@@ -75,7 +75,7 @@ export const removeItem = async (req, res) => {
     try {
         const userId = req.session.user;
         const { itemId } = req.body;
-        
+
         const cart = await cartService.removeItem(userId, itemId);
         res.status(200).json({ success: true, cart, message: "Item removed from cart" });
     } catch (error) {
