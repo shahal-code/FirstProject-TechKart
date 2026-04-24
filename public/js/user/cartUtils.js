@@ -1,5 +1,9 @@
 // Shared AJAX utilities for Cart and Wishlist
-window.addToCart = async function(productId, variantId, quantity = 1) {
+window.addToCart = async function(productId, variantId, quantity = 1, event = null) {
+    if (event) {
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+    }
     try {
         const response = await fetch('/user/cart/add', {
             method: 'POST',

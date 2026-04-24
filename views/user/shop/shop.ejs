@@ -537,7 +537,7 @@
                                                         <%= product.description %>
                                                     </p>
                                                     <% if (product.variants[0]?.stock > 0) { %>
-                                                        <button onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
+                                                        <button onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>', 1, event)"
                                                             class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
                                                             <span
                                                                 class="material-symbols-outlined text-lg">add_shopping_cart</span>

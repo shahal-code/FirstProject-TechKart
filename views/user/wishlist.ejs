@@ -67,7 +67,8 @@
                          const variant = product.variants.find(v => v._id.toString() === variantIdStr) || product.variants[0];
                     %>
                         <div
-                            class="glass-card rounded-3xl overflow-hidden group hover:border-primary/50 transition-all duration-500">
+                            data-product-id="<%= product._id %>" data-variant-id="<%= variant?._id %>"
+                            class="glass-card group rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500">
                             <div class="relative aspect-[4/3] overflow-hidden">
                                 <img src="<%= (variant && variant.images && variant.images.length > 0) ? variant.images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -154,7 +155,17 @@
                         });
                         const data = await response.json();
                         if (data.success) {
-                            window.location.reload();
+                            const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
+                            if (itemRow) {
+                                itemRow.style.opacity = '0';
+                                itemRow.style.transform = 'scale(0.9)';
+                                setTimeout(() => {
+                                    itemRow.remove();
+                                    if (document.querySelectorAll('.glass-card.group.rounded-3xl').length === 0) {
+                                        window.location.reload();
+                                    }
+                                }, 500);
+                            }
                         }
                     } catch (error) {
                         console.error('Error:', error);
@@ -162,36 +173,24 @@
                 }
 
                 async function moveToCart(productId, variantId) {
-                    try {
-                        const response = await fetch('/user/cart/add', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productId, variantId, quantity: 1 })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Added to Cart',
-                                text: 'Product moved from wishlist to your cart!',
-                                background: '#0D0D0D',
-                                color: '#fff',
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: data.message || 'Failed to add item to cart',
-                                background: '#0D0D0D',
-                                color: '#fff',
-                            });
+                    if (typeof addToCart === 'function') {
+                        const result = await addToCart(productId, variantId, 1);
+                        if (result && result.success) {
+                            // Remove item from DOM without reload
+                            const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
+                            if (itemRow) {
+                                itemRow.style.opacity = '0';
+                                itemRow.style.transform = 'translateX(50px)';
+                                setTimeout(() => {
+                                    itemRow.remove();
+                                    if (document.querySelectorAll('.glass-card.group.rounded-3xl').length === 0) {
+                                        window.location.reload();
+                                    }
+                                }, 500);
+                            }
                         }
-                    } catch (error) {
-                        console.error('Error:', error);
+                    } else {
+                        console.error("Global addToCart function not found!");
                     }
                 }
             </script>

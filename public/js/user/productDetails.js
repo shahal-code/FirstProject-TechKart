@@ -205,7 +205,11 @@ window.addEventListener('load', () => {
 });
 
 // Add to Cart Logic
-async function handleAddToCart(productId) {
+async function handleAddToCart(productId, event = null) {
+    if (event) {
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+    }
     if (!currentVariant) {
         Swal.fire({
             icon: 'info',
@@ -219,7 +223,7 @@ async function handleAddToCart(productId) {
 
     // Call the global function from cartUtils.js
     if (typeof addToCart === 'function') {
-        const result = await addToCart(productId, currentVariant._id, currentQty);
+        const result = await addToCart(productId, currentVariant._id, currentQty, event);
         if (result && result.success && result.cart) {
             cartItems = result.cart.items;
             updateUI();
