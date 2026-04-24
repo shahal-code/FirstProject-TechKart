@@ -71,7 +71,7 @@ function updateUI() {
     });
     
     const inCartQty = cartItem ? cartItem.quantity : 0;
-    const availableToBuy = Math.max(0, currentVariant.stock - inCartQty);
+    const availableToBuy = Math.max(0, currentVariant.stock);
 
     const stockDot = document.getElementById('stock-dot');
     const stockStatus = document.getElementById('stock-status');

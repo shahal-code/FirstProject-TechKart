@@ -149,6 +149,35 @@ function previewVariantImages(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    for (const file of files) {
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid File Type',
+                text: `File "${file.name}" is not a supported image format. Please use JPG, PNG, WEBP, or AVIF.`,
+                background: '#11151F',
+                color: '#fff'
+            });
+            event.target.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File Too Large',
+                text: `File "${file.name}" exceeds the 5MB size limit.`,
+                background: '#11151F',
+                color: '#fff'
+            });
+            event.target.value = '';
+            return;
+        }
+    }
+
     currentFilesToProcess = files;
     event.target.value = ''; // Reset
     processNextFile();
