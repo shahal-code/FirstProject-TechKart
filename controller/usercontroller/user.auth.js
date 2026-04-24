@@ -128,7 +128,13 @@ export const resendOTP = async (req, res) => {
         req.session.otp = otp;
         req.session.otpExpiry = otpExpiry;
 
-        res.status(200).json({ success: true, message: "OTP resent successfully" });
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ success: false, message: "Failed to resend OTP" });
+            }
+            res.status(200).json({ success: true, message: "OTP resent successfully" });
+        });
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
         res.status(500).json({ success: false, message: "Failed to resend OTP" });

@@ -1,17 +1,19 @@
 import * as ProductService from "../../services/user/productServices.js";
 import * as WishlistService from "../../services/user/wishlistServices.js";
-
+import Category from "../../models/categoryModel.js";
 
 
 export const LandingOrHome_load = async (req, res) => {
     try {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+        const categories = await Category.find({ is_blocked: false }).limit(4);
         res.render("user/home/home", { 
             path: "/",
             products: featuredProducts,
             user: req.session.user || null,
-            wishlistProductIds
+            wishlistProductIds,
+            categories
         });
     } catch (error) {
         console.log("Error loading home page:", error.message);
@@ -21,9 +23,18 @@ export const LandingOrHome_load = async (req, res) => {
 
 export const Dashboard_load = async (req, res) => {
     try {
-        res.render("user/home/dashboard", { path: "/user/dashboard" });
+        const featuredProducts = await ProductService.getFeaturedProducts(3);
+        const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+        const categories = await Category.find({ is_blocked: false }).limit(4);
+        res.render("user/home/dashboard", { 
+            path: "/user/dashboard",
+            products: featuredProducts,
+            user: req.session.user || null,
+            wishlistProductIds,
+            categories
+        });
     } catch (error) {
-        console.log(error.message);
+        console.log("Error loading dashboard:", error.message);
         res.status(500).send("Internal Server Error");
     }
 };
@@ -51,12 +62,14 @@ export const ShopPage_load = async (req, res) => {
         // Pass everything from the URL (?search=xx&sort=yy) to the service
         const data = await ProductService.getShopData(req.query);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+        const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
 
         res.render("user/shop/shop", {
             path: "/user/shop",
             ...data, // This spreads products, categories, totalPages, etc.
             query: req.query, // Pass query back to EJS to keep search text in input
-            wishlistProductIds
+            wishlistProductIds,
+            cart
         });
     } catch (error) {
         console.log(error.message);
@@ -92,9 +105,13 @@ export const ProductDetails_load = async (req, res) => {
         }
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+        
+        // Fetch cart to show current quantities
+        const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
 
         res.render('user/shop/productDetails', {
             ...data,
+            cart,
             user: req.session.user || null,
             path: '/user/product',
             wishlistProductIds

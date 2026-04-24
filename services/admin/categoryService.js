@@ -1,27 +1,26 @@
 import Category from "../../models/categoryModel.js";
 import Product from "../../models/productModel.js";
 
-/**
- * Get all categories with pagination and product counts.
- */
+
+ // Get all categories with pagination and product counts.
+ 
 export const getAllCategories = async (query, page, limit) => {
     const categories = await Category.find(query)
         .sort({ created_at: -1 })
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit)
+        .lean();
+
+    // Attach product count to each category
+    const categoriesWithCounts = await Promise.all(
+        categories.map(async (cat) => {
+            const productCount = await Product.countDocuments({ category_id: cat._id });
+            return { ...cat, productCount };
+        })
+    );
 
     const totalCategories = await Category.countDocuments(query);
     const totalPages = Math.ceil(totalCategories / limit);
-
-    const categoriesWithCounts = await Promise.all(
-        categories.map(async (category) => {
-            const productCount = await Product.countDocuments({ category_id: category._id });
-            return {
-                ...category.toObject(),
-                productCount
-            };
-        })
-    );
 
     return {
         categories: categoriesWithCounts,
@@ -30,9 +29,9 @@ export const getAllCategories = async (query, page, limit) => {
     };
 };
 
-/**
- * Get category summary stats.
- */
+
+//  Get category summary stats.
+
 export const getCategoryStats = async () => {
     const totalCount = await Category.countDocuments();
     const newestCategory = await Category.findOne().sort({ created_at: -1 });
@@ -44,16 +43,15 @@ export const getCategoryStats = async () => {
     };
 };
 
-/**
- * Get category by ID.
- */
+
+ // Get category by ID.
+
 export const getCategoryById = async (id) => {
     return await Category.findById(id);
 };
 
-/**
- * Create a new category.
- */
+ // Create a new category.
+ 
 export const createCategory = async (categoryData) => {
     const { name, description } = categoryData;
 
@@ -76,9 +74,9 @@ export const createCategory = async (categoryData) => {
     return await newCategory.save();
 };
 
-/**
- * Update an existing category.
- */
+
+ // Update an existing category.
+
 export const updateCategory = async (id, categoryData) => {
     const { name, description } = categoryData;
 
@@ -108,9 +106,9 @@ export const updateCategory = async (id, categoryData) => {
     return updatedCategory;
 };
 
-/**
- * Toggle category blocked status.
- */
+
+ // Toggle category blocked status.
+ 
 export const toggleCategoryStatus = async (id) => {
     const category = await Category.findById(id);
     if (!category) {
@@ -120,9 +118,9 @@ export const toggleCategoryStatus = async (id) => {
     return await category.save();
 };
 
-/**
- * Delete a category.
- */
+
+ // Delete a category.
+ 
 export const deleteCategory = async (id) => {
     const deletedCategory = await Category.findByIdAndDelete(id);
     if (!deletedCategory) {

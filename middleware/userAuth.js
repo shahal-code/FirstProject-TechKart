@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import Cart from "../models/cartModel.js";
 
 export const isAuthenticated = async (req, res, next) => {
   if (req.session.user) {
@@ -69,5 +70,28 @@ export const noCache = (req, res, next) => {
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
   next();
+};
+
+export const userContext = async (req, res, next) => {
+  try {
+    const userId = req.session.user;
+    let user = null;
+    let cartCount = 0;
+
+    if (userId) {
+      user = await User.findById(userId);
+      const cart = await Cart.findOne({ userId });
+      if (cart && cart.items) {
+        cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
+      }
+    }
+
+    res.locals.user = user;
+    res.locals.cartCount = cartCount;
+    next();
+  } catch (error) {
+    console.error("User Context Middleware Error:", error);
+    next();
+  }
 };
 

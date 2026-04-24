@@ -195,39 +195,45 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                         <label class="input-label">Color</label>
-                        <input type="text" name="color" class="input-field" placeholder="e.g. Space Gray">
+                        <input type="text" name="color" id="color" class="input-field" placeholder="e.g. Space Gray">
+                        <p id="color-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
-                        <label class="input-label">Price (USD)</label>
-                        <input type="number" name="price" class="input-field" placeholder="e.9. 1999" required>
+                        <label class="input-label">Price (INR)</label>
+                        <input type="number" name="price" id="price" class="input-field" placeholder="e.g. 79999">
+                        <p id="price-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="input-label">Stock</label>
-                        <input type="number" name="stock" class="input-field" placeholder="100" required>
+                        <input type="number" name="stock" id="stock" class="input-field" placeholder="100">
+                        <p id="stock-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="input-label">Processor Brand</label>
-                        <select id="processorBrand" name="processorBrand" class="input-field appearance-none cursor-pointer" required onchange="updateProcessorModels()">
+                        <select id="processorBrand" name="processorBrand" class="input-field appearance-none cursor-pointer" onchange="updateProcessorModels()">
                             <option value="" disabled selected>Select Brand</option>
                             <option value="Intel">Intel</option>
                             <option value="AMD">AMD</option>
                         </select>
+                        <p id="processorBrand-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="input-label">Processor Model</label>
-                        <select id="processorModel" name="processor" class="input-field appearance-none cursor-pointer" required>
+                        <select id="processorModel" name="processor" class="input-field appearance-none cursor-pointer">
                             <option value="" disabled selected>Select Model</option>
                         </select>
+                        <p id="processorModel-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="input-label">RAM</label>
-                        <select name="ram" class="input-field appearance-none cursor-pointer" required>
+                        <select name="ram" id="ram" class="input-field appearance-none cursor-pointer">
                             <option value="" disabled selected>Select RAM</option>
                             <option value="8GB">8GB</option>
                             <option value="16GB">16GB</option>
                             <option value="32GB">32GB</option>
                             <option value="64GB">64GB</option>
                         </select>
+                        <p id="ram-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     </div>
                     <div>
                         <label class="input-label">Storage</label>
@@ -256,6 +262,7 @@
                         <p class="text-sm font-bold">Click to upload images for this color/variant</p>
                         <input type="file" id="variantImageUpload" name="images" multiple accept="image/*" class="hidden" onchange="previewVariantImages(event)">
                     </label>
+                    <p id="images-error" class="text-rose-500 text-[10px] mt-1 hidden"></p>
                     <div id="variantImagePreview" class="flex flex-wrap gap-4 mt-6"></div>
                     <div id="removedImagesContainer"></div>
                 </div>

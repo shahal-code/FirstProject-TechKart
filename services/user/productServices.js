@@ -3,25 +3,27 @@ import Category from "../../models/categoryModel.js";
 
 
 async function getProductDetails(productId) {
-    const product = await Product.findOne({ 
-        _id: productId, 
-        is_blocked: { $ne: true } 
-    }).populate('category_id');
+    const product = await Product.findById(productId)
+        .populate("category_id")
+        .lean();
 
-    if (!product) return null;
+    if (!product || product.is_blocked) return null;
 
     // Fetch related products (same category)
     const relatedProducts = await Product.find({
-        category_id: product.category_id,
-        _id: { $ne: productId },
+        category_id: product.category_id?._id || product.category_id,
+        _id: { $ne: product._id },
         is_blocked: { $ne: true }
-    }).limit(4);
+    })
+        .populate("category_id")
+        .limit(4)
+        .lean();
 
     return { product, relatedProducts };
 }
 
 const getShopData = async (queryParams) => {
-    const { search, category, sort, page = 1, limit = 9 } = queryParams;
+    const { search, category, sort, page = 1, limit = 6 } = queryParams;
 
     // 1. Build the Query Object
     let query = { is_blocked: { $ne: true } }; // Base query: only show unblocked products
@@ -35,12 +37,16 @@ const getShopData = async (queryParams) => {
     }
 
     if (queryParams.processor) {
+        const processors = Array.isArray(queryParams.processor)
+            ? queryParams.processor
+            : [queryParams.processor];
+        const processorRegexes = processors.map(p => new RegExp(p, 'i'));
         query["$or"] = [
-            { "variants.processor": { $regex: queryParams.processor, $options: "i" } },
-            { "variants.processorBrand": { $regex: queryParams.processor, $options: "i" } }
+            { "variants.processor": { $in: processorRegexes } },
+            { "variants.processorBrand": { $in: processorRegexes } }
         ];
     }
-    
+
     if (queryParams.ram) {
         if (Array.isArray(queryParams.ram)) {
             query["variants.ram"] = { $in: queryParams.ram };
@@ -88,12 +94,14 @@ const getShopData = async (queryParams) => {
 
     // 2. Build the Price Filter
     if (queryParams.price) {
-        if (queryParams.price === "under1000") {
-            query["variants.price"] = { $lt: 1000 };
-        } else if (queryParams.price === "1000-2000") {
-            query["variants.price"] = { $gte: 1000, $lte: 2000 };
-        } else if (queryParams.price === "over2000") {
-            query["variants.price"] = { $gt: 2000 };
+        if (queryParams.price === "under50000") {
+            query["variants.price"] = { $lt: 50000 };
+        } else if (queryParams.price === "50000-100000") {
+            query["variants.price"] = { $gte: 50000, $lte: 100000 };
+        } else if (queryParams.price === "100000-200000") {
+            query["variants.price"] = { $gte: 100000, $lte: 200000 };
+        } else if (queryParams.price === "over200000") {
+            query["variants.price"] = { $gt: 200000 };
         }
     } else if (queryParams.maxPrice) {
         const max = parseInt(queryParams.maxPrice);
@@ -109,7 +117,8 @@ const getShopData = async (queryParams) => {
         .populate("category_id")
         .sort(sortOrder)
         .skip(skip)
-        .limit(limit);
+        .limit(parseInt(limit))
+        .lean();
 
     const totalProducts = await Product.countDocuments(query);
     const categories = await Category.find({ is_blocked: false });
@@ -118,16 +127,17 @@ const getShopData = async (queryParams) => {
         products,
         categories,
         totalProducts,
-        currentPage: page,
+        currentPage: parseInt(page),
         totalPages: Math.ceil(totalProducts / limit)
     };
 };
 
 async function getFeaturedProducts(limit = 3) {
     return await Product.find({ is_blocked: { $ne: true } })
-        .populate('category_id')
+        .populate("category_id")
         .sort({ createdAt: -1 })
-        .limit(limit);
+        .limit(limit)
+        .lean();
 }
 
 export {

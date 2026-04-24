@@ -117,15 +117,17 @@
                                         class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Category
                                         Name</label>
                                     <input type="text" id="categoryName" name="name" value="<%= category.name %>"
-                                        required class="input-field w-full" placeholder="e.g. Gaming Gear" />
+                                        class="input-field w-full" placeholder="e.g. Gaming Gear" />
+                                    <p id="categoryNameError" class="text-rose-500 text-xs mt-2 hidden"></p>
                                 </div>
 
                                 <div>
                                     <label
                                         class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Description</label>
-                                    <textarea id="categoryDescription" name="description" required
+                                    <textarea id="categoryDescription" name="description"
                                         class="input-field w-full h-16 resize-none"
                                         placeholder="Provide a detailed description..."><%= category.description %></textarea>
+                                    <p id="categoryDescError" class="text-rose-500 text-xs mt-2 hidden"></p>
                                 </div>
 
                                 <div class="pt-6 flex gap-4">
@@ -149,55 +151,7 @@
                 </div>
         </main>
 
-        <script>
-            document.getElementById('editCategoryForm')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const id = document.getElementById('categoryId').value;
-                const name = document.getElementById('categoryName').value;
-                const description = document.getElementById('categoryDescription').value;
-
-                try {
-                    const response = await fetch(`/admin/editCategory/${id}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, description })
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Updated!',
-                            text: data.message,
-                            background: '#111827',
-                            color: '#fff',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            window.location.href = '/admin/category';
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: data.error,
-                            background: '#111827',
-                            color: '#fff'
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to communicate with the server',
-                        background: '#111827',
-                        color: '#fff'
-                    });
-                }
-            });
-        </script>
+        <script src="/js/validation.js"></script>
 </body>
 
 </html>

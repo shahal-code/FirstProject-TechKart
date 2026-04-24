@@ -1,11 +1,12 @@
+import { Query } from "mongoose";
 import Product from "../../models/productModel.js";
 
-/**
- * Get all products with pagination and category populate.
- */
+
+// Get all products with pagination and category populate.
+
 export const getAllProducts = async (query, page, limit) => {
     const products = await Product.find(query)
-        .populate('category_id')
+        .populate("category_id")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -20,11 +21,14 @@ export const getAllProducts = async (query, page, limit) => {
     };
 };
 
+
+
+
 /**
  * Get product by ID with populated category.
  */
 export const getProductById = async (id) => {
-    return await Product.findById(id).populate('category_id');
+    return await Product.findById(id).populate("category_id");
 };
 
 /**
@@ -127,10 +131,10 @@ export const updateProduct = async (id, productData) => {
     product.name = name;
     product.description = description;
     product.category_id = category_id;
-    
+
     // Update specifications
-    product.specifications = { 
-        display, 
+    product.specifications = {
+        display,
         battery,
         weight: product.specifications?.weight,
         os: product.specifications?.os
@@ -163,3 +167,9 @@ export const toggleProductStatus = async (id) => {
     product.is_blocked = !product.is_blocked;
     return await product.save();
 };
+
+
+
+
+
+

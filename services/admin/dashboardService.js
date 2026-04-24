@@ -1,7 +1,7 @@
-/**
- * Dashboard statistics and analytics service.
- * Currently a placeholder for real-time overview logic.
- */
+
+ // Dashboard statistics and analytics service.
+  //Currently a placeholder for real-time overview logic.
+ 
 export const getDashboardStats = async () => {
   return {
     activePage: "dashboard",

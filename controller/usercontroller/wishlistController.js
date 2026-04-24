@@ -25,8 +25,12 @@ export const toggleWishlist = async (req, res) => {
             return res.status(401).json({ success: false, message: "Please login to manage wishlist" });
         }
 
-        const { productId } = req.body;
-        const result = await wishlistService.toggleWishlist(userId, productId);
+        const { productId, variantId } = req.body;
+        if (!variantId) {
+            return res.status(400).json({ success: false, message: "Variant ID is required" });
+        }
+
+        const result = await wishlistService.toggleWishlist(userId, productId, variantId);
         res.status(200).json({ 
             success: true, 
             action: result.action,
@@ -41,8 +45,8 @@ export const toggleWishlist = async (req, res) => {
 export const removeFromWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { productId } = req.body;
-        await wishlistService.removeFromWishlist(userId, productId);
+        const { productId, variantId } = req.body;
+        await wishlistService.removeFromWishlist(userId, productId, variantId);
         res.status(200).json({ success: true, message: "Removed from wishlist" });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });

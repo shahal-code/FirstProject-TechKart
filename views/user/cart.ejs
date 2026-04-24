@@ -61,7 +61,7 @@
                         <% cart.items.forEach(item=> {
                             const product = item.productId;
                             if(product) {
-                            const variant = product.variants.id(item.variantId);
+                            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
                             if(variant) {
                             %>
                             <!-- Product Item -->

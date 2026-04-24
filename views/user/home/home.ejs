@@ -141,74 +141,44 @@
                             <div class="h-1 w-20 bg-primary mx-auto rounded-full"></div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div
-                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
-                                <div
-                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-3xl">sports_esports</span>
+                            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                <% 
+                                const iconMap = {
+                                    'gaming': 'sports_esports',
+                                    'business': 'work',
+                                    'student': 'school',
+                                    'creator': 'palette',
+                                    'professional': 'work'
+                                };
+                                %>
+                                <% categories.forEach(category => { 
+                                    const lowerName = category.name.toLowerCase();
+                                    let icon = 'devices';
+                                    for (const [key, val] of Object.entries(iconMap)) {
+                                        if (lowerName.includes(key)) {
+                                            icon = val;
+                                            break;
+                                        }
+                                    }
+                                %>
+                                <div onclick="window.location.href='/user/shop?category=<%= category._id %>'"
+                                    class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                    <div
+                                        class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                        <span class="material-symbols-outlined text-3xl"><%= icon %></span>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <h3 class="text-white text-xl font-bold premium-heading uppercase"><%= category.name %></h3>
+                                        <p class="text-gray-400 text-sm leading-relaxed line-clamp-2"><%= category.description %></p>
+                                    </div>
+                                    <div
+                                        class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                        Learn More <span
+                                            class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                    </div>
                                 </div>
-                                <div class="flex flex-col gap-2">
-                                    <h3 class="text-white text-xl font-bold premium-heading">GAMING</h3>
-                                    <p class="text-gray-400 text-sm leading-relaxed">High-refresh rates and
-                                        desktop-class graphics for enthusiasts.</p>
-                                </div>
-                                <div
-                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
-                                    Learn More <span
-                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                                </div>
-                            </div>
-                            <div
-                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
-                                <div
-                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-3xl">work</span>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <h3 class="text-white text-xl font-bold premium-heading">BUSINESS</h3>
-                                    <p class="text-gray-400 text-sm leading-relaxed">Enterprise-grade security and
-                                        all-day battery endurance.</p>
-                                </div>
-                                <div
-                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
-                                    Learn More <span
-                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                                </div>
-                            </div>
-                            <div
-                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
-                                <div
-                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-3xl">school</span>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <h3 class="text-white text-xl font-bold premium-heading">STUDENT</h3>
-                                    <p class="text-gray-400 text-sm leading-relaxed">Lightweight versatility that keeps
-                                        up with your campus life.</p>
-                                </div>
-                                <div
-                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
-                                    Learn More <span
-                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                                </div>
-                            </div>
-                            <div
-                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
-                                <div
-                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                    <span class="material-symbols-outlined text-3xl">palette</span>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <h3 class="text-white text-xl font-bold premium-heading">CREATORS</h3>
-                                    <p class="text-gray-400 text-sm leading-relaxed">Color-accurate displays and massive
-                                        multi-core power.</p>
-                                </div>
-                                <div
-                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
-                                    Learn More <span
-                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                                </div>
-                            </div>
+                                <% }) %>
+                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -230,7 +200,7 @@
                                             <span class="px-6 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">Sold Out</span>
                                         </div>
                                     <% } %>
-                                    <button onclick="toggleWishlist(event, '<%= product._id %>')" 
+                                    <button onclick="toggleWishlist(event, '<%= product._id %>', '<%= product.variants[0]?._id %>')" 
                                             class="absolute top-4 right-4 z-10 size-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-all duration-300">
                                         <span class="material-symbols-outlined text-xl" style="<%= (wishlistProductIds && wishlistProductIds.includes(product._id.toString())) ? 'font-variation-settings: \'FILL\' 1' : '' %>">favorite</span>
                                     </button>

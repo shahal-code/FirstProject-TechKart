@@ -11,7 +11,7 @@ export const getCartView = async (req, res) => {
             cart.items.forEach(item => {
                 const product = item.productId;
                 if (product) {
-                    const variant = product.variants.id(item.variantId);
+                    const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
                     if (variant) {
                         subtotal += variant.price * item.quantity;
                     }
@@ -53,7 +53,7 @@ export const addItem = async (req, res) => {
         const cart = await cartService.addToCart(userId, productId, variantId, Number(quantity));
         res.status(200).json({ success: true, cart, message: "Item added to cart successfully" });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(400).json({ success: false, message: error.message, code: error.code || null });
     }
 };
 

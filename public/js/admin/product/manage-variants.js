@@ -255,3 +255,77 @@ async function deleteVariant(variantId) {
         }
     }
 }
+
+// Form Validation
+document.getElementById('variantForm').onsubmit = function (e) {
+    let isValid = true;
+    const form = this;
+
+    // Reset errors
+    document.querySelectorAll('.text-rose-500').forEach(p => {
+        if (p.id.endsWith('-error')) {
+            p.classList.add('hidden');
+            p.textContent = '';
+        }
+    });
+
+    function showError(id, message) {
+        const errorElement = document.getElementById(id + '-error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            isValid = false;
+        }
+    }
+
+    const color = form.color.value.trim();
+    const price = form.price.value.trim();
+    const stock = form.stock.value.trim();
+    const processorBrand = form.processorBrand.value;
+    const processorModel = form.processorModel.value;
+    const ram = form.ram.value;
+
+    if (!color) showError('color', 'Please enter a color name.');
+    
+    if (!price) {
+        showError('price', 'Please enter a price.');
+    } else if (isNaN(price) || parseFloat(price) <= 0) {
+        showError('price', 'Please enter a valid positive price.');
+    }
+
+    if (!stock) {
+        showError('stock', 'Please enter stock quantity.');
+    } else if (isNaN(stock) || parseInt(stock) < 0) {
+        showError('stock', 'Stock cannot be negative.');
+    }
+
+    if (!processorBrand) showError('processorBrand', 'Please select a processor brand.');
+    if (!processorModel || processorModel === 'Select Model') showError('processorModel', 'Please select a processor model.');
+    if (!ram) showError('ram', 'Please select RAM size.');
+
+    // Image Validation
+    const isEdit = form.action.includes('edit');
+    let totalImages = selectedFiles.length;
+
+    if (isEdit) {
+        const variantId = form.action.split('/').pop();
+        const variant = productVariants.find(v => v._id === variantId);
+        if (variant) {
+            const existingCount = variant.images.length;
+            totalImages += (existingCount - removedImages.length);
+        }
+    }
+
+    if (totalImages < 3) {
+        showError('images', `At least 3 images are required. (Current: ${totalImages})`);
+    }
+
+    if (!isValid) {
+        e.preventDefault();
+        // Optional: Scroll to the first error
+        const firstError = document.querySelector('.text-rose-500:not(.hidden)');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+};

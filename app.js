@@ -6,9 +6,8 @@ import userRoutes from "./routes/userRoutes.js";
 import passport from "passport";
 import './config/passport.js';
 import session from "express-session";
-import User from "./models/userModel.js";
-import Cart from "./models/cartModel.js";
 import * as ErrorHandler from "./middleware/errorHandler.js";
+import { userContext } from "./middleware/userAuth.js";
 
 const app = express();
 
@@ -36,29 +35,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(async (req, res, next) => {
-  try {
-    const userId = req.session.user;
-    let user = null;
-    let cartCount = 0;
-
-    if (userId) {
-      user = await User.findById(userId);
-      const cart = await Cart.findOne({ userId });
-      if (cart && cart.items) {
-        cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
-      }
-    }
-
-    res.locals.user = user;
-    res.locals.cartCount = cartCount;
-    res.locals.loginMethod = req.session.loginMethod || null;
-    res.locals.path = req.path;
-    next();
-  } catch (error) {
-    console.error("Middleware Error", error);
-    next();
-  }
+app.use(userContext);
+app.use((req, res, next) => {
+  res.locals.loginMethod = req.session.loginMethod || null;
+  res.locals.path = req.path;
+  next();
 });
 
 app.set("view engine", "ejs");
@@ -71,6 +52,8 @@ app.use("/admin", adminRoutes);
 app.use(ErrorHandler.notFound);
 app.use(ErrorHandler.globalErrorHandler);
 
+
+
 app.listen(3000, () => {
-  console.log("Server running on port 3000");
+  console.log(`Server running on http://localhost:${3000}`);
 });

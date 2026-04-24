@@ -4,30 +4,39 @@ import Wishlist from "../../models/wishlistModel.js";
 
 // Fetch user's cart
 export const getCart = async (userId) => {
-    let cart = await Cart.findOne({ userId }).populate({
-        path: 'items.productId',
-        model: 'Product'
-    });
+    if (!userId) return { items: [] };
+
+    let cart = await Cart.findOne({ userId }).populate("items.productId").lean();
 
     if (!cart) {
         cart = await Cart.create({ userId, items: [] });
+        return cart;
     }
 
-    // Lazy Cleanup: Filter out products that are blocked
-    const originalItemCount = cart.items.length;
-    cart.items = cart.items.filter(item => item.productId && !item.productId.is_blocked);
-    
-    if (cart.items.length !== originalItemCount) {
-        await cart.save();
+    // Filter out blocked or missing products
+    const filteredItems = cart.items.filter(
+        item => item.productId && item.productId.is_blocked !== true
+    );
+
+    // Lazy Cleanup: if cart DB has more items than the filtered result, sync it
+    if (filteredItems.length !== cart.items.length) {
+        const dbCart = await Cart.findOne({ userId });
+        dbCart.items = filteredItems.map(item => ({
+            productId: item.productId._id,
+            variantId: item.variantId,
+            quantity: item.quantity
+        }));
+        await dbCart.save();
     }
 
+    cart.items = filteredItems;
     return cart;
 };
 
 // Add item to cart
 export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     let cart = await Cart.findOne({ userId });
-    
+
     if (!cart) {
         cart = new Cart({ userId, items: [] });
     }
@@ -39,6 +48,10 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
 
     const variant = product.variants.id(variantId);
     if (!variant) throw new Error("Variant not found");
+
+    if (variant.stock <= 0) {
+        throw new Error("Product is out of stock");
+    }
 
     if (variant.stock < quantity) {
         throw new Error(`Only ${variant.stock} items left in stock`);
@@ -52,14 +65,16 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     );
 
     if (existingItemIndex > -1) {
-        const totalQuantity = cart.items[existingItemIndex].quantity + quantity;
+        let totalQuantity = cart.items[existingItemIndex].quantity + quantity;
+        
+        // Cap at stock and per-product limit
+        if (totalQuantity > variant.stock) {
+            totalQuantity = variant.stock;
+        }
         if (totalQuantity > MAX_QUANTITY_PER_PRODUCT) {
-            throw new Error(`Maximum quantity per product is ${MAX_QUANTITY_PER_PRODUCT}`);
+            totalQuantity = MAX_QUANTITY_PER_PRODUCT;
         }
         
-        if (totalQuantity > variant.stock) {
-             throw new Error("Cannot add more than available stock");
-        }
         cart.items[existingItemIndex].quantity = totalQuantity;
     } else {
         if (quantity > MAX_QUANTITY_PER_PRODUCT) {
@@ -75,7 +90,10 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     await cart.save();
 
     // Remove from wishlist if it exists there
-    await Wishlist.updateOne({ userId }, { $pull: { products: productId } });
+    await Wishlist.updateOne(
+        { userId }, 
+        { $pull: { products: { productId, variantId } } }
+    );
 
     return cart;
 };

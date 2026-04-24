@@ -44,12 +44,14 @@ window.addToCart = async function(productId, variantId, quantity = 1) {
                 });
             }
         }
+        return result;
     } catch (error) {
         console.error('Error adding to cart:', error);
+        return { success: false, message: error.message };
     }
 };
 
-window.toggleWishlist = async function(event, productId) {
+window.toggleWishlist = async function(event, productId, variantId) {
     if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -59,7 +61,7 @@ window.toggleWishlist = async function(event, productId) {
         const response = await fetch('/user/wishlist/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId })
+            body: JSON.stringify({ productId, variantId })
         });
         const data = await response.json();
         if (data.success) {

@@ -38,7 +38,7 @@ export const prepareSignup = async (fullname, email, password) => {
     return {
         userData: { fullname, email, password: hashedPassword },
         otp,
-        otpExpiry: Date.now() + 15 * 1000
+        otpExpiry: Date.now() + 60 * 1000
     };
 };
 
@@ -58,7 +58,7 @@ export const resendOtp = async (email) => {
     await sendOtpEmail(email, otp);
     return {
         otp,
-        otpExpiry: Date.now() + 15 * 1000
+        otpExpiry: Date.now() + 60 * 1000
     };
 };
 
@@ -74,7 +74,7 @@ export const preparePasswordReset = async (email) => {
 
     return {
         otp,
-        otpExpiry: Date.now() + 15 * 1000
+        otpExpiry: Date.now() + 60 * 1000
     };
 };
 

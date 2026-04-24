@@ -60,13 +60,18 @@
 
             <% if (wishlist && wishlist.products && wishlist.products.length> 0) { %>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <% wishlist.products.forEach(product=> { %>
+                    <% wishlist.products.forEach(item => { 
+                         const product = item.productId;
+                         if (!product) return;
+                         const variantIdStr = item.variantId ? item.variantId.toString() : null;
+                         const variant = product.variants.find(v => v._id.toString() === variantIdStr) || product.variants[0];
+                    %>
                         <div
                             class="glass-card rounded-3xl overflow-hidden group hover:border-primary/50 transition-all duration-500">
                             <div class="relative aspect-[4/3] overflow-hidden">
-                                <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
+                                <img src="<%= (variant && variant.images && variant.images.length > 0) ? variant.images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <button onclick="removeFromWishlist('<%= product._id %>')"
+                                <button onclick="removeFromWishlist('<%= product._id %>', '<%= variant?._id %>')"
                                     class="absolute top-4 right-4 size-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-red-500 transition-all duration-300">
                                     <span class="material-symbols-outlined text-xl">close</span>
                                 </button>
@@ -76,8 +81,15 @@
                                     <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">
                                         <%= product.name %>
                                     </h3>
-                                    <span class="text-primary font-bold">₹<%= product.variants[0]?.price %></span>
+                                    <span class="text-primary font-bold">₹<%= variant?.price || 0 %></span>
                                 </div>
+                                <% if(variant) { %>
+                                    <div class="flex flex-wrap gap-2 mb-3">
+                                        <% if(variant.ram) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.ram %></span><% } %>
+                                        <% if(variant.storage) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.storage %></span><% } %>
+                                        <% if(variant.processor) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.processor %></span><% } %>
+                                    </div>
+                                <% } %>
                                 <p class="text-gray-400 text-sm line-clamp-2 mb-8">
                                     <%= product.description %>
                                 </p>
@@ -87,11 +99,18 @@
                                         class="flex-1 py-4 bg-white text-black text-center font-black text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all duration-300">
                                         View Product
                                     </a>
-                                    <button
-                                        onclick="moveToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
-                                        class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                        <span class="material-symbols-outlined">add_shopping_cart</span>
-                                    </button>
+                                    <% if (variant && variant.stock > 0) { %>
+                                        <button
+                                            onclick="moveToCart('<%= product._id %>', '<%= variant?._id %>')"
+                                            class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
+                                            <span class="material-symbols-outlined">add_shopping_cart</span>
+                                        </button>
+                                    <% } else { %>
+                                        <button disabled
+                                            class="size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed" title="Out of Stock">
+                                            <span class="material-symbols-outlined">remove_shopping_cart</span>
+                                        </button>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
@@ -113,7 +132,7 @@
         <%- include('../partials/user/footer') %>
 
             <script>
-                async function removeFromWishlist(productId) {
+                async function removeFromWishlist(productId, variantId) {
                     const result = await Swal.fire({
                         title: 'Remove from wishlist?',
                         icon: 'question',
@@ -131,7 +150,7 @@
                         const response = await fetch('/user/wishlist/remove', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productId })
+                            body: JSON.stringify({ productId, variantId })
                         });
                         const data = await response.json();
                         if (data.success) {
@@ -161,6 +180,14 @@
                                 showConfirmButton: false
                             }).then(() => {
                                 window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: data.message || 'Failed to add item to cart',
+                                background: '#0D0D0D',
+                                color: '#fff',
                             });
                         }
                     } catch (error) {

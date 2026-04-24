@@ -1,33 +1,41 @@
 import Wishlist from "../../models/wishlistModel.js";
-import Product from "../../models/productModel.js";
 
 // Fetch user's wishlist
 export const getWishlist = async (userId) => {
-    let wishlist = await Wishlist.findOne({ userId }).populate({
-        path: 'products',
-        match: { is_blocked: false } // only return products that aren't blocked
-    });
+    if (!userId) return { products: [] };
+
+    let wishlist = await Wishlist.findOne({ userId }).populate("products.productId").lean();
 
     if (!wishlist) {
         wishlist = await Wishlist.create({ userId, products: [] });
+        return wishlist;
     }
+
+    // Filter out blocked products or malformed entries
+    wishlist.products = wishlist.products.filter(
+        item => item && item.productId && item.productId.is_blocked !== true
+    );
 
     return wishlist;
 };
 
 // Toggle product in wishlist
-export const toggleWishlist = async (userId, productId) => {
+export const toggleWishlist = async (userId, productId, variantId) => {
     let wishlist = await Wishlist.findOne({ userId });
 
     if (!wishlist) {
-        wishlist = new Wishlist({ userId, products: [productId] });
+        wishlist = new Wishlist({ userId, products: [{ productId, variantId }] });
         await wishlist.save();
         return { action: 'added', wishlist };
     }
 
-    const index = wishlist.products.indexOf(productId);
+    // Filter out old malformed entries if any exist
+    wishlist.products = wishlist.products.filter(p => p && p.productId);
+
+    const index = wishlist.products.findIndex(p => p.productId.toString() === productId && p.variantId.toString() === variantId);
+    
     if (index === -1) {
-        wishlist.products.push(productId);
+        wishlist.products.push({ productId, variantId });
         await wishlist.save();
         return { action: 'added', wishlist };
     } else {
@@ -38,11 +46,11 @@ export const toggleWishlist = async (userId, productId) => {
 };
 
 // Remove product from wishlist
-export const removeFromWishlist = async (userId, productId) => {
+export const removeFromWishlist = async (userId, productId, variantId) => {
     let wishlist = await Wishlist.findOne({ userId });
 
     if (wishlist) {
-        wishlist.products = wishlist.products.filter(id => id.toString() !== productId);
+        wishlist.products = wishlist.products.filter(p => p && p.productId && !(p.productId.toString() === productId && p.variantId.toString() === variantId));
         await wishlist.save();
     }
 
@@ -53,5 +61,7 @@ export const removeFromWishlist = async (userId, productId) => {
 export const getWishlistProductIds = async (userId) => {
     if (!userId) return [];
     const wishlist = await Wishlist.findOne({ userId });
-    return wishlist ? wishlist.products.map(id => id.toString()) : [];
+    if (!wishlist) return [];
+    
+    return wishlist.products.map(p => p && p.productId ? p.productId.toString() : null).filter(Boolean);
 };

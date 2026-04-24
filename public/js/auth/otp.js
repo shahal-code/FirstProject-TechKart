@@ -49,9 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let count = timerText ? parseInt(timerText.getAttribute('data-expires-in')) : 15;
 
     if (timerElement && resendBtn && timerText) {
+        // Formatter function
+        const formatTime = (timeInSeconds) => {
+            let m = Math.floor(timeInSeconds / 60);
+            let s = timeInSeconds % 60;
+            return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+        };
+
         // Initial set to avoid delay
-        let initialSeconds = count < 10 ? '0' + count : count;
-        timerElement.innerHTML = `00:${initialSeconds}`;
+        timerElement.innerHTML = formatTime(count);
         
         if (count <= 0) {
             timerElement.innerHTML = "00:00";
@@ -69,8 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resendBtn.classList.remove('cursor-not-allowed', 'opacity-50');
                 timerText.style.display = 'none';
             } else {
-                let seconds = count < 10 ? '0' + count : count;
-                timerElement.innerHTML = `00:${seconds}`;
+                timerElement.innerHTML = formatTime(count);
                 count--;
             }
         }, 1000);
@@ -95,7 +100,7 @@ window.resendOtp = function () {
             resendBtn.classList.add('cursor-not-allowed', 'opacity-50');
             if (timerText) timerText.style.display = 'inline';
             if (timerElement) timerElement.innerHTML = `00:59`;
-            window.location.reload();
+            window.location.href = window.location.pathname;
         });
     }
 };

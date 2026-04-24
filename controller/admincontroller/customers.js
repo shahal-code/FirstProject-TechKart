@@ -14,12 +14,15 @@ export const getUsers = async (req, res) => {
     };
 
     const { users, totalUsers, totalPages } = await CustomerService.getAllUsers(query, page, limit);
+    
+    const stats=await CustomerService.getCustomerStats();
 
     res.render("admin/customers/users", {
       users,
       page,
       totalPages,
       totalUsers,
+      stats,
       search,
       activePage: "customers",
       pageTitle: "Customer CRM",
