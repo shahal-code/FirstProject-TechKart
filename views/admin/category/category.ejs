@@ -143,16 +143,16 @@
                                         class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors text-xl">search</span>
                                     <input name="search" type="text" placeholder="Search categories..."
                                         value="<%= typeof search !== 'undefined' ? search : '' %>"
-                                        class="!bg-white/5 border border-white/10 rounded-full py-2 pl-4 pr-10 text-sm w-64 focus:outline-none focus:border-primary text-white placeholder:text-slate-500" />
+                                        class="!bg-white/5 border border-white/10 rounded-xl py-2.5 pl-12 pr-10 text-sm w-64 focus:outline-none focus:border-primary text-white placeholder:text-slate-500" />
                                 </div>
                                 <button type="submit"
-                                    class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-primary/20">
-                                    Search
+                                    class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
+                                    Filter
                                 </button>
                                 <% if (typeof search !=='undefined' && search) { %>
                                     <button type="button" onclick="window.location.href='/admin/category'"
                                         class="bg-white/5 hover:bg-white/10 text-slate-400 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/10">
-                                        Clear
+                                        Reset
                                     </button>
                                     <% } %>
                             </form>

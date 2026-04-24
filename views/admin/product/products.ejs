@@ -103,20 +103,23 @@
                     <section class="glass-morphism rounded-2xl overflow-hidden border border-white/5">
                         <!-- Filters -->
                         <form action="/admin/product" method="GET"
-                            class="p-6 border-b border-white/5 flex flex-wrap items-center justify-between gap-4">
-                            <div class="flex items-center gap-6">
-                                <button type="submit"
-                                    class="bg-primary text-white text-xs font-bold px-5 py-2 rounded-lg">Apply
-                                    Filters</button>
-                                <a href="/admin/product"
-                                    class="text-slate-400 text-xs hover:text-white transition-colors">Reset Filters</a>
+                            class="p-6 border-b border-white/5 flex flex-wrap items-center gap-4">
+                            
+                            <div class="relative flex-1 max-w-md">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">search</span>
+                                <input type="text" name="search" value="<%= search || '' %>" placeholder="Search products..."
+                                    class="!bg-white/5 border border-white/10 rounded-xl py-2.5 pl-12 pr-10 text-sm w-full focus:outline-none focus:border-primary text-white placeholder:text-slate-500">
                             </div>
 
-                            <div class="relative">
-                                <input type="text" name="search" value="<%= search || '' %>" placeholder="Search"
-                                    class="!bg-white/5 border border-white/10 rounded-full py-2 pl-4 pr-10 text-sm w-64 focus:outline-none focus:border-primary text-white placeholder:text-slate-500">
+                            <div class="flex items-center gap-3">
                                 <button type="submit"
-                                    class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm hover:text-white transition-colors">search</button>
+                                    class="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg uppercase tracking-wider">
+                                    Apply Filters
+                                </button>
+                                <a href="/admin/product"
+                                    class="bg-white/5 hover:bg-white/10 text-slate-400 text-xs font-bold px-6 py-2.5 rounded-xl transition-all border border-white/10 uppercase tracking-wider">
+                                    Reset
+                                </a>
                             </div>
                         </form>
 
