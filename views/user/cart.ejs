@@ -65,7 +65,7 @@
                             if(variant) {
                             %>
                             <!-- Product Item -->
-                            <div
+                            <div id="cart-item-<%= item._id %>"
                                 class="glass p-6 rounded-xl flex flex-col sm:flex-row items-center gap-6 group hover:border-primary/50 transition-all duration-300">
                                 <div class="bg-surface-dark rounded-lg size-32 flex-shrink-0 bg-cover bg-center border border-white/5"
                                     style='background-image: url("<%= variant.images[0] %>");'>
@@ -78,30 +78,34 @@
                                         <% const specs=[]; if(variant.ram) specs.push(variant.ram); if(variant.storage)
                                             specs.push(variant.storage); if(variant.color) specs.push(variant.color); %>
                                             <%= specs.join(', ') %>
-                            </p>
-                            <div class="mt-4 flex items-center justify-center sm:justify-start gap-4">
-                                <span class="text-lg font-semibold text-primary">₹<%= variant.price %></span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-6">
-                            <div class="flex items-center gap-3 bg-white/5 p-1 rounded-full border border-white/10">
-                                <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-qty="<%= item.quantity %>" data-delta="-1"
-                                    class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
-                                    <% if(item.quantity <= 1) { %> disabled <% } %>>-</button>
-                                <input class="w-8 text-center bg-transparent border-none p-0 focus:ring-0 font-medium"
-                                    type="number" value="<%= item.quantity %>" readonly />
-                                <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-qty="<%= item.quantity %>" data-delta="1"
-                                    class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70">+</button>
-                            </div>
-                            <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
-                                                hover:text-red-500 transition-colors">
-                                                <span class="material-symbols-outlined">delete</span>
-                                                </button>
+                                    </p>
+                                    <div class="mt-4 flex items-center justify-center sm:justify-start gap-4">
+                                        <span class="text-lg font-semibold text-primary">₹<%= variant.price %></span>
+                                        <!-- Hidden span to store unit price for JS -->
+                                        <span id="price-<%= item._id %>" class="hidden"><%= variant.price %></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-3 bg-white/5 p-1 rounded-full border border-white/10">
+                                        <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-delta="-1"
+                                            id="minus-<%= item._id %>"
+                                            class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
+                                            <% if(item.quantity <= 1) { %> disabled <% } %>>-</button>
+                                        <input id="qty-input-<%= item._id %>" class="w-8 text-center bg-transparent border-none p-0 focus:ring-0 font-medium"
+                                            type="number" value="<%= item.quantity %>" readonly />
+                                        <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-delta="1"
+                                            id="plus-<%= item._id %>"
+                                            class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70">+</button>
+                                    </div>
+                                    <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
+                                                        hover:text-red-500 transition-colors">
+                                                        <span class="material-symbols-outlined">delete</span>
+                                                        </button>
                                 </div>
                             </div>
                             <% } } }) %>
                                 <% } else { %>
-                                    <div class="glass p-12 rounded-xl text-center">
+                                    <div id="empty-cart-msg" class="glass p-12 rounded-xl text-center">
                                         <span
                                             class="material-symbols-outlined text-6xl text-white/20 mb-4 block">remove_shopping_cart</span>
                                         <h3 class="text-2xl font-bold mb-2">Your cart is empty</h3>
@@ -127,7 +131,7 @@
                         <div class="space-y-4 mb-8">
                             <div class="flex justify-between items-center">
                                 <span class="text-white/60 font-medium">Subtotal</span>
-                                <span class="font-semibold">₹<%= subtotal.toFixed(2) %></span>
+                                <span id="summary-subtotal" class="font-semibold">₹<%= subtotal.toFixed(2) %></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-white/60 font-medium">Shipping</span>
@@ -135,12 +139,12 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-white/60 font-medium">Estimated Tax</span>
-                                <span class="font-semibold">₹<%= tax.toFixed(2) %></span>
+                                <span id="summary-tax" class="font-semibold">₹<%= tax.toFixed(2) %></span>
                             </div>
                             <div class="h-px bg-white/10 my-6"></div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-bold">Total</span>
-                                <span class="text-2xl font-black text-primary">₹<%= total.toFixed(2) %></span>
+                                <span id="summary-total" class="text-2xl font-black text-primary">₹<%= total.toFixed(2) %></span>
                             </div>
                         </div>
                         <div class="space-y-4">
@@ -173,7 +177,8 @@
             <script>
                 function handleQuantityChange(btn) {
                     const itemId = btn.getAttribute('data-id');
-                    const currentQuantity = parseInt(btn.getAttribute('data-qty'));
+                    const qtyInput = document.getElementById(`qty-input-${itemId}`);
+                    const currentQuantity = parseInt(qtyInput.value);
                     const delta = parseInt(btn.getAttribute('data-delta'));
                     const newQuantity = currentQuantity + delta;
 
@@ -183,8 +188,6 @@
                 }
 
                 async function updateCartItem(itemId, newQuantity) {
-                    if (newQuantity < 1) return;
-
                     try {
                         const response = await fetch('/user/cart/update', {
                             method: 'POST',
@@ -194,7 +197,26 @@
 
                         const result = await response.json();
                         if (result.success) {
-                            window.location.reload();
+                            // Update individual item quantity and buttons
+                            const qtyInput = document.getElementById(`qty-input-${itemId}`);
+                            const minusBtn = document.getElementById(`minus-${itemId}`);
+                            const plusBtn = document.getElementById(`plus-${itemId}`);
+                            
+                            qtyInput.value = newQuantity;
+                            minusBtn.disabled = newQuantity <= 1;
+
+                            // Update summary
+                            updateCartSummary(result.cart);
+                            
+                            // Update badge if exists
+                            if (typeof window.addToCart === 'function') {
+                                const badge = document.getElementById('cart-badge');
+                                if (badge) {
+                                    const totalQty = result.cart.items.reduce((total, item) => total + item.quantity, 0);
+                                    badge.textContent = totalQty;
+                                    badge.classList.toggle('hidden', totalQty === 0);
+                                }
+                            }
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -206,13 +228,6 @@
                         }
                     } catch (error) {
                         console.error('Error updating cart:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'An error occurred while updating the cart.',
-                            background: '#0D0D0D',
-                            color: '#fff'
-                        });
                     }
                 }
 
@@ -240,7 +255,19 @@
 
                         const result = await response.json();
                         if (result.success) {
-                            window.location.reload();
+                            const itemRow = document.getElementById(`cart-item-${itemId}`);
+                            if (itemRow) {
+                                itemRow.style.opacity = '0';
+                                itemRow.style.transform = 'translateY(20px)';
+                                setTimeout(() => {
+                                    itemRow.remove();
+                                    if (result.cart.items.length === 0) {
+                                        window.location.reload();
+                                    } else {
+                                        updateCartSummary(result.cart);
+                                    }
+                                }, 300);
+                            }
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -252,14 +279,26 @@
                         }
                     } catch (error) {
                         console.error('Error removing item:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'An error occurred while removing the item.',
-                            background: '#0D0D0D',
-                            color: '#fff'
-                        });
                     }
+                }
+
+                function updateCartSummary(cart) {
+                    // Recalculate subtotal using prices from the DOM since the server only sends IDs
+                    let subtotal = 0;
+                    cart.items.forEach(item => {
+                        const priceSpan = document.getElementById(`price-${item._id}`);
+                        if (priceSpan) {
+                            const price = parseFloat(priceSpan.textContent);
+                            subtotal += price * item.quantity;
+                        }
+                    });
+
+                    const tax = subtotal * 0.18; // 18% tax matching controller logic
+                    const total = subtotal + tax;
+
+                    document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+                    document.getElementById('summary-tax').textContent = `₹${tax.toFixed(2)}`;
+                    document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
                 }
             </script>
 </body>

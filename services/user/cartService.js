@@ -121,7 +121,7 @@ export const updateQuantity = async (userId, itemId, newQuantity) => {
 
     item.quantity = newQuantity;
     await cart.save();
-    return cart;
+    return await Cart.findOne({ userId }).populate('items.productId');
 };
 
 // Remove item from cart
@@ -131,5 +131,5 @@ export const removeItem = async (userId, itemId) => {
 
     cart.items = cart.items.filter(item => item._id.toString() !== itemId);
     await cart.save();
-    return cart;
+    return await Cart.findOne({ userId }).populate('items.productId');
 };
