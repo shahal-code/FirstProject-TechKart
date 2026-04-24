@@ -27,8 +27,8 @@ window.addToCart = async function(productId, variantId, quantity = 1) {
             // Update cart badge if exists
             const badge = document.getElementById('cart-badge');
             if (badge) {
-                const currentCount = parseInt(badge.textContent.trim()) || 0;
-                badge.textContent = currentCount + quantity;
+                const newTotal = result.cart.items.reduce((total, item) => total + item.quantity, 0);
+                badge.textContent = newTotal;
                 badge.classList.remove('hidden');
             }
         } else {

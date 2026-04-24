@@ -575,19 +575,52 @@
                     <div class="h-px bg-[#3b82f6] w-12 text-white"></div>
                     <h2 class="text-3xl font-black uppercase tracking-tight text-white">Related Products</h2>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
                     <% relatedProducts.forEach(rel => { %>
                     <div class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 border border-white/5">
-                        <a href="/user/product/<%= rel._id %>" class="block aspect-[4/3] relative overflow-hidden">
-                            <img src="<%= (rel.variants && rel.variants.length > 0 && rel.variants[0].images) ? rel.variants[0].images[0] : (rel.images ? rel.images[0] : '/img/placeholder.jpg') %>" 
-                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                        </a>
-                        <div class="p-6">
-                            <h3 class="text-white font-bold text-lg mb-2 truncate"><%= rel.name %></h3>
-                            <div class="flex justify-between items-center">
-                                <span class="text-primary font-bold">₹<%= rel.variants[0]?.price || '0' %></span>
-                                <a href="/user/product/<%= rel._id %>" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Details</a>
+                        <div class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
+                            <% 
+                                const isRelSoldOut = rel.variants.every(v => v.stock <= 0);
+                            %>
+                            <a href="/user/product/<%= rel._id %>" class="w-full h-full block">
+                                <img src="<%= (rel.variants && rel.variants.length > 0 && rel.variants[0].images) ? rel.variants[0].images[0] : (rel.images ? rel.images[0] : '/img/placeholder.jpg') %>" 
+                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 <%= isRelSoldOut ? 'grayscale opacity-50' : '' %>" />
+                            </a>
+                            <% if (isRelSoldOut) { %>
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                                    <span class="px-6 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">Sold Out</span>
+                                </div>
+                            <% } %>
+                            <button onclick="toggleWishlist(event, '<%= rel._id %>', '<%= rel.variants[0]?._id %>')" 
+                                    class="absolute top-4 right-4 z-10 size-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-all duration-300">
+                                <span class="material-symbols-outlined text-xl" style="<%= (wishlistProductIds && wishlistProductIds.includes(rel._id.toString())) ? 'font-variation-settings: \'FILL\' 1' : '' %>">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-8">
+                            <div class="flex justify-between items-start mb-3">
+                                <a href="/user/product/<%= rel._id %>">
+                                    <h3 class="text-white text-2xl font-black premium-heading uppercase hover:text-primary transition-colors truncate max-w-[150px]">
+                                        <%= rel.name %>
+                                    </h3>
+                                </a>
+                                <span class="text-primary font-bold text-2xl">₹<%= rel.variants[0]?.price || '0' %></span>
                             </div>
+                            <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
+                                <%= rel.description %>
+                            </p>
+                            <% if (rel.variants[0]?.stock > 0) { %>
+                                <button onclick="addToCart('<%= rel._id %>', '<%= rel.variants[0]?._id %>')"
+                                    class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            <% } else { %>
+                                <button disabled
+                                    class="w-full flex items-center justify-center gap-3 bg-white/10 text-gray-500 font-black text-xs uppercase tracking-widest py-4 rounded-full cursor-not-allowed">
+                                    <span class="material-symbols-outlined text-lg">block</span>
+                                    Out of Stock
+                                </button>
+                            <% } %>
                         </div>
                     </div>
                     <% }) %>
