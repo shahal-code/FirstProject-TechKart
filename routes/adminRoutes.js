@@ -50,8 +50,8 @@ router.get("/logout", (req, res) => {
     if (err) {
       console.log("Logout error:", err);
     }
-    res.clearCookie("connect.sid");
-    res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
+    res.clearCookie("admin.sid");
+    // res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
     res.redirect("/admin/login");
   });
 });

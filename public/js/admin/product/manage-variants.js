@@ -265,7 +265,9 @@ async function deleteVariant(variantId) {
         showCancelButton: true,
         confirmButtonColor: '#fe3f40',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: 'Yes, delete it!',
+        background: '#11151F',
+        color: '#fff'
     });
 
     if (res.isConfirmed) {
@@ -275,12 +277,24 @@ async function deleteVariant(variantId) {
                 method: 'DELETE'
             });
             if (response.ok) {
-                Swal.fire('Deleted!', 'Variant has been removed.', 'success').then(() => {
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Variant has been removed.',
+                    icon: 'success',
+                    background: '#11151F',
+                    color: '#fff'
+                }).then(() => {
                     window.location.reload();
                 });
             }
         } catch (error) {
-            Swal.fire('Error!', 'Failed to delete variant.', 'error');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to delete variant.',
+                icon: 'error',
+                background: '#11151F',
+                color: '#fff'
+            });
         }
     }
 }

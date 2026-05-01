@@ -8,7 +8,7 @@ export const LandingOrHome_load = async (req, res) => {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
         const categories = await Category.find({ is_blocked: false }).limit(4);
-        res.render("user/home/home", { 
+        res.render("user/home/home", {
             path: "/",
             products: featuredProducts,
             user: req.session.user || null,
@@ -26,7 +26,7 @@ export const Dashboard_load = async (req, res) => {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
         const categories = await Category.find({ is_blocked: false }).limit(4);
-        res.render("user/home/dashboard", { 
+        res.render("user/home/dashboard", {
             path: "/user/dashboard",
             products: featuredProducts,
             user: req.session.user || null,
@@ -105,7 +105,7 @@ export const ProductDetails_load = async (req, res) => {
         }
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
-        
+
         // Fetch cart to show current quantities
         const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
 

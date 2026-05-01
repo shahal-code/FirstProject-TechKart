@@ -1,21 +1,30 @@
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
+import Category from "../../models/categoryModel.js";
 import Wishlist from "../../models/wishlistModel.js";
 
 // Fetch user's cart
 export const getCart = async (userId) => {
     if (!userId) return { items: [] };
 
-    let cart = await Cart.findOne({ userId }).populate("items.productId").lean();
+    let cart = await Cart.findOne({ userId })
+        .populate({
+            path: "items.productId",
+            populate: { path: "category_id" }
+        })
+        .lean();
 
     if (!cart) {
         cart = await Cart.create({ userId, items: [] });
         return cart;
     }
 
-    // Filter out blocked or missing products
+    // Filter out blocked or missing products, or products with blocked categories
     const filteredItems = cart.items.filter(
-        item => item.productId && item.productId.is_blocked !== true
+        item => item.productId && 
+                item.productId.is_blocked !== true && 
+                item.productId.category_id && 
+                item.productId.category_id.is_blocked !== true
     );
 
     // Lazy Cleanup: if cart DB has more items than the filtered result, sync it
@@ -42,9 +51,11 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     }
 
     // Check if product exists and variant is valid
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate('category_id');
     if (!product) throw new Error("Product not found");
-    if (product.is_blocked) throw new Error("This product is currently unavailable");
+    if (product.is_blocked || (product.category_id && product.category_id.is_blocked)) {
+        throw new Error("This product is currently unavailable");
+    }
 
     const variant = product.variants.id(variantId);
     if (!variant) throw new Error("Variant not found");
@@ -106,7 +117,10 @@ export const updateQuantity = async (userId, itemId, newQuantity) => {
     const item = cart.items.id(itemId);
     if (!item) throw new Error("Item not found in cart");
 
-    const product = await Product.findById(item.productId);
+    const product = await Product.findById(item.productId).populate('category_id');
+    if (!product || product.is_blocked || (product.category_id && product.category_id.is_blocked)) {
+        throw new Error("This product is currently unavailable");
+    }
     const variant = product.variants.id(item.variantId);
 
     const MAX_QUANTITY_PER_PRODUCT = 5;

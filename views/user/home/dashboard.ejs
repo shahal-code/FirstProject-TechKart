@@ -87,8 +87,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap gap-5">
-                                    <button
-                                    onclick="window.location.href='/user/shop'"
+                                    <button onclick="window.location.href='/user/shop'"
                                         class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-primary text-white text-sm font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_30px_-5px_#0055FF] hover:scale-105">
                                         Shop All Laptops
                                     </button>
@@ -146,44 +145,43 @@
                                 <div class="h-1 w-20 bg-primary mx-auto rounded-full"></div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
-                                    <% 
-                                    const iconMap = {
-                                        'gaming': 'sports_esports',
-                                        'business': 'work',
-                                        'student': 'school',
-                                        'creator': 'palette',
-                                        'professional': 'work'
-                                    };
-                                    %>
-                                    <% categories.forEach(category => { 
-                                        const lowerName = category.name.toLowerCase();
-                                        let icon = 'devices';
-                                        for (const [key, val] of Object.entries(iconMap)) {
+                                <% if (typeof categories !=='undefined' && categories.length> 0) { %>
+                                    <% const iconMap={ 'gaming' : 'sports_esports' , 'business' : 'work' , 'student'
+                                        : 'school' , 'creator' : 'palette' , 'professional' : 'work' }; %>
+                                        <% categories.forEach(category=> {
+                                            const lowerName = category.name.toLowerCase();
+                                            let icon = 'devices';
+                                            for (const [key, val] of Object.entries(iconMap)) {
                                             if (lowerName.includes(key)) {
-                                                icon = val;
-                                                break;
+                                            icon = val;
+                                            break;
                                             }
-                                        }
-                                    %>
-                                    <div onclick="window.location.href='/user/shop?category=<%= category._id %>'"
-                                        class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
-                                        <div
-                                            class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                            <span class="material-symbols-outlined text-3xl"><%= icon %></span>
-                                        </div>
-                                        <div class="flex flex-col gap-2">
-                                            <h3 class="text-white text-xl font-bold premium-heading uppercase"><%= category.name %></h3>
-                                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-2"><%= category.description %></p>
-                                        </div>
-                                        <div
-                                            class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
-                                            Learn More <span
-                                                class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                                <% } %>
+                                            }
+                                            %>
+                                            <div onclick="window.location.href='/user/shop?category=<%= category._id %>'"
+                                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                                <div
+                                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                    <span class="material-symbols-outlined text-3xl">
+                                                        <%= icon %>
+                                                    </span>
+                                                </div>
+                                                <div class="flex flex-col gap-2">
+                                                    <h3 class="text-white text-xl font-bold premium-heading uppercase">
+                                                        <%= category.name %>
+                                                    </h3>
+                                                    <p class="text-gray-400 text-sm leading-relaxed line-clamp-2">
+                                                        <%= category.description %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                                    Learn More <span
+                                                        class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -195,48 +193,64 @@
                                 href="/user/shop">See All</a>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                            <% products.forEach(product => { %>
-                            <div class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
-                                <a href="/user/product/<%= product._id %>" class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
-                                    <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
-                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
-                                    <% if (product.variants[0]?.stock <= 0) { %>
-                                        <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                                            <span class="px-6 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">Sold Out</span>
+                            <% products.forEach(product=> { %>
+                                <div
+                                    class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                                    <a href="/user/product/<%= product._id %>"
+                                        class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
+                                        <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
+                                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
+                                        <% if (product.variants[0]?.stock <=0) { %>
+                                            <div
+                                                class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                                                <span
+                                                    class="px-6 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">Sold
+                                                    Out</span>
+                                            </div>
+                                            <% } %>
+                                                <button
+                                                    onclick="toggleWishlist(event, '<%= product._id %>', '<%= product.variants[0]?._id %>')"
+                                                    class="absolute top-4 right-4 z-10 size-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-all duration-300">
+                                                    <span class="material-symbols-outlined text-xl"
+                                                        style="<%= (wishlistProductIds && wishlistProductIds.includes(product._id.toString())) ? 'font-variation-settings: \'FILL\' 1' : '' %>">favorite</span>
+                                                </button>
+                                    </a>
+                                    <div class="p-8">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <a href="/user/product/<%= product._id %>">
+                                                <h3
+                                                    class="text-white text-2xl font-black premium-heading uppercase hover:text-primary transition-colors">
+                                                    <%= product.name %>
+                                                </h3>
+                                            </a>
+                                            <span class="text-primary font-bold text-2xl">₹<%=
+                                                    product.variants[0]?.price || '0' %></span>
                                         </div>
-                                    <% } %>
-                                    <button onclick="toggleWishlist(event, '<%= product._id %>', '<%= product.variants[0]?._id %>')" 
-                                            class="absolute top-4 right-4 z-10 size-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-all duration-300">
-                                        <span class="material-symbols-outlined text-xl" style="<%= (wishlistProductIds && wishlistProductIds.includes(product._id.toString())) ? 'font-variation-settings: \'FILL\' 1' : '' %>">favorite</span>
-                                    </button>
-                                </a>
-                                <div class="p-8">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <a href="/user/product/<%= product._id %>">
-                                            <h3 class="text-white text-2xl font-black premium-heading uppercase hover:text-primary transition-colors">
-                                                <%= product.name %>
-                                            </h3>
-                                        </a>
-                                        <span class="text-primary font-bold text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
+                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
+                                            <%= product.description %>
+                                        </p>
+                                        <button
+                                            onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
+                                            class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+                                            Add to Cart
+                                        </button>
                                     </div>
-                                    <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
-                                        <%= product.description %>
-                                    </p>
-                                    <button onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
-                                        class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                        <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-                                        Add to Cart
-                                    </button>
                                 </div>
-                            </div>
-                            <% }) %>
+                                <% }) %>
                         </div>
                     </div>
                 </main>
                 <%- include('../../partials/user/footer') %>
         </div>
     </div>
-
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || (typeof window.performance != 'undefined' && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
 </body>
 
 </html>

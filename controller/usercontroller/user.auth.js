@@ -66,7 +66,7 @@ export const signup = async (req, res) => {
         }
 
         const { userData, otp, otpExpiry } = await AuthService.prepareSignup(fullname, email, password);
-        
+
         req.session.userData = userData;
         req.session.otp = otp;
         req.session.otpExpiry = otpExpiry;
@@ -159,7 +159,7 @@ export const fogotPassword = async (req, res) => {
         if (emailError) return res.redirect(303, `/user/forgot-password?message=${encodeURIComponent(emailError)}&email=${encodeURIComponent(email)}`);
 
         const { otp, otpExpiry } = await AuthService.preparePasswordReset(email);
-        
+
         req.session.resetEmail = email;
         req.session.otp = otp;
         req.session.otpExpiry = otpExpiry;
@@ -205,8 +205,8 @@ export const isLogout = (req, res) => {
             console.log("Logout error:", err);
             return res.redirect("/user");
         }
-        res.clearCookie("connect.sid");
-        res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
+        res.clearCookie("user.id");
+        // res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
         res.redirect("/user/login");
     });
 };

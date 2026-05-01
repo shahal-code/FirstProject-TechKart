@@ -2,14 +2,15 @@ import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
 
 
+
 async function getProductDetails(productId) {
     const product = await Product.findById(productId)
         .populate("category_id")
         .lean();
 
-    if (!product || product.is_blocked) return null;
+    if (!product || product.is_blocked || (product.category_id && product.category_id.is_blocked)) return null;
 
-    // Fetch related products (same category)
+    // Fetch related products (same category and not blocked)
     const relatedProducts = await Product.find({
         category_id: product.category_id?._id || product.category_id,
         _id: { $ne: product._id },
@@ -19,21 +20,43 @@ async function getProductDetails(productId) {
         .limit(4)
         .lean();
 
-    return { product, relatedProducts };
+    // Filter related products for blocked categories
+    const filteredRelated = relatedProducts.filter(p => p.category_id && !p.category_id.is_blocked);
+
+    return { product, relatedProducts: filteredRelated };
 }
 
 const getShopData = async (queryParams) => {
     const { search, category, sort, page = 1, limit = 6 } = queryParams;
 
+    // Fetch active categories to filter products
+    const activeCategories = await Category.find({ is_blocked: false }).select('_id name');
+    const activeCategoryIds = activeCategories.map(cat => cat._id);
+
     // 1. Build the Query Object
-    let query = { is_blocked: { $ne: true } }; // Base query: only show unblocked products
+    let query = { 
+        is_blocked: { $ne: true },
+        category_id: { $in: activeCategoryIds } // Only show products in active categories
+    };
 
     if (search) {
         query.name = { $regex: search, $options: "i" }; // Case insensitive search
     }
 
     if (category) {
-        query.category_id = category;
+        // If a category filter is applied, it must also be in the active list
+        if (activeCategoryIds.some(id => id.toString() === category)) {
+            query.category_id = category;
+        } else {
+            // If the requested category is blocked, return no results
+            return {
+                products: [],
+                categories: activeCategories,
+                totalProducts: 0,
+                currentPage: parseInt(page),
+                totalPages: 0
+            };
+        }
     }
 
     if (queryParams.processor) {
@@ -121,11 +144,10 @@ const getShopData = async (queryParams) => {
         .lean();
 
     const totalProducts = await Product.countDocuments(query);
-    const categories = await Category.find({ is_blocked: false });
 
     return {
         products,
-        categories,
+        categories: activeCategories,
         totalProducts,
         currentPage: parseInt(page),
         totalPages: Math.ceil(totalProducts / limit)
@@ -133,7 +155,13 @@ const getShopData = async (queryParams) => {
 };
 
 async function getFeaturedProducts(limit = 3) {
-    return await Product.find({ is_blocked: { $ne: true } })
+    const activeCategories = await Category.find({ is_blocked: false }).select('_id name');
+    const activeCategoryIds = activeCategories.map(cat => cat._id);
+
+    return await Product.find({ 
+        is_blocked: { $ne: true },
+        category_id: { $in: activeCategoryIds }
+    })
         .populate("category_id")
         .sort({ createdAt: -1 })
         .limit(limit)
@@ -145,3 +173,8 @@ export {
     getProductDetails,
     getFeaturedProducts
 };
+
+
+
+
+

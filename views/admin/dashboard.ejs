@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>TechKart Admin Top Performance Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-      rel="stylesheet"
-    />
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: "#0055ff",
-              "background-light": "#f5f6f8",
-              "background-dark": "#0d0d0d",
-              "card-bg": "rgba(23, 33, 54, 0.4)",
-            },
-            fontFamily: {
-              display: ["Space Grotesk", "sans-serif"],
-            },
-            borderRadius: {
-              DEFAULT: "0.5rem",
-              lg: "1rem",
-              xl: "1.5rem",
-              full: "9999px",
-            },
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>TechKart Admin Top Performance Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#0055ff",
+            "background-light": "#f5f6f8",
+            "background-dark": "#0d0d0d",
+            "card-bg": "rgba(23, 33, 54, 0.4)",
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+            lg: "1rem",
+            xl: "1.5rem",
+            full: "9999px",
           },
         },
-      };
-    </script>
-    <style type="text/tailwindcss">
-      body {
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    body {
         font-family: "Space Grotesk", sans-serif;
       }
       .glass-morphism {
@@ -73,581 +71,372 @@
         border-radius: 10px;
       }
     </style>
-  </head>
-  <body class="flex min-h-screen bg-background-dark text-white">
-    <%- include('../partials/admin/sidebar') %>
-    <main
-      class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar min-w-0"
-    >
+</head>
+
+<body class="flex min-h-screen bg-background-dark text-white">
+  <%- include('../partials/admin/sidebar') %>
+    <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar min-w-0">
       <%- include('../partials/admin/header') %>
-      <div class="p-4 md:p-10 space-y-6 md:space-y-10">
-        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden group"
-          >
-            <div class="flex justify-between items-start mb-4">
-              <span
-                class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                >Total Revenue</span
-              >
-              <span class="material-symbols-outlined text-primary/60"
-                >payments</span
-              >
-            </div>
-            <div class="flex items-end gap-3">
-              <h3 class="text-3xl font-bold tracking-tight">₹428,192</h3>
-              <span
-                class="text-emerald-400 text-xs font-bold pb-1 flex items-center"
-                >+12.5%</span
-              >
-            </div>
-            <div class="mt-6 h-12 w-full relative">
-              <svg class="w-full h-full" viewBox="0 0 200 60">
-                <path
-                  class="glow-line"
-                  d="M0 50 Q 25 45, 50 35 T 100 40 T 150 20 T 200 10"
-                  fill="none"
-                  stroke="#0055ff"
-                  stroke-width="3"
-                ></path>
-              </svg>
-            </div>
-          </div>
-          <div
-            class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden"
-          >
-            <div class="flex justify-between items-start mb-4">
-              <span
-                class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                >Active Orders</span
-              >
-              <span class="material-symbols-outlined text-primary/60"
-                >local_shipping</span
-              >
-            </div>
-            <h3 class="text-3xl font-bold tracking-tight">1,248</h3>
-            <p class="text-xs text-slate-500 mt-2 font-medium">
-              42 orders pending fulfillment
-            </p>
-            <div
-              class="mt-4 w-full bg-white/5 h-1.5 rounded-full overflow-hidden"
-            >
-              <div
-                class="bg-primary h-full w-3/4 shadow-[0_0_8px_rgba(0,85,255,0.4)]"
-              ></div>
-            </div>
-          </div>
-          <div
-            class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden"
-          >
-            <div class="flex justify-between items-start mb-4">
-              <span
-                class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                >Total Users</span
-              >
-              <span class="material-symbols-outlined text-primary/60"
-                >group_add</span
-              >
-            </div>
-            <h3 class="text-3xl font-bold tracking-tight">85.4k</h3>
-            <p class="text-xs text-slate-500 mt-2 font-medium">
-              +2.1k from last month
-            </p>
-            <div class="flex mt-4 -space-x-2">
-              <div
-                class="w-6 h-6 rounded-full bg-slate-700 border-2 border-[#0d0d0d]"
-              ></div>
-              <div
-                class="w-6 h-6 rounded-full bg-slate-600 border-2 border-[#0d0d0d]"
-              ></div>
-              <div
-                class="w-6 h-6 rounded-full bg-slate-500 border-2 border-[#0d0d0d]"
-              ></div>
-              <div
-                class="w-6 h-6 rounded-full bg-primary/20 border-2 border-[#0d0d0d] flex items-center justify-center"
-              >
-                <span class="text-[8px] font-bold">+</span>
+        <div class="p-4 md:p-10 space-y-6 md:space-y-10">
+          <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden group">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Revenue</span>
+                <span class="material-symbols-outlined text-primary/60">payments</span>
               </div>
-            </div>
-          </div>
-          <div
-            class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden"
-          >
-            <div class="flex justify-between items-start mb-4">
-              <span
-                class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                >Stock Alerts</span
-              >
-              <span class="material-symbols-outlined text-amber-500/80"
-                >warning</span
-              >
-            </div>
-            <h3 class="text-3xl font-bold tracking-tight">14</h3>
-            <p class="text-xs text-slate-500 mt-2 font-medium">
-              Items requiring restock
-            </p>
-            <button
-              class="mt-4 text-[10px] font-bold text-primary uppercase tracking-widest hover:underline"
-            >
-              View Inventory
-            </button>
-          </div>
-        </section>
-        <section class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <div
-            class="glass-morphism high-gloss rounded-2xl overflow-hidden flex flex-col min-h-[520px]"
-          >
-            <div
-              class="p-6 border-b border-white/5 flex items-center justify-between bg-white/5"
-            >
-              <div>
-                <h3 class="font-bold tracking-tight text-lg">
-                  Top 10 Products
-                </h3>
-                <p
-                  class="text-[10px] text-slate-500 uppercase tracking-[0.2em]"
-                >
-                  Best-selling units by revenue
-                </p>
+              <div class="flex items-end gap-3">
+                <h3 class="text-3xl font-bold tracking-tight">₹428,192</h3>
+                <span class="text-emerald-400 text-xs font-bold pb-1 flex items-center">+12.5%</span>
               </div>
-              <button
-                class="bg-primary/10 text-primary p-2 rounded-lg hover:bg-primary/20 transition-all"
-              >
-                <span class="material-symbols-outlined text-sm">download</span>
-              </button>
-            </div>
-            <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
-              <div class="space-y-5">
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">01</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >TechKart Ultra X15</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹142,500
-                        <span class="text-slate-500 font-normal ml-2"
-                          >98 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[95%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">02</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >ProBook Pro 15</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹118,200
-                        <span class="text-slate-500 font-normal ml-2"
-                          >82 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[82%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">03</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >Zenith Gaming G9</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹94,000
-                        <span class="text-slate-500 font-normal ml-2"
-                          >45 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[65%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">04</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >SlimAir 13 Ultra</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹82,900
-                        <span class="text-slate-500 font-normal ml-2"
-                          >74 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[58%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">05</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >Nexus Workstation Z1</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹76,000
-                        <span class="text-slate-500 font-normal ml-2"
-                          >12 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[52%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 group">
-                  <div class="text-xs font-bold text-primary/40 w-4">06</div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                      <span class="text-sm font-semibold text-slate-200"
-                        >CoreBook Lite 14</span
-                      >
-                      <span class="text-xs font-bold text-white"
-                        >₹54,200
-                        <span class="text-slate-500 font-normal ml-2"
-                          >115 units</span
-                        ></span
-                      >
-                    </div>
-                    <div
-                      class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden"
-                    >
-                      <div
-                        class="bg-primary h-full w-[45%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="glass-morphism high-gloss rounded-2xl overflow-hidden flex flex-col min-h-[520px]"
-          >
-            <div
-              class="p-6 border-b border-white/5 flex items-center justify-between bg-white/5"
-            >
-              <div>
-                <h3 class="font-bold tracking-tight text-lg">
-                  Category Performance
-                </h3>
-                <p
-                  class="text-[10px] text-slate-500 uppercase tracking-[0.2em]"
-                >
-                  Revenue Distribution
-                </p>
-              </div>
-              <div class="flex gap-2">
-                <div
-                  class="bg-white/5 border border-white/10 text-[10px] font-bold rounded-lg py-1 px-3 text-slate-400 uppercase tracking-widest"
-                >
-                  Orders
-                </div>
-                <div
-                  class="bg-primary/20 border border-primary/30 text-[10px] font-bold rounded-lg py-1 px-3 text-primary uppercase tracking-widest"
-                >
-                  Revenue
-                </div>
-              </div>
-            </div>
-            <div class="flex-1 p-8 flex flex-col">
-              <div class="flex-1 flex items-center justify-center relative">
-                <svg class="w-64 h-64 -rotate-90" viewBox="0 0 100 100">
-                  <circle
-                    class="text-white/5"
-                    cx="50"
-                    cy="50"
-                    fill="transparent"
-                    r="40"
-                    stroke="currentColor"
-                    stroke-width="8"
-                  ></circle>
-                  <circle
-                    class="text-primary glow-line"
-                    cx="50"
-                    cy="50"
-                    fill="transparent"
-                    r="40"
-                    stroke="currentColor"
-                    stroke-dasharray="251.2"
-                    stroke-dashoffset="138.16"
-                    stroke-linecap="round"
-                    stroke-width="10"
-                  ></circle>
-                  <circle
-                    class="text-white/40"
-                    cx="50"
-                    cy="50"
-                    fill="transparent"
-                    r="40"
-                    stroke="currentColor"
-                    stroke-dasharray="251.2"
-                    stroke-dashoffset="188.4"
-                    stroke-linecap="round"
-                    stroke-width="6"
-                    transform="rotate(162 50 50)"
-                  ></circle>
-                  <circle
-                    class="text-white/20"
-                    cx="50"
-                    cy="50"
-                    fill="transparent"
-                    r="40"
-                    stroke="currentColor"
-                    stroke-dasharray="251.2"
-                    stroke-dashoffset="200.96"
-                    stroke-linecap="round"
-                    stroke-width="4"
-                    transform="rotate(252 50 50)"
-                  ></circle>
+              <div class="mt-6 h-12 w-full relative">
+                <svg class="w-full h-full" viewBox="0 0 200 60">
+                  <path class="glow-line" d="M0 50 Q 25 45, 50 35 T 100 40 T 150 20 T 200 10" fill="none"
+                    stroke="#0055ff" stroke-width="3"></path>
                 </svg>
-                <div
-                  class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-                >
-                  <span class="text-4xl font-bold">₹428k</span>
-                  <span
-                    class="text-[10px] text-slate-500 uppercase tracking-widest font-bold"
-                    >Total Sales</span
-                  >
-                </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mt-4">
-                <div class="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div class="flex items-center gap-2 mb-1">
-                    <div
-                      class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#0055ff]"
-                    ></div>
-                    <span
-                      class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                      >Gaming</span
-                    >
-                  </div>
-                  <div class="text-lg font-bold">₹192,600</div>
-                  <div class="text-[10px] text-emerald-400 font-bold">
-                    +18.2%
-                  </div>
-                </div>
-                <div class="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div class="flex items-center gap-2 mb-1">
-                    <div class="w-2 h-2 rounded-full bg-white/40"></div>
-                    <span
-                      class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                      >Business</span
-                    >
-                  </div>
-                  <div class="text-lg font-bold">₹107,000</div>
-                  <div class="text-[10px] text-slate-500 font-bold">+2.4%</div>
-                </div>
-                <div class="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div class="flex items-center gap-2 mb-1">
-                    <div class="w-2 h-2 rounded-full bg-white/20"></div>
-                    <span
-                      class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                      >Student</span
-                    >
-                  </div>
-                  <div class="text-lg font-bold">₹85,600</div>
-                  <div class="text-[10px] text-amber-400 font-bold">-1.5%</div>
-                </div>
-                <div class="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div class="flex items-center gap-2 mb-1">
-                    <div class="w-2 h-2 rounded-full bg-white/10"></div>
-                    <span
-                      class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                      >Other</span
-                    >
-                  </div>
-                  <div class="text-lg font-bold">₹42,800</div>
-                  <div class="text-[10px] text-slate-500 font-bold">Stable</div>
+            </div>
+            <div class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Orders</span>
+                <span class="material-symbols-outlined text-primary/60">local_shipping</span>
+              </div>
+              <h3 class="text-3xl font-bold tracking-tight">1,248</h3>
+              <p class="text-xs text-slate-500 mt-2 font-medium">
+                42 orders pending fulfillment
+              </p>
+              <div class="mt-4 w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-primary h-full w-3/4 shadow-[0_0_8px_rgba(0,85,255,0.4)]"></div>
+              </div>
+            </div>
+            <div class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Users</span>
+                <span class="material-symbols-outlined text-primary/60">group_add</span>
+              </div>
+              <h3 class="text-3xl font-bold tracking-tight">85.4k</h3>
+              <p class="text-xs text-slate-500 mt-2 font-medium">
+                +2.1k from last month
+              </p>
+              <div class="flex mt-4 -space-x-2">
+                <div class="w-6 h-6 rounded-full bg-slate-700 border-2 border-[#0d0d0d]"></div>
+                <div class="w-6 h-6 rounded-full bg-slate-600 border-2 border-[#0d0d0d]"></div>
+                <div class="w-6 h-6 rounded-full bg-slate-500 border-2 border-[#0d0d0d]"></div>
+                <div
+                  class="w-6 h-6 rounded-full bg-primary/20 border-2 border-[#0d0d0d] flex items-center justify-center">
+                  <span class="text-[8px] font-bold">+</span>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
-          <div
-            class="lg:col-span-2 glass-morphism rounded-xl overflow-hidden flex flex-col"
-          >
-            <div
-              class="p-6 border-b border-white/5 flex items-center justify-between"
-            >
-              <h3 class="font-bold tracking-tight">Recent Orders</h3>
-              <button
-                class="text-xs text-slate-400 hover:text-white transition-colors"
-              >
-                View All
+            <div class="glass-morphism high-gloss p-6 rounded-xl relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Stock Alerts</span>
+                <span class="material-symbols-outlined text-amber-500/80">warning</span>
+              </div>
+              <h3 class="text-3xl font-bold tracking-tight">14</h3>
+              <p class="text-xs text-slate-500 mt-2 font-medium">
+                Items requiring restock
+              </p>
+              <button class="mt-4 text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">
+                View Inventory
               </button>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left">
-                <thead>
-                  <tr
-                    class="text-[10px] uppercase tracking-[0.2em] text-slate-500 border-b border-white/5"
-                  >
-                    <th class="px-6 py-4 font-semibold">Order ID</th>
-                    <th class="px-6 py-4 font-semibold">Customer</th>
-                    <th class="px-6 py-4 font-semibold">Status</th>
-                    <th class="px-6 py-4 font-semibold">Amount</th>
-                    <th class="px-6 py-4 font-semibold">Action</th>
-                  </tr>
-                </thead>
-                <tbody class="text-sm">
-                  <tr
-                    class="table-row-hover border-b border-white/5 transition-colors"
-                  >
-                    <td class="px-6 py-4 font-display font-medium text-primary">
-                      #TK-8821
-                    </td>
-                    <td class="px-6 py-4">Marcus Sterling</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded uppercase"
-                        >Delivered</span
-                      >
-                    </td>
-                    <td class="px-6 py-4 font-bold">₹1,299.00</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white"
-                        >more_vert</span
-                      >
-                    </td>
-                  </tr>
-                  <tr
-                    class="table-row-hover border-b border-white/5 transition-colors"
-                  >
-                    <td class="px-6 py-4 font-display font-medium text-primary">
-                      #TK-8822
-                    </td>
-                    <td class="px-6 py-4">Elena Rossi</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase"
-                        >Processing</span
-                      >
-                    </td>
-                    <td class="px-6 py-4 font-bold">₹849.50</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white"
-                        >more_vert</span
-                      >
-                    </td>
-                  </tr>
-                  <tr
-                    class="table-row-hover border-b border-white/5 transition-colors"
-                  >
-                    <td class="px-6 py-4 font-display font-medium text-primary">
-                      #TK-8823
-                    </td>
-                    <td class="px-6 py-4">Julian Thorne</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="px-2 py-1 bg-amber-500/10 text-amber-400 text-[10px] font-bold rounded uppercase"
-                        >Shipped</span
-                      >
-                    </td>
-                    <td class="px-6 py-4 font-bold">₹2,100.00</td>
-                    <td class="px-6 py-4">
-                      <span
-                        class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white"
-                        >more_vert</span
-                      >
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="glass-morphism rounded-xl p-6 flex flex-col">
-            <div class="mb-6 flex items-center justify-between">
-              <h3 class="font-bold tracking-tight">Active Campaigns</h3>
-              <span
-                class="text-[10px] font-bold text-primary uppercase tracking-widest"
-                >LIVE</span
-              >
-            </div>
-            <div class="flex-1 flex flex-col justify-center space-y-6">
-              <div class="space-y-2">
-                <div
-                  class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400"
-                >
-                  <span>Summer Tech Sale</span>
-                  <span class="text-white font-bold">64%</span>
+          </section>
+          <section class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div class="glass-morphism high-gloss rounded-2xl overflow-hidden flex flex-col min-h-[520px]">
+              <div class="p-6 border-b border-white/5 flex items-center justify-between bg-white/5">
+                <div>
+                  <h3 class="font-bold tracking-tight text-lg">
+                    Top 10 Products
+                  </h3>
+                  <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em]">
+                    Best-selling units by revenue
+                  </p>
                 </div>
-                <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                  <div
-                    class="bg-primary h-full w-[64%] shadow-[0_0_10px_rgba(0,85,255,0.5)]"
-                  ></div>
-                </div>
+                <button class="bg-primary/10 text-primary p-2 rounded-lg hover:bg-primary/20 transition-all">
+                  <span class="material-symbols-outlined text-sm">download</span>
+                </button>
               </div>
-              <div class="space-y-2">
-                <div
-                  class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400"
-                >
-                  <span>Back to School</span>
-                  <span class="text-white font-bold">42%</span>
-                </div>
-                <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                  <div
-                    class="bg-primary h-full w-[42%] shadow-[0_0_10px_rgba(0,85,255,0.5)]"
-                  ></div>
+              <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+                <div class="space-y-5">
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">01</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">TechKart Ultra X15</span>
+                        <span class="text-xs font-bold text-white">₹142,500
+                          <span class="text-slate-500 font-normal ml-2">98 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[95%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">02</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">ProBook Pro 15</span>
+                        <span class="text-xs font-bold text-white">₹118,200
+                          <span class="text-slate-500 font-normal ml-2">82 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[82%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">03</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">Zenith Gaming G9</span>
+                        <span class="text-xs font-bold text-white">₹94,000
+                          <span class="text-slate-500 font-normal ml-2">45 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[65%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">04</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">SlimAir 13 Ultra</span>
+                        <span class="text-xs font-bold text-white">₹82,900
+                          <span class="text-slate-500 font-normal ml-2">74 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[58%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">05</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">Nexus Workstation Z1</span>
+                        <span class="text-xs font-bold text-white">₹76,000
+                          <span class="text-slate-500 font-normal ml-2">12 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[52%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 group">
+                    <div class="text-xs font-bold text-primary/40 w-4">06</div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-semibold text-slate-200">CoreBook Lite 14</span>
+                        <span class="text-xs font-bold text-white">₹54,200
+                          <span class="text-slate-500 font-normal ml-2">115 units</span></span>
+                      </div>
+                      <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[45%] shadow-[0_0_15px_rgba(0,85,255,0.4)] rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div
-              class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 uppercase font-bold tracking-[0.2em]"
-            >
-              <span>Conversion Rate</span>
-              <span class="text-emerald-400">4.82%</span>
+            <div class="glass-morphism high-gloss rounded-2xl overflow-hidden flex flex-col min-h-[520px]">
+              <div class="p-6 border-b border-white/5 flex items-center justify-between bg-white/5">
+                <div>
+                  <h3 class="font-bold tracking-tight text-lg">
+                    Category Performance
+                  </h3>
+                  <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em]">
+                    Revenue Distribution
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <div
+                    class="bg-white/5 border border-white/10 text-[10px] font-bold rounded-lg py-1 px-3 text-slate-400 uppercase tracking-widest">
+                    Orders
+                  </div>
+                  <div
+                    class="bg-primary/20 border border-primary/30 text-[10px] font-bold rounded-lg py-1 px-3 text-primary uppercase tracking-widest">
+                    Revenue
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1 p-8 flex flex-col">
+                <div class="flex-1 flex items-center justify-center relative">
+                  <svg class="w-64 h-64 -rotate-90" viewBox="0 0 100 100">
+                    <circle class="text-white/5" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor"
+                      stroke-width="8"></circle>
+                    <circle class="text-primary glow-line" cx="50" cy="50" fill="transparent" r="40"
+                      stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="138.16" stroke-linecap="round"
+                      stroke-width="10"></circle>
+                    <circle class="text-white/40" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor"
+                      stroke-dasharray="251.2" stroke-dashoffset="188.4" stroke-linecap="round" stroke-width="6"
+                      transform="rotate(162 50 50)"></circle>
+                    <circle class="text-white/20" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor"
+                      stroke-dasharray="251.2" stroke-dashoffset="200.96" stroke-linecap="round" stroke-width="4"
+                      transform="rotate(252 50 50)"></circle>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span class="text-4xl font-bold">₹428k</span>
+                    <span class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Total Sales</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                  <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#0055ff]"></div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Gaming</span>
+                    </div>
+                    <div class="text-lg font-bold">₹192,600</div>
+                    <div class="text-[10px] text-emerald-400 font-bold">
+                      +18.2%
+                    </div>
+                  </div>
+                  <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="w-2 h-2 rounded-full bg-white/40"></div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Business</span>
+                    </div>
+                    <div class="text-lg font-bold">₹107,000</div>
+                    <div class="text-[10px] text-slate-500 font-bold">+2.4%</div>
+                  </div>
+                  <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Student</span>
+                    </div>
+                    <div class="text-lg font-bold">₹85,600</div>
+                    <div class="text-[10px] text-amber-400 font-bold">-1.5%</div>
+                  </div>
+                  <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Other</span>
+                    </div>
+                    <div class="text-lg font-bold">₹42,800</div>
+                    <div class="text-[10px] text-slate-500 font-bold">Stable</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
-      </div>
+          </section>
+          <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
+            <div class="lg:col-span-2 glass-morphism rounded-xl overflow-hidden flex flex-col">
+              <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h3 class="font-bold tracking-tight">Recent Orders</h3>
+                <button class="text-xs text-slate-400 hover:text-white transition-colors">
+                  View All
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead>
+                    <tr class="text-[10px] uppercase tracking-[0.2em] text-slate-500 border-b border-white/5">
+                      <th class="px-6 py-4 font-semibold">Order ID</th>
+                      <th class="px-6 py-4 font-semibold">Customer</th>
+                      <th class="px-6 py-4 font-semibold">Status</th>
+                      <th class="px-6 py-4 font-semibold">Amount</th>
+                      <th class="px-6 py-4 font-semibold">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm">
+                    <tr class="table-row-hover border-b border-white/5 transition-colors">
+                      <td class="px-6 py-4 font-display font-medium text-primary">
+                        #TK-8821
+                      </td>
+                      <td class="px-6 py-4">Marcus Sterling</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded uppercase">Delivered</span>
+                      </td>
+                      <td class="px-6 py-4 font-bold">₹1,299.00</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white">more_vert</span>
+                      </td>
+                    </tr>
+                    <tr class="table-row-hover border-b border-white/5 transition-colors">
+                      <td class="px-6 py-4 font-display font-medium text-primary">
+                        #TK-8822
+                      </td>
+                      <td class="px-6 py-4">Elena Rossi</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">Processing</span>
+                      </td>
+                      <td class="px-6 py-4 font-bold">₹849.50</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white">more_vert</span>
+                      </td>
+                    </tr>
+                    <tr class="table-row-hover border-b border-white/5 transition-colors">
+                      <td class="px-6 py-4 font-display font-medium text-primary">
+                        #TK-8823
+                      </td>
+                      <td class="px-6 py-4">Julian Thorne</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="px-2 py-1 bg-amber-500/10 text-amber-400 text-[10px] font-bold rounded uppercase">Shipped</span>
+                      </td>
+                      <td class="px-6 py-4 font-bold">₹2,100.00</td>
+                      <td class="px-6 py-4">
+                        <span
+                          class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white">more_vert</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="glass-morphism rounded-xl p-6 flex flex-col">
+              <div class="mb-6 flex items-center justify-between">
+                <h3 class="font-bold tracking-tight">Active Campaigns</h3>
+                <span class="text-[10px] font-bold text-primary uppercase tracking-widest">LIVE</span>
+              </div>
+              <div class="flex-1 flex flex-col justify-center space-y-6">
+                <div class="space-y-2">
+                  <div class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400">
+                    <span>Summer Tech Sale</span>
+                    <span class="text-white font-bold">64%</span>
+                  </div>
+                  <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                    <div class="bg-primary h-full w-[64%] shadow-[0_0_10px_rgba(0,85,255,0.5)]"></div>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400">
+                    <span>Back to School</span>
+                    <span class="text-white font-bold">42%</span>
+                  </div>
+                  <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                    <div class="bg-primary h-full w-[42%] shadow-[0_0_10px_rgba(0,85,255,0.5)]"></div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 uppercase font-bold tracking-[0.2em]">
+                <span>Conversion Rate</span>
+                <span class="text-emerald-400">4.82%</span>
+              </div>
+            </div>
+          </section>
+        </div>
     </main>
     <div
-      class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full"
-    ></div>
+      class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full">
+    </div>
     <div
-      class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full"
-    ></div>
-  </body>
+      class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full">
+    </div>
+
+    <script>
+      window.addEventListener('pageshow', function (event) {
+        if (event.persisted || (typeof window.performance != 'undefined' && window.performance.navigation.type === 2)) {
+          window.location.reload();
+        }
+      });
+    </script>
+
+</body>
+
 </html>

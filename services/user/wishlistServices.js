@@ -4,16 +4,25 @@ import Wishlist from "../../models/wishlistModel.js";
 export const getWishlist = async (userId) => {
     if (!userId) return { products: [] };
 
-    let wishlist = await Wishlist.findOne({ userId }).populate("products.productId").lean();
+    let wishlist = await Wishlist.findOne({ userId })
+        .populate({
+            path: "products.productId",
+            populate: { path: "category_id" }
+        })
+        .lean();
 
     if (!wishlist) {
         wishlist = await Wishlist.create({ userId, products: [] });
         return wishlist;
     }
 
-    // Filter out blocked products or malformed entries
+    // Filter out blocked products, malformed entries, or products with blocked categories
     wishlist.products = wishlist.products.filter(
-        item => item && item.productId && item.productId.is_blocked !== true
+        item => item && 
+                item.productId && 
+                item.productId.is_blocked !== true && 
+                item.productId.category_id && 
+                item.productId.category_id.is_blocked !== true
     );
 
     return wishlist;
