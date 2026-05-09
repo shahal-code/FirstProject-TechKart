@@ -6,7 +6,8 @@ import userRoutes from "./routes/userRoutes.js";
 import passport from "passport";
 import './config/passport.js';
 import session from "express-session";
-import User from "./models/userModel.js";
+import * as ErrorHandler from "./middleware/errorHandler.js";
+import { userContext } from "./middleware/userAuth.js";
 const app = express();
 
 connectDB();
@@ -22,37 +23,60 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "fallback-secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+//user session
+const userSession = session({
+  name: "user.id",
+  secret: process.env.SESSION_SECRET || "user-secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24
+  }
+});
+
+//admin session
+const adminSession = session({
+  name: "admin.sid",
+  secret: process.env.ADMIN_SECRET || "admin-secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 12
+  }
+})
 
 app.use(passport.initialize());
-app.use(passport.session());
 
+const setLocals = (req, res, next) => {
+  res.locals.loginMethod = req.session.loginMethod || null;
+  res.locals.path = req.path;
+  next();
+};
 
+//user session,passport,routes
+app.use("/user",userSession,passport.session(),userContext,setLocals,userRoutes);
+//admin session ,passport,routes
+app.use("/admin",adminSession,passport.session(),setLocals,adminRoutes);
 
-app.use(async (req, res, next) => {
-  try {
-    res.locals.user = req.session.user ? await User.findById(req.session.user) : null;
-    res.locals.loginMethod = req.session.loginMethod || null;
-    res.locals.path = req.path;
-    next();
-  } catch (error) {
-    console.log("MiddleWare Error", error);
-    next();
-  }
+app.use((req, res, next) => {
+  res.locals.loginMethod = req.session ? req.session.loginMethod : null;
+  res.locals.path = req.path;
+  next();
 });
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-app.use("/user", userRoutes);
-app.use("/admin", adminRoutes);
+
+// Error Handling Middleware
+app.use(ErrorHandler.notFound);
+app.use(ErrorHandler.globalErrorHandler);
+
+//PORT
 
 app.listen(3000, () => {
-  console.log("Server running on port 3000");
+  console.log(`Server running on http://localhost:${3000}`);
 });
+
+
+

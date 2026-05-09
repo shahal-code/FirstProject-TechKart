@@ -41,6 +41,10 @@ const addressSchema = new mongoose.Schema({
     address_type: {
         type: String,
         required: true
+    },
+    is_default: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

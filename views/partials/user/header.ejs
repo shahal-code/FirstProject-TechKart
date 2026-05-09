@@ -1,3 +1,7 @@
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/user/cartUtils.js"></script>
+
 <header id="mainHeader"
     class="fixed top-0 z-50 w-full border-b border-white/0 bg-transparent px-4 md:px-10 py-4 transition-all duration-300">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4 md:gap-8">
@@ -11,17 +15,17 @@
                 </div>
                 <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading">TECHKART</h2>
             </div>
-            <label class="hidden md:flex flex-col flex-1 max-w-md !h-10">
+            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden md:flex flex-col flex-1 max-w-md !h-10' %>">
                 <div
                     class="flex w-full flex-1 items-stretch rounded-full h-full bg-white/5 border border-white/10 overflow-hidden focus-within:border-primary transition-colors">
                     <div class="text-gray-500 flex items-center justify-center pl-4">
                         <span class="material-symbols-outlined text-xl">search</span>
                     </div>
-                    <input
+                    <input name="search"
                         class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 h-full placeholder:text-gray-500 px-4 pl-2 text-sm font-normal text-white"
-                        placeholder="Search for premium tech..." value="" />
+                        placeholder="Search for premium tech..." value="<%= locals.query?.search || '' %>" />
                 </div>
-            </label>
+            </form>
         </div>
         <div class="flex items-center gap-4 md:gap-8">
             <nav class="hidden lg:flex items-center gap-8">
@@ -36,10 +40,17 @@
                         href="/user/about">ABOUT US</a>
             </nav>
             <div class="flex items-center gap-3 md:gap-4">
-                <button
+                <a href="/user/wishlist"
                     class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300">
+                    <span class="material-symbols-outlined text-xl">favorite</span>
+                </a>
+                <a href="/user/cart"
+                    class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 relative group">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
-                </button>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 size-4 bg-primary text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D] <%= locals.cartCount > 0 ? '' : 'hidden' %>">
+                        <%= locals.cartCount || 0 %>
+                    </span>
+                </a>
                 <% if (locals.user) { %>
                     <a href="/user/profile"
                         class="flex items-center justify-center gap-2 rounded-full h-10 px-6 bg-primary text-white text-[10px] font-black uppercase tracking-[0.15em] hover:shadow-[0_0_25px_-5px_#0055FF] hover:scale-105 transition-all duration-300">
@@ -93,6 +104,11 @@
                 <span class="material-symbols-outlined text-xl">shopping_bag</span>
                 SHOP
             </a>
+            <a href="/user/wishlist"
+                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                <span class="material-symbols-outlined text-xl">favorite</span>
+                WISHLIST
+            </a>
             <a href="/user/contact"
                 class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
                 <span class="material-symbols-outlined text-xl">call</span>
@@ -103,17 +119,22 @@
                 <span class="material-symbols-outlined text-xl">info</span>
                 ABOUT US
             </a>
+            <a href="/user/cart"
+                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                CART
+            </a>
         </div>
 
         <div class="mt-auto pt-6 border-t border-white/10">
             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 px-4">Search Catalog</p>
-            <div class="relative mb-6">
+            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible' : 'relative mb-6' %>">
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
-                <input
+                <input name="search"
                     class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-xs text-white focus:outline-none focus:border-primary transition-all focus:bg-white/[0.08]"
-                    placeholder="Search product..." />
-            </div>
+                    placeholder="Search product..." value="<%= locals.query?.search || '' %>" />
+            </form>
             <div class="flex items-center justify-between px-2">
                 <p class="text-[8px] text-gray-600 uppercase tracking-widest font-bold">TechKart Premium © 2024</p>
                 <div class="flex gap-2">
@@ -124,5 +145,4 @@
         </div>
     </div>
 </div>
-
 <script src="/js/partials/header.js"></script>

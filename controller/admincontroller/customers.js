@@ -1,12 +1,10 @@
-import User from "../../models/userModel.js";
+import * as CustomerService from "../../services/admin/customerService.js";
 
 export const getUsers = async (req, res) => {
   try {
     const search = req.query.search || "";
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
-
-    const skip = (page - 1) * limit;
 
     const query = {
       $or: [
@@ -15,38 +13,34 @@ export const getUsers = async (req, res) => {
       ],
     };
 
-    const totalUsers = await User.countDocuments(query);
-    const totalPages = Math.ceil(totalUsers / limit);
+    const { users, totalUsers, totalPages } = await CustomerService.getAllUsers(query, page, limit);
+    
+    const stats=await CustomerService.getCustomerStats();
 
-    const users = await User.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    res.render("admin/users", {
+    res.render("admin/customers/users", {
       users,
       page,
       totalPages,
       totalUsers,
+      stats,
       search,
       activePage: "customers",
       pageTitle: "Customer CRM",
       pageSubtitle: "Manage your global customer base"
     });
   } catch (error) {
-    console.log(error.message);
+    console.error("Error fetching users:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
 
 export const blockUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    user.isBlocked = !user.isBlocked;
-    await user.save();
+    const { id } = req.params;
+    await CustomerService.toggleBlockStatus(id);
     res.redirect("/admin/users");
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    console.error("Error toggling block status:", error.message);
+    res.status(error.message === "User not found" ? 404 : 500).send("Internal Server Error");
   }
 };

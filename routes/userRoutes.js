@@ -9,6 +9,7 @@ import * as PageController from "../controller/usercontroller/pages.controller.j
 import * as Profile from "../controller/usercontroller/profile.js";
 import * as Address from "../controller/usercontroller/address.js";
 
+
 // Authentication
 router
   .route('/login')
@@ -55,9 +56,24 @@ router.get(
 
 // Pages
 router.get('/', userAuth.isBlocked, PageController.LandingOrHome_load);
-router.get('/shop', userAuth.isAuthenticated, userAuth.isBlocked, PageController.ShopPage_load);
-router.get('/contact', userAuth.isAuthenticated, userAuth.isBlocked, PageController.ContactPage_load);
-router.get('/about', userAuth.isAuthenticated, userAuth.isBlocked, PageController.AboutPage_load);
+router.get('/shop', userAuth.isBlocked, PageController.ShopPage_load);
+router.get('/product/:id', userAuth.isBlocked, PageController.ProductDetails_load);
+router.get('/contact', userAuth.isBlocked, PageController.ContactPage_load);
+router.get('/about', userAuth.isBlocked, PageController.AboutPage_load);
+
+import * as cartController from "../controller/usercontroller/cartController.js";
+import * as WishlistController from "../controller/usercontroller/wishlistController.js";
+// Cart
+router.get('/cart', userAuth.isAuthenticated, userAuth.isBlocked, cartController.getCartView);
+router.post('/cart/add', userAuth.isAuthenticated, userAuth.isBlocked, cartController.addItem);
+router.post('/cart/update', userAuth.isAuthenticated, userAuth.isBlocked, cartController.updateQuantity);
+router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartController.removeItem);
+
+// Wishlist
+router.get('/wishlist', userAuth.isAuthenticated, userAuth.isBlocked, WishlistController.getWishlistView);
+router.post('/wishlist/add', userAuth.isAuthenticated, userAuth.isBlocked, WishlistController.toggleWishlist);
+router.post('/wishlist/remove', userAuth.isAuthenticated, userAuth.isBlocked, WishlistController.removeFromWishlist);
+
 
 router.get('/dashboard', userAuth.isAuthenticated, PageController.Dashboard_load);
 
@@ -89,6 +105,9 @@ router.post('/address/edit/:id', userAuth.isAuthenticated, Address.editAddress);
 router.get('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.get('/delete-address/:id', userAuth.isAuthenticated, Address.deleteAddress);
 router.delete('/address/delete/:id', userAuth.isAuthenticated, Address.deleteAddress);
+
+router.get('/address/set-default/:id', userAuth.isAuthenticated, Address.setDefaultAddress);
+router.get('/settings', userAuth.isAuthenticated);
 
 router.get('/logout', userAuth.isAuthenticated, usercontroller.isLogout);
 
