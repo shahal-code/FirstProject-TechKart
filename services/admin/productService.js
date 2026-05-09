@@ -88,6 +88,8 @@ export const updateVariant = async (productId, variantId, variantData, files) =>
     // Handle image removal
     if (variantData.removedImages) {
         const removed = Array.isArray(variantData.removedImages) ? variantData.removedImages : [variantData.removedImages];
+        console.log("Existing Images:", images);
+        console.log("Images to Remove:", removed);
         images = images.filter(img => !removed.includes(img));
     }
 

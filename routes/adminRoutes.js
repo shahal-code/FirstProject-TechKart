@@ -6,6 +6,7 @@ import * as adminAuth from "../middleware/adminAuth.js";
 import * as CategoryController from "../controller/admincontroller/categoryController.js";
 import * as ProductController from "../controller/admincontroller/productController.js";
 import { uploadProduct } from "../config/productMulter.js";
+import * as orderController from "../controller/admincontroller/orderController.js"
 
 const router = express.Router();
 
@@ -80,5 +81,11 @@ router.get("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.get
 router.post("/product/edit/:id", adminAuth.isAdminLoggedIn, ProductController.updateProduct); // No images here
 router.post("/product/toggle-status/:id", adminAuth.isAdminLoggedIn, ProductController.toggleProductStatus);
 router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductController.deleteProduct);
+
+
+//orders
+router.get("/orders", adminAuth.isAdminLoggedIn,orderController.loadOrders);
+
+
 
 export default router;

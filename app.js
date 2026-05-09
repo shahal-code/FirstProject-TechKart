@@ -54,24 +54,12 @@ const setLocals = (req, res, next) => {
 };
 
 //user session,passport,routes
-app.use("/user",
-  userSession,
-  passport.session(),
-  userContext,
-  setLocals,
-  userRoutes
-);
-
+app.use("/user",userSession,passport.session(),userContext,setLocals,userRoutes);
 //admin session ,passport,routes
-app.use("/admin",
-  adminSession,
-  passport.session(),
-  setLocals,
-  adminRoutes
-);
+app.use("/admin",adminSession,passport.session(),setLocals,adminRoutes);
 
 app.use((req, res, next) => {
-  res.locals.loginMethod = req.session.loginMethod || null;
+  res.locals.loginMethod = req.session ? req.session.loginMethod : null;
   res.locals.path = req.path;
   next();
 });
@@ -80,14 +68,15 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 
 
-
 // Error Handling Middleware
 app.use(ErrorHandler.notFound);
 app.use(ErrorHandler.globalErrorHandler);
 
+//PORT
 
 app.listen(3000, () => {
   console.log(`Server running on http://localhost:${3000}`);
 });
+
 
 

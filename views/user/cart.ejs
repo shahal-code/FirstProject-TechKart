@@ -66,7 +66,7 @@
                             %>
                             <!-- Product Item -->
                             <div id="cart-item-<%= item._id %>"
-                                class="glass p-6 rounded-xl flex flex-col sm:flex-row items-center gap-6 group hover:border-primary/50 transition-all duration-300">
+                                class="glass p-6 rounded-xl flex flex-col sm:flex-row items-center gap-6 group hover:border-primary/50 transition-all duration-300 <%= item.isUnavailable ? 'opacity-50 grayscale' : '' %>">
                                 <div class="bg-surface-dark rounded-lg size-32 flex-shrink-0 bg-cover bg-center border border-white/5"
                                     style='background-image: url("<%= variant.images[0] %>");'>
                                 </div>
@@ -80,9 +80,14 @@
                                             <%= specs.join(', ') %>
                                     </p>
                                     <div class="mt-4 flex items-center justify-center sm:justify-start gap-4">
-                                        <span class="text-lg font-semibold text-primary">₹<%= variant.price %></span>
-                                        <!-- Hidden span to store unit price for JS -->
-                                        <span id="price-<%= item._id %>" class="hidden"><%= variant.price %></span>
+                                        <% if (item.isUnavailable) { %>
+                                            <span class="text-sm font-bold text-red-500 bg-red-500/10 px-3 py-1 rounded-full">Product Unavailable</span>
+                                            <span id="price-<%= item._id %>" class="hidden">0</span>
+                                        <% } else { %>
+                                            <span class="text-lg font-semibold text-primary">₹<%= variant.price %></span>
+                                            <!-- Hidden span to store unit price for JS -->
+                                            <span id="price-<%= item._id %>" class="hidden"><%= variant.price %></span>
+                                        <% } %>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-6">
@@ -90,12 +95,13 @@
                                         <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-delta="-1"
                                             id="minus-<%= item._id %>"
                                             class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
-                                            <% if(item.quantity <= 1) { %> disabled <% } %>>-</button>
+                                            <% if(item.quantity <= 1 || item.isUnavailable) { %> disabled <% } %>>-</button>
                                         <input id="qty-input-<%= item._id %>" class="w-8 text-center bg-transparent border-none p-0 focus:ring-0 font-medium"
                                             type="number" value="<%= item.quantity %>" readonly />
                                         <button onclick="handleQuantityChange(this)" data-id="<%= item._id %>" data-delta="1"
                                             id="plus-<%= item._id %>"
-                                            class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70">+</button>
+                                            class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
+                                            <% if(item.isUnavailable) { %> disabled <% } %>>+</button>
                                     </div>
                                     <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
                                                         hover:text-red-500 transition-colors">
@@ -148,11 +154,16 @@
                             </div>
                         </div>
                         <div class="space-y-4">
+                            <% const hasUnavailable = cart && cart.items && cart.items.some(i => i.isUnavailable); %>
                             <button
-                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                <%= hasUnavailable ? 'disabled title="Please remove unavailable items to checkout"' : '' %>>
                                 PROCEED TO CHECKOUT
                                 <span class="material-symbols-outlined">chevron_right</span>
                             </button>
+                            <% if (hasUnavailable) { %>
+                                <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to proceed.</p>
+                            <% } %>
                             <div class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
                                 <span class="material-symbols-outlined">payments</span>
                                 <span class="material-symbols-outlined">credit_card</span>

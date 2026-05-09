@@ -84,12 +84,12 @@ passport.use(
   )
 );
 
-// ✅ Serialize user
+// Serialize user
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// ✅ Deserialize user
+//  Deserialize user
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);

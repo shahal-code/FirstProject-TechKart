@@ -111,7 +111,7 @@
                     <h2 class="text-3xl md:text-5xl font-bold mb-4 text-glow">Lost in Cyberspace?</h2>
                     <p
                         class="text-slate-500 dark:text-slate-400 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-relaxed">
-                        The page you are looking for has been upgraded or moved to a different dimension.
+                        <%= typeof message !== 'undefined' && message ? message : "The page you are looking for has been upgraded or moved to a different dimension." %>
                     </p>
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <a class="group relative flex items-center justify-center bg-primary text-white px-10 py-4 rounded-lg font-bold transition-all hover:scale-105 active:scale-95 glow-effect"

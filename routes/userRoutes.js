@@ -57,7 +57,7 @@ router.get(
 // Pages
 router.get('/', userAuth.isBlocked, PageController.LandingOrHome_load);
 router.get('/shop', userAuth.isBlocked, PageController.ShopPage_load);
-router.get('/product/:id', userAuth.isAuthenticated, userAuth.isBlocked, PageController.ProductDetails_load);
+router.get('/product/:id', userAuth.isBlocked, PageController.ProductDetails_load);
 router.get('/contact', userAuth.isBlocked, PageController.ContactPage_load);
 router.get('/about', userAuth.isBlocked, PageController.AboutPage_load);
 

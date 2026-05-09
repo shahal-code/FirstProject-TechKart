@@ -9,11 +9,13 @@ export const getCartView = async (req, res) => {
         let subtotal = 0;
         if (cart && cart.items) {
             cart.items.forEach(item => {
-                const product = item.productId;
-                if (product) {
-                    const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
-                    if (variant) {
-                        subtotal += variant.price * item.quantity;
+                if (!item.isUnavailable) {
+                    const product = item.productId;
+                    if (product) {
+                        const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+                        if (variant) {
+                            subtotal += variant.price * item.quantity;
+                        }
                     }
                 }
             });

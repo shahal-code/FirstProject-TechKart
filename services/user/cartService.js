@@ -19,26 +19,16 @@ export const getCart = async (userId) => {
         return cart;
     }
 
-    // Filter out blocked or missing products, or products with blocked categories
-    const filteredItems = cart.items.filter(
-        item => item.productId && 
-                item.productId.is_blocked !== true && 
-                item.productId.category_id && 
-                item.productId.category_id.is_blocked !== true
-    );
-
-    // Lazy Cleanup: if cart DB has more items than the filtered result, sync it
-    if (filteredItems.length !== cart.items.length) {
-        const dbCart = await Cart.findOne({ userId });
-        dbCart.items = filteredItems.map(item => ({
-            productId: item.productId._id,
-            variantId: item.variantId,
-            quantity: item.quantity
-        }));
-        await dbCart.save();
-    }
-
-    cart.items = filteredItems;
+    // Flag unavailable items instead of silently removing them
+    cart.items.forEach(item => {
+        if (!item.productId || 
+            item.productId.is_blocked === true || 
+            !item.productId.category_id || 
+            item.productId.category_id.is_blocked === true) {
+            
+            item.isUnavailable = true;
+        }
+    });
     return cart;
 };
 

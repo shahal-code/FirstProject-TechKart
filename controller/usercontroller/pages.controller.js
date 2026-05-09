@@ -80,7 +80,7 @@ export const ShopPage_load = async (req, res) => {
 
 export const page_404 = async (req, res) => {
     try {
-        res.render("user/404"); // Assuming there's a 404 view
+        res.status(404).render("error/404", { message: "The page you are looking for has been upgraded or moved to a different dimension." });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -101,7 +101,33 @@ export const ProductDetails_load = async (req, res) => {
         const data = await ProductService.getProductDetails(productId);
 
         if (!data) {
-            return res.status(404).render('user/404');
+            // Check if product exists but is blocked
+            const productModel = (await import("../../models/productModel.js")).default;
+            const productCheck = await productModel.findById(productId).populate('category_id');
+
+            // if (productCheck && (productCheck.is_blocked || (productCheck.category_id && productCheck.category_id.is_blocked))) {
+            //     return res.status(403).render('error/404', { message: "This product is currently unavailable or has been removed from the catalog." });
+            // }
+            if (productCheck && (productCheck.is_blocked || (productCheck.category_id && productCheck.category_id.is_blocked))) {
+                const wishlistProductIds = req.session.user ? await WishlistService.getWishlistProductIds(req.session.user) : [];
+                const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
+
+                return res.render('user/shop/productDetails', {
+                    product: productCheck,
+                    relatedProducts: [],
+                    cart,
+                    user: req.session.user || null,
+                    path: '/user/product',
+                    wishlistProductIds,
+                    isUnavailable: true,
+
+
+                })
+            }
+
+
+
+            return res.status(404).render('error/404', { message: "The product you are looking for does not exist." });
         }
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
