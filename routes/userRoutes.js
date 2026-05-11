@@ -73,6 +73,7 @@ router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartCo
 // Checkout
 router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);
 router.post('/checkout/place-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.placeOrder);
+router.get('/checkout/order-success', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getOrderSuccessView);
 
 // Orders
 router.get('/orders', userAuth.isAuthenticated, userAuth.isBlocked, Order.getOrders);

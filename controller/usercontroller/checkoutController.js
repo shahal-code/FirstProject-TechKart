@@ -67,7 +67,7 @@ export const placeOrder = async (req, res) => {
         res.json({
             success: true,
             message: "Order placed successfully!",
-            redirectUrl: "/user/dashboard" // Or a specific order success page
+            redirectUrl: `/user/checkout/order-success?id=${order.orderId}`
         });
 
     } catch (error) {
@@ -76,5 +76,23 @@ export const placeOrder = async (req, res) => {
             success: false,
             message: error.message || "Failed to place order. Please try again."
         });
+    }
+};
+
+/**
+ * Render Order Success Page
+ */
+export const getOrderSuccessView = async (req, res) => {
+    try {
+        const orderId = req.query.id;
+        if (!orderId) return res.redirect('/user/shop');
+        
+        res.render('user/checkout/orderSuccess', { 
+            orderId,
+            path: '/user/checkout/order-success'
+        });
+    } catch (error) {
+        console.error("Order Success Page Error:", error);
+        res.redirect('/user/shop');
     }
 };
