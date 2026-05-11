@@ -63,6 +63,8 @@ class OrderService {
         await Cart.deleteOne({ userId });
 
         return order;
+    }
+
     async getOrders(userId, query = {}, page = 1, limit = 10) {
         const skip = (page - 1) * limit;
         const orders = await Order.find({ userId, ...query })
