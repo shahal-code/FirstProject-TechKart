@@ -24,7 +24,7 @@ export const getCartView = async (req, res) => {
         const tax = subtotal * 0.08; // 8% placeholder tax
         const total = subtotal + tax;
 
-        res.render("user/cart", {
+        res.render("user/cart/cart", {
             cart,
             subtotal,
             tax,
