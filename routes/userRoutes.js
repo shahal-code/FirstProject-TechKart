@@ -8,7 +8,7 @@ import * as usercontroller from "../controller/usercontroller/user.auth.js";
 import * as PageController from "../controller/usercontroller/pages.controller.js";
 import * as Profile from "../controller/usercontroller/profile.js";
 import * as Address from "../controller/usercontroller/address.js";
-
+import * as Checkout from "../controller/usercontroller/checkoutController.js"
 
 // Authentication
 router
@@ -68,6 +68,12 @@ router.get('/cart', userAuth.isAuthenticated, userAuth.isBlocked, cartController
 router.post('/cart/add', userAuth.isAuthenticated, userAuth.isBlocked, cartController.addItem);
 router.post('/cart/update', userAuth.isAuthenticated, userAuth.isBlocked, cartController.updateQuantity);
 router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartController.removeItem);
+
+// Checkout
+router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);
+router.post('/checkout/place-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.placeOrder);
+
+
 
 // Wishlist
 router.get('/wishlist', userAuth.isAuthenticated, userAuth.isBlocked, WishlistController.getWishlistView);

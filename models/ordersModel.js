@@ -6,13 +6,13 @@ const orderSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    // 2. Custom Order ID (e.g., #TK-12345)
+   
     orderId: {
         type: String,
         required: true,
         unique: true
     },
-    // 3. The Items Purchased
+    
     orderedItems: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema({
             required: true
         },
         variantId: {
-            type: String, // Storing the variant ID from your product model
+            type: String, 
             required: true
         },
         quantity: {
@@ -28,11 +28,10 @@ const orderSchema = new mongoose.Schema({
             required: true
         },
         price: {
-            type: Number, // The price at the time of purchase
+            type: Number, 
             required: true
         }
     }],
-    // 4. Totals
     totalPrice: {
         type: Number,
         required: true
@@ -45,7 +44,7 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    // 5. Shipping Address (Copy the data from your Address model)
+    
     shippingAddress: {
         fullname: String,
         phone: String,
@@ -55,7 +54,6 @@ const orderSchema = new mongoose.Schema({
         state: String,
         postal_code: String
     },
-    // 6. Payment & Status
     paymentMethod: {
         type: String,
         required: true

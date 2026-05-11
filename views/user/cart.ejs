@@ -103,10 +103,10 @@
                                             class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
                                             <% if(item.isUnavailable) { %> disabled <% } %>>+</button>
                                     </div>
-                                    <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
-                                                        hover:text-red-500 transition-colors">
-                                                        <span class="material-symbols-outlined">delete</span>
-                                                        </button>
+                                    <button onclick="removeCartItem(' <%=item._id %>')" class="p-2 text-white/30
+                                                hover:text-red-500 transition-colors">
+                                                <span class="material-symbols-outlined">delete</span>
+                                                </button>
                                 </div>
                             </div>
                             <% } } }) %>
@@ -150,25 +150,27 @@
                             <div class="h-px bg-white/10 my-6"></div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-bold">Total</span>
-                                <span id="summary-total" class="text-2xl font-black text-primary">₹<%= total.toFixed(2) %></span>
+                                <span id="summary-total" class="text-2xl font-black text-primary">₹<%= total.toFixed(2)
+                                        %></span>
                             </div>
                         </div>
                         <div class="space-y-4">
-                            <% const hasUnavailable = cart && cart.items && cart.items.some(i => i.isUnavailable); %>
-                            <button
-                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                <%= hasUnavailable ? 'disabled title="Please remove unavailable items to checkout"' : '' %>>
-                                PROCEED TO CHECKOUT
-                                <span class="material-symbols-outlined">chevron_right</span>
-                            </button>
-                            <% if (hasUnavailable) { %>
-                                <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to proceed.</p>
-                            <% } %>
-                            <div class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
-                                <span class="material-symbols-outlined">payments</span>
-                                <span class="material-symbols-outlined">credit_card</span>
-                                <span class="material-symbols-outlined">account_balance</span>
-                            </div>
+                            <% const hasUnavailable=cart && cart.items && cart.items.some(i=> i.isUnavailable); %>
+                                <a href="/user/checkout"
+                                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 <%= hasUnavailable ? 'pointer-events-none opacity-50' : '' %>"
+                                    <%= hasUnavailable ? 'onclick="return false;" title="Please remove unavailable items to checkout"' : '' %>>
+                                    PROCEED TO CHECKOUT
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </a>
+                                <% if (hasUnavailable) { %>
+                                    <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to
+                                        proceed.</p>
+                                    <% } %>
+                                        <div class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
+                                            <span class="material-symbols-outlined">payments</span>
+                                            <span class="material-symbols-outlined">credit_card</span>
+                                            <span class="material-symbols-outlined">account_balance</span>
+                                        </div>
                         </div>
                     </div>
                     <div class="mt-8 glass p-6 rounded-xl">
@@ -212,13 +214,13 @@
                             const qtyInput = document.getElementById(`qty-input-${itemId}`);
                             const minusBtn = document.getElementById(`minus-${itemId}`);
                             const plusBtn = document.getElementById(`plus-${itemId}`);
-                            
+
                             qtyInput.value = newQuantity;
                             minusBtn.disabled = newQuantity <= 1;
 
                             // Update summary
                             updateCartSummary(result.cart);
-                            
+
                             // Update badge if exists
                             if (typeof window.addToCart === 'function') {
                                 const badge = document.getElementById('cart-badge');
