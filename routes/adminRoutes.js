@@ -84,7 +84,9 @@ router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductControlle
 
 
 //orders
-router.get("/orders", adminAuth.isAdminLoggedIn,orderController.loadOrders);
+router.get("/orders", adminAuth.isAdminLoggedIn, orderController.loadOrders);
+router.get("/orders/:orderId", adminAuth.isAdminLoggedIn, orderController.getOrderDetails);
+router.post("/orders/update-status", adminAuth.isAdminLoggedIn, orderController.updateStatus);
 
 
 

@@ -18,3 +18,13 @@ export const getAllOrders = async (query, page, limit) => {
         orders,totalOrders,totalPages
     };
 };
+
+export const getOrderById = async (orderId) => {
+    return await Order.findById(orderId)
+        .populate("userId")
+        .populate("orderedItems.product");
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+    return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+};

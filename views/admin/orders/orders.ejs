@@ -11,6 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -250,7 +251,7 @@
                                                     class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
                                                     <span class="material-symbols-outlined text-xl">visibility</span>
                                                 </a>
-                                                <button
+                                                <button onclick="updateStatus('<%= order._id %>', '<%= order.status %>')"
                                                     class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
                                                     <span class="material-symbols-outlined text-xl">edit</span>
                                                 </button>
@@ -329,6 +330,64 @@
         class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full">
     </div>
 
+    <script>
+        async function updateStatus(orderId, currentStatus) {
+            const { value: newStatus } = await Swal.fire({
+                title: 'Update Order Status',
+                input: 'select',
+                inputOptions: {
+                    'Pending': 'Pending',
+                    'Processing': 'Processing',
+                    'Shipped': 'Shipped',
+                    'Delivered': 'Delivered',
+                    'Cancelled': 'Cancelled',
+                    'Return Request': 'Return Request',
+                    'Returned': 'Returned'
+                },
+                inputValue: currentStatus,
+                showCancelButton: true,
+                confirmButtonColor: '#0055ff',
+                cancelButtonColor: '#ff4444',
+                background: '#1a2234',
+                color: '#fff',
+                inputAttributes: {
+                    'class': 'bg-slate-800 text-white rounded-lg border-white/10'
+                }
+            });
+
+            if (newStatus && newStatus !== currentStatus) {
+                try {
+                    const response = await fetch('/admin/orders/update-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId, status: newStatus })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Updated!',
+                            text: data.message,
+                            background: '#1a2234',
+                            color: '#fff',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => window.location.reload());
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error.message,
+                        background: '#1a2234',
+                        color: '#fff'
+                    });
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

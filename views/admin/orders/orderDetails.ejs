@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin - Order #<%= order.orderId %></title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0055ff",
+                        "background-dark": "#0d0d0d",
+                        "card-bg": "rgba(23, 33, 54, 0.4)",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .status-badge { @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5; }
+        .status-pending { @apply bg-amber-500/10 text-amber-500 border border-amber-500/20; }
+        .status-processing { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
+        .status-shipped { @apply bg-indigo-500/10 text-indigo-500 border border-indigo-500/20; }
+        .status-delivered { @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20; }
+        .status-cancelled { @apply bg-rose-500/10 text-rose-500 border border-rose-500/20; }
+    </style>
+</head>
+
+<body class="bg-background-dark font-display text-slate-200">
+    <div class="flex h-screen overflow-hidden">
+        <%- include('../../partials/admin/sidebar') %>
+
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header class="flex items-center justify-between px-8 py-4 border-b border-white/5 bg-background-dark/50 backdrop-blur-md sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <a href="/admin/orders" class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h1 class="text-lg font-bold">Order Details</h1>
+                </div>
+            </header>
+
+            <div class="p-8 max-w-7xl mx-auto w-full space-y-6">
+                <!-- Order Header -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 p-6 rounded-2xl bg-card-bg border border-white/5 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Order ID</p>
+                            <h2 class="text-2xl font-bold text-primary tracking-tight"><%= order.orderId %></h2>
+                            <p class="text-xs text-slate-400 mt-2">Placed on <%= new Date(order.createdAt).toLocaleString() %></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Current Status</p>
+                            <% 
+                                let statusClass = 'status-pending';
+                                if (order.status === 'Processing') statusClass = 'status-processing';
+                                if (order.status === 'Shipped') statusClass = 'status-shipped';
+                                if (order.status === 'Delivered') statusClass = 'status-delivered';
+                                if (order.status === 'Cancelled') statusClass = 'status-cancelled';
+                            %>
+                            <span class="status-badge <%= statusClass %> text-xs py-2 px-4"><%= order.status %></span>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-card-bg border border-white/5">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 text-center">Final Amount</p>
+                        <h2 class="text-3xl font-bold text-center text-white">₹<%= order.finalAmount.toLocaleString() %></h2>
+                        <div class="mt-4 flex justify-center gap-2">
+                             <span class="status-badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[9px]"><%= order.paymentStatus %></span>
+                             <span class="status-badge bg-primary/10 text-primary border border-primary/20 text-[9px]"><%= order.paymentMethod %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Customer and Items -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Customer Card -->
+                        <div class="p-6 rounded-2xl bg-card-bg border border-white/5">
+                            <h3 class="font-bold flex items-center gap-2 mb-6">
+                                <span class="material-symbols-outlined text-primary">person</span>
+                                Customer Information
+                            </h3>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Name</p>
+                                    <p class="font-bold text-white"><%= order.userId ? order.userId.fullname : 'Unknown User' %></p>
+                                    <p class="text-xs text-slate-400 mt-1"><%= order.userId ? order.userId.email : 'N/A' %></p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Contact</p>
+                                    <p class="font-bold text-white"><%= order.shippingAddress.phone %></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Items List -->
+                        <div class="rounded-2xl bg-card-bg border border-white/5 overflow-hidden">
+                            <div class="p-6 border-b border-white/5">
+                                <h3 class="font-bold flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">inventory_2</span>
+                                    Ordered Items
+                                </h3>
+                            </div>
+                            <div class="divide-y divide-white/5">
+                                <% order.orderedItems.forEach(item => { %>
+                                    <div class="p-6 flex gap-6">
+                                        <div class="size-20 rounded-xl bg-slate-800 overflow-hidden flex-shrink-0">
+                                            <% const variant = item.product.variants.find(v => v._id.toString() === item.variantId.toString()); %>
+                                            <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="font-bold text-white"><%= item.product.name %></h4>
+                                                    <p class="text-xs text-slate-500">Qty: <%= item.quantity %></p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="font-bold text-white">₹<%= item.price.toLocaleString() %></p>
+                                                    <p class="text-xs text-slate-500">Total: ₹<%= (item.price * item.quantity).toLocaleString() %></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Address and Summary -->
+                    <div class="space-y-6">
+                        <!-- Address -->
+                        <div class="p-6 rounded-2xl bg-card-bg border border-white/5">
+                            <h3 class="font-bold flex items-center gap-2 mb-6">
+                                <span class="material-symbols-outlined text-primary">local_shipping</span>
+                                Shipping Address
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <p class="font-bold text-white"><%= order.shippingAddress.fullname %></p>
+                                <p class="text-slate-400 leading-relaxed">
+                                    <%= order.shippingAddress.line1 %><br>
+                                    <% if (order.shippingAddress.line2) { %>
+                                        <%= order.shippingAddress.line2 %><br>
+                                    <% } %>
+                                    <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.postal_code %>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="p-6 rounded-2xl bg-card-bg border border-white/5 space-y-4">
+                            <h3 class="font-bold mb-6">Price Summary</h3>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Total Price</span>
+                                <span class="text-white font-medium">₹<%= order.totalPrice.toLocaleString() %></span>
+                            </div>
+                            <% if (order.discount > 0) { %>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Discount</span>
+                                    <span class="text-rose-500 font-bold">-₹<%= order.discount.toLocaleString() %></span>
+                                </div>
+                            <% } %>
+                            <div class="h-px bg-white/5 my-4"></div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white">Final Amount</span>
+                                <span class="text-xl font-bold text-primary">₹<%= order.finalAmount.toLocaleString() %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
