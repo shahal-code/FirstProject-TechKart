@@ -1,4 +1,6 @@
 import * as OrderService from "../../services/admin/ordersService.js";
+import User from "../../models/userModel.js";
+import Product from "../../models/productModel.js";
 
 export const loadOrders = async (req, res) => {
     try {
@@ -24,8 +26,23 @@ export const loadOrders = async (req, res) => {
         }
         //search logic
         if (search) {
+            // Step 1: Find matching users
+            const matchingUsers = await User.find({
+                fullname: { $regex: search, $options: 'i' }
+            }).select('_id');
+            const userIds = matchingUsers.map(u => u._id);
+
+            // Step 2: Find matching products
+            const matchingProducts = await Product.find({
+                name: { $regex: search, $options: 'i' }
+            }).select('_id');
+            const productIds = matchingProducts.map(p => p._id);
+
+            // Step 3: Search by Order ID OR Customer ID OR Product ID
             query.$or = [
-                { orderId: { $regex: search, $options: 'i' } }
+                { orderId: { $regex: search, $options: 'i' } },
+                { userId: { $in: userIds } },
+                { "orderedItems.product": { $in: productIds } }
             ];
         }
 
