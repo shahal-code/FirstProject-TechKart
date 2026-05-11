@@ -209,51 +209,56 @@
                                     Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-white/5">
+                        <tbody class="divide-y divide-white/[0.02]">
                             <% if (orders && orders.length > 0) { %>
                                 <% orders.forEach(order => { %>
-                                    <tr class="hover:bg-white/[0.03] transition-colors group">
-                                        <td class="px-8 py-4">
-                                            <span class="text-sm font-bold text-primary font-mono"><%= order.orderId %></span>
+                                    <tr class="group hover:bg-white/[0.02] transition-all duration-300">
+                                        <td class="px-8 py-5">
+                                            <span class="text-xs font-black text-primary uppercase tracking-[0.2em] font-mono"><%= order.orderId %></span>
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-5">
                                             <div class="flex items-center gap-3">
-                                                <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                                                <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary border border-primary/20">
                                                     <%= (order.userId && order.userId.fullname) ? order.userId.fullname.split(' ').map(n => n[0]).join('') : 'U' %>
                                                 </div>
-                                                <span class="text-sm font-medium"><%= (order.userId && order.userId.fullname) ? order.userId.fullname : 'Unknown User' %></span>
+                                                <span class="text-sm font-bold text-slate-200"><%= (order.userId && order.userId.fullname) ? order.userId.fullname : 'Unknown User' %></span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <span class="text-sm text-slate-300">
+                                        <td class="px-6 py-5">
+                                            <span class="text-sm font-medium text-slate-400 line-clamp-1">
                                                 <%= order.orderedItems[0]?.product?.name || 'Product' %> 
                                                 <% if (order.orderedItems.length > 1) { %>
-                                                    <span class="text-[10px] text-slate-500">(+<%= order.orderedItems.length - 1 %> more)</span>
+                                                    <span class="text-[10px] text-slate-600 font-bold ml-1">(+<%= order.orderedItems.length - 1 %> more)</span>
                                                 <% } %>
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-slate-400">
-                                            <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                        <td class="px-6 py-5">
+                                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                            </p>
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-5">
                                             <% 
-                                                let statusClass = 'status-processing';
+                                                let statusClass = 'status-pending';
+                                                if (order.status === 'Processing') statusClass = 'status-processing';
                                                 if (order.status === 'Shipped') statusClass = 'status-shipped';
                                                 if (order.status === 'Delivered') statusClass = 'status-delivered';
                                                 if (order.status === 'Cancelled') statusClass = 'status-cancelled';
                                             %>
-                                            <span class="status-badge <%= statusClass %>"><%= order.status %></span>
+                                            <span class="status-badge <%= statusClass %> shadow-sm"><%= order.status %></span>
                                         </td>
-                                        <td class="px-6 py-4 text-sm font-bold">₹<%= order.finalAmount.toLocaleString() %></td>
-                                        <td class="px-8 py-4 text-right">
-                                            <div class="flex justify-end gap-2">
+                                        <td class="px-6 py-5">
+                                            <span class="text-sm font-black text-white">₹<%= order.finalAmount.toLocaleString() %></span>
+                                        </td>
+                                        <td class="px-8 py-5 text-right">
+                                            <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                 <a href="/admin/orders/<%= order._id %>"
-                                                    class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
-                                                    <span class="material-symbols-outlined text-xl">visibility</span>
+                                                    class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20">
+                                                    <span class="material-symbols-outlined text-lg">visibility</span>
                                                 </a>
                                                 <button onclick="updateStatus('<%= order._id %>', '<%= order.status %>')"
-                                                    class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
-                                                    <span class="material-symbols-outlined text-xl">edit</span>
+                                                    class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20">
+                                                    <span class="material-symbols-outlined text-lg">edit</span>
                                                 </button>
                                             </div>
                                         </td>
@@ -333,7 +338,8 @@
     <script>
         async function updateStatus(orderId, currentStatus) {
             const { value: newStatus } = await Swal.fire({
-                title: 'Update Order Status',
+                title: '<span class="text-white font-display">Update Order Status</span>',
+                html: '<div class="text-slate-400 text-sm mb-4">Select the new lifecycle state for this order.</div>',
                 input: 'select',
                 inputOptions: {
                     'Pending': 'Pending',
@@ -346,12 +352,20 @@
                 },
                 inputValue: currentStatus,
                 showCancelButton: true,
+                confirmButtonText: 'Update Status',
+                cancelButtonText: 'Keep Current',
                 confirmButtonColor: '#0055ff',
-                cancelButtonColor: '#ff4444',
-                background: '#1a2234',
+                cancelButtonColor: 'rgba(255,255,255,0.05)',
+                background: '#111827',
                 color: '#fff',
                 inputAttributes: {
-                    'class': 'bg-slate-800 text-white rounded-lg border-white/10'
+                    'style': 'color-scheme: dark; background-color: #0f172a !important;'
+                },
+                customClass: {
+                    popup: 'rounded-[2rem] border border-white/10 shadow-2xl backdrop-blur-xl',
+                    input: 'bg-slate-900 border-white/10 text-white rounded-xl focus:ring-primary focus:border-primary mx-auto w-[80%]',
+                    confirmButton: 'rounded-xl px-6 py-3 font-bold',
+                    cancelButton: 'rounded-xl px-6 py-3 font-bold text-slate-400'
                 }
             });
 
@@ -366,12 +380,15 @@
                     if (data.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Updated!',
-                            text: data.message,
-                            background: '#1a2234',
+                            title: 'Status Updated',
+                            text: `Order is now ${newStatus}`,
+                            background: '#111827',
                             color: '#fff',
                             showConfirmButton: false,
-                            timer: 1500
+                            timer: 1500,
+                            customClass: {
+                                popup: 'rounded-[2rem] border border-white/10 shadow-2xl'
+                            }
                         }).then(() => window.location.reload());
                     } else {
                         throw new Error(data.message);
@@ -379,10 +396,13 @@
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
+                        title: 'Update Failed',
                         text: error.message,
-                        background: '#1a2234',
-                        color: '#fff'
+                        background: '#111827',
+                        color: '#fff',
+                        customClass: {
+                            popup: 'rounded-[2rem] border border-white/10 shadow-2xl'
+                        }
                     });
                 }
             }
