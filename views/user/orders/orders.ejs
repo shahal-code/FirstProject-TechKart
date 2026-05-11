@@ -63,8 +63,20 @@
                 <div class="flex items-center gap-6">
                     <form action="/user/orders" method="GET" class="relative group">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-lg">search</span>
-                        <input name="search" class="bg-white/5 border-none rounded-xl pl-10 pr-4 py-2 text-sm w-64 focus:ring-1 focus:ring-primary placeholder:text-white/30 transition-all focus:w-80" 
+                        <input name="search" class="bg-white/5 border-none rounded-xl pl-10 pr-20 py-2 text-sm w-64 focus:ring-1 focus:ring-primary placeholder:text-white/30 transition-all focus:w-80" 
                                placeholder="Search by Order ID or Product Name..." type="text" value="<%= locals.search || '' %>" />
+                        
+                        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <% if (locals.search) { %>
+                                <a href="/user/orders" class="p-1.5 text-white/20 hover:text-rose-500 transition-colors flex items-center justify-center" title="Clear Search">
+                                    <span class="material-symbols-outlined text-base">close</span>
+                                </a>
+                                <div class="w-px h-4 bg-white/10 mx-0.5"></div>
+                            <% } %>
+                            <button type="submit" class="p-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all flex items-center justify-center group/btn shadow-lg shadow-primary/10">
+                                <span class="material-symbols-outlined text-base group-hover/btn:scale-110 transition-transform">arrow_forward</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </header>
