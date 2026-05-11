@@ -93,38 +93,87 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Left: Items and Timeline -->
                     <div class="lg:col-span-2 space-y-8">
+                        <!-- Order Timeline -->
+                        <div class="glass-card rounded-3xl p-8 overflow-hidden relative">
+                            <div class="flex items-center justify-between relative z-10">
+                                <% 
+                                    const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+                                    const currentIndex = statuses.indexOf(order.status);
+                                    const isCancelled = order.status === 'Cancelled';
+                                    const isReturned = order.status === 'Returned';
+                                %>
+
+                                <% if (!isCancelled && !isReturned) { %>
+                                    <% statuses.forEach((status, index) => { %>
+                                        <div class="flex flex-col items-center gap-3 relative z-10 flex-1">
+                                            <div class="size-10 rounded-full flex items-center justify-center transition-all duration-500 <%= index <= currentIndex ? 'bg-primary text-white shadow-[0_0_20px_rgba(6,87,249,0.4)]' : 'bg-white/5 text-white/20 border border-white/5' %>">
+                                                <span class="material-symbols-outlined text-lg">
+                                                    <%= status === 'Pending' ? 'shopping_basket' : 
+                                                        status === 'Processing' ? 'precision_manufacturing' : 
+                                                        status === 'Shipped' ? 'local_shipping' : 'verified' %>
+                                                </span>
+                                            </div>
+                                            <span class="text-[10px] font-black uppercase tracking-widest <%= index <= currentIndex ? 'text-white' : 'text-white/20' %>"><%= status %></span>
+                                            
+                                            <!-- Connection Line -->
+                                            <% if (index < statuses.length - 1) { %>
+                                                <div class="absolute left-1/2 top-5 w-full h-[2px] bg-white/5 -z-10">
+                                                    <div class="h-full bg-primary transition-all duration-1000 ease-out" style="width: <%= index < currentIndex ? '100%' : '0%' %>"></div>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div class="flex items-center gap-6 w-full p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                                        <div class="size-14 rounded-2xl bg-rose-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+                                            <span class="material-symbols-outlined text-3xl"><%= isCancelled ? 'cancel' : 'keyboard_return' %></span>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-bold text-rose-500"><%= order.status %></h4>
+                                            <p class="text-white/40 text-sm">This order has been <%= order.status.toLowerCase() %>.</p>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
                         <!-- Items List -->
                         <div class="glass-card rounded-3xl overflow-hidden">
-                            <div class="p-6 border-b border-white/5">
-                                <h3 class="font-bold flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-primary">inventory_2</span>
-                                    Ordered Items (<%= order.orderedItems.length %>)
+                            <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                                <h3 class="font-bold flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary">package_2</span>
+                                    Items Package
                                 </h3>
+                                <span class="text-[10px] font-black text-white/20 uppercase tracking-widest"><%= order.orderedItems.length %> Product(s)</span>
                             </div>
                             <div class="divide-y divide-white/5">
                                 <% order.orderedItems.forEach(item => { %>
-                                    <div class="p-6 flex gap-6">
-                                        <div class="size-24 rounded-2xl bg-card-dark border border-white/5 overflow-hidden flex-shrink-0">
+                                    <div class="p-8 flex flex-col sm:flex-row gap-8 hover:bg-white/[0.02] transition-colors group">
+                                        <div class="size-32 rounded-2xl bg-card-dark border border-white/5 overflow-hidden flex-shrink-0 relative">
                                             <% const variant = item.product.variants.find(v => v._id.toString() === item.variantId.toString()); %>
-                                            <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover">
+                                            <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex justify-between items-start mb-2">
+                                        <div class="flex-1 flex flex-col justify-between py-1">
+                                            <div class="flex justify-between items-start">
                                                 <div>
-                                                    <h4 class="font-bold text-lg"><%= item.product.name %></h4>
-                                                    <p class="text-white/40 text-xs font-medium uppercase tracking-widest">
-                                                        <%= variant?.color %> | <%= variant?.storage || variant?.ram || '' %>
-                                                    </p>
+                                                    <h4 class="font-bold text-xl mb-1 group-hover:text-primary transition-colors"><%= item.product.name %></h4>
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <span class="px-2 py-0.5 rounded bg-white/5 text-[10px] font-bold text-white/40 border border-white/5 uppercase"><%= variant?.color %></span>
+                                                        <span class="px-2 py-0.5 rounded bg-white/5 text-[10px] font-bold text-white/40 border border-white/5 uppercase"><%= variant?.storage || variant?.ram || '' %></span>
+                                                    </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="font-bold">₹<%= item.price.toLocaleString() %></p>
-                                                    <p class="text-white/40 text-xs">Qty: <%= item.quantity %></p>
+                                                    <p class="text-xl font-black">₹<%= item.price.toLocaleString() %></p>
+                                                    <p class="text-white/30 text-[10px] font-black uppercase tracking-widest">Qty: <%= item.quantity %></p>
                                                 </div>
                                             </div>
-                                            <div class="flex items-center justify-between mt-4">
-                                                <span class="text-sm font-bold text-primary">₹<%= (item.price * item.quantity).toLocaleString() %></span>
+                                            <div class="flex items-center justify-between mt-6">
+                                                <div class="flex flex-col">
+                                                    <span class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Subtotal</span>
+                                                    <span class="text-lg font-black text-white">₹<%= (item.price * item.quantity).toLocaleString() %></span>
+                                                </div>
                                                 <% if (item.status === 'Cancelled') { %>
-                                                    <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-rose-500/10 rounded-lg">Item Cancelled</span>
+                                                    <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-full">Item Cancelled</span>
                                                 <% } %>
                                             </div>
                                         </div>

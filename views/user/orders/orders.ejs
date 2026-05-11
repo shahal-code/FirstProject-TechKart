@@ -74,12 +74,25 @@
                     <div class="grid grid-cols-1 gap-4">
                         <% orders.forEach(order => { %>
                             <div class="glass-card rounded-3xl p-6 hover:bg-white/[0.05] transition-all border border-white/5 group">
-                                <div class="flex flex-col md:flex-row justify-between gap-6">
-                                    <!-- Order Info -->
-                                    <div class="flex flex-col justify-between">
-                                        <div>
-                                            <div class="flex items-center gap-3 mb-2">
-                                                <span class="text-xs font-black text-primary uppercase tracking-[0.2em]"><%= order.orderId %></span>
+                                <div class="flex flex-col lg:flex-row justify-between items-center gap-8">
+                                    <div class="flex flex-col md:flex-row items-center gap-8 w-full">
+                                        <!-- Large Product Image -->
+                                        <div class="size-28 rounded-3xl bg-card-dark border border-white/5 overflow-hidden flex-shrink-0 relative shadow-2xl">
+                                            <% const mainItem = order.orderedItems[0]; %>
+                                            <% const variant = mainItem.product.variants.find(v => v._id.toString() === mainItem.variantId.toString()); %>
+                                            <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                            
+                                            <% if (order.orderedItems.length > 1) { %>
+                                                <div class="absolute bottom-2 right-2 bg-primary/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold border border-white/10">
+                                                    +<%= order.orderedItems.length - 1 %>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Order Info -->
+                                        <div class="flex-1 flex flex-col justify-center py-1 text-center md:text-left">
+                                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
+                                                <span class="text-[10px] font-black text-primary uppercase tracking-[0.25em]"><%= order.orderId %></span>
                                                 <% 
                                                     let statusKey = order.status.toLowerCase();
                                                     if (statusKey === 'return request') statusKey = 'pending';
@@ -89,48 +102,34 @@
                                                     <%= order.status %>
                                                 </span>
                                             </div>
-                                            <h3 class="text-lg font-bold mb-1">
+                                            <h3 class="text-xl font-bold mb-1 tracking-tight text-white group-hover:text-primary transition-colors">
                                                 <%= order.orderedItems[0].product.name %>
-                                                <% if (order.orderedItems.length > 1) { %>
-                                                    <span class="text-white/40 text-sm font-medium"> + <%= order.orderedItems.length - 1 %> more items</span>
-                                                <% } %>
                                             </h3>
-                                            <p class="text-white/40 text-sm font-medium">
-                                                Placed on <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+                                            <p class="text-white/40 text-sm font-medium mb-4">
+                                                Ordered on <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
                                             </p>
-                                        </div>
-                                        <div class="mt-6 flex items-center gap-4">
-                                            <div class="flex -space-x-3">
-                                                <% order.orderedItems.slice(0, 3).forEach(item => { %>
-                                                    <div class="size-10 rounded-full border-2 border-[#0D0D0D] overflow-hidden bg-card-dark">
-                                                        <% const variant = item.product.variants.find(v => v._id.toString() === item.variantId.toString()); %>
-                                                        <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover">
-                                                    </div>
-                                                <% }) %>
-                                                <% if (order.orderedItems.length > 3) { %>
-                                                    <div class="size-10 rounded-full border-2 border-[#0D0D0D] bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
-                                                        +<%= order.orderedItems.length - 3 %>
-                                                    </div>
-                                                <% } %>
+                                            <div class="flex items-center justify-center md:justify-start gap-4">
+                                                <span class="text-xl font-black text-white">₹<%= order.finalAmount.toLocaleString() %></span>
+                                                <span class="size-1 rounded-full bg-white/10"></span>
+                                                <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]"><%= order.paymentMethod %></span>
                                             </div>
-                                            <span class="text-sm font-bold">₹<%= order.finalAmount.toLocaleString() %></span>
                                         </div>
                                     </div>
 
                                     <!-- Actions -->
-                                    <div class="flex flex-col justify-between items-end gap-4">
-                                        <a href="/user/orders/<%= order._id %>" class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl text-sm font-bold transition-all border border-white/10 flex items-center gap-2 group-hover:border-primary/30">
+                                    <div class="flex flex-col items-center lg:items-end gap-4 flex-shrink-0">
+                                        <a href="/user/orders/<%= order._id %>" class="bg-white/5 hover:bg-primary text-white px-8 py-3.5 rounded-2xl text-sm font-bold transition-all border border-white/10 flex items-center gap-2 group-hover:border-primary/30 shadow-xl hover:shadow-primary/20">
                                             View Details
                                             <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                         </a>
                                         
                                         <% if (['Pending', 'Processing', 'Shipped'].includes(order.status)) { %>
-                                            <button onclick="cancelOrder('<%= order._id %>')" class="text-rose-500 hover:text-rose-400 text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-colors">
+                                            <button onclick="cancelOrder('<%= order._id %>')" class="text-rose-500/60 hover:text-rose-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all py-1">
                                                 <span class="material-symbols-outlined text-sm">cancel</span>
                                                 Cancel Order
                                             </button>
                                         <% } else if (order.status === 'Delivered') { %>
-                                            <button onclick="returnOrder('<%= order._id %>')" class="text-amber-500 hover:text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-colors">
+                                            <button onclick="returnOrder('<%= order._id %>')" class="text-amber-500/60 hover:text-amber-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all py-1">
                                                 <span class="material-symbols-outlined text-sm">keyboard_return</span>
                                                 Return Order
                                             </button>
