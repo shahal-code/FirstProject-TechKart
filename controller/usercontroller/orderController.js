@@ -1,4 +1,5 @@
 import orderService from "../../services/user/orderService.js";
+import { generateInvoice } from "../../utils/invoiceGenerator.js";
 
 export const getOrders = async (req, res) => {
     try {
@@ -75,5 +76,28 @@ export const returnOrder = async (req, res) => {
     } catch (error) {
         console.error("Error returning order:", error);
         res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const downloadInvoice = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const orderId = req.params.orderId;
+
+        const order = await orderService.getOrderById(orderId, userId);
+        if (!order || order.status !== 'Delivered') {
+            return res.status(404).send("Invoice not available.");
+        }
+
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}.pdf`);
+
+        // Use the utility to generate and stream the PDF
+        generateInvoice(res, order);
+
+    } catch (error) {
+        console.error("Invoice Download Error:", error);
+        res.status(500).send("Failed to generate invoice.");
     }
 };
