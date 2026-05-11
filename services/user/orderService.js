@@ -12,9 +12,14 @@ class OrderService {
         // Validate Stock and Prepare Items
         let subtotal = 0;
         const orderedItems = cart.items.map(item => {
-            const variant = item.productId.variants.find(v => v._id.toString() === item.variantId.toString());
-            if (!variant) throw new Error("Product variant not found.");
-            if (variant.stock < item.quantity) throw new Error(`Not enough stock for ${item.productId.name}`);
+            const product = item.productId;
+            if (!product || product.is_blocked || product.is_unlisted) {
+                throw new Error(`Product ${product ? product.name : 'Unknown'} is no longer available.`);
+            }
+
+            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+            if (!variant || variant.is_blocked) throw new Error(`Specific variant for ${product.name} is no longer available.`);
+            if (variant.stock < item.quantity) throw new Error(`Not enough stock for ${product.name}`);
 
             subtotal += variant.price * item.quantity;
             return {
