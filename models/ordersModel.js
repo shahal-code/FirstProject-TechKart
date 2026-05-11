@@ -69,6 +69,14 @@ const orderSchema = new mongoose.Schema({
         required: true,
         enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
         default: 'Pending'
+    },
+    cancellationReason: {
+        type: String,
+        default: null
+    },
+    returnReason: {
+        type: String,
+        default: null
     }
 }, { timestamps: true });
 
