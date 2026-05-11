@@ -15,7 +15,7 @@ router.use(adminAuth.noCache);
 router.get("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
   const message = req.query.message || null;
   const email = req.query.email || null;
-  res.render("admin/login", { message, email });
+  res.render("admin/auth/login", { message, email });
 });
 
 router.post("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
