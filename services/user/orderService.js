@@ -63,6 +63,60 @@ class OrderService {
         await Cart.deleteOne({ userId });
 
         return order;
+    async getOrders(userId, query = {}, page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const orders = await Order.find({ userId, ...query })
+            .populate('orderedItems.product')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalOrders = await Order.countDocuments({ userId, ...query });
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        return { orders, totalPages, totalOrders };
+    }
+
+    async getOrderById(orderId, userId) {
+        return await Order.findOne({ _id: orderId, userId }).populate('orderedItems.product');
+    }
+
+    async cancelOrder(orderId, userId, reason) {
+        const order = await Order.findOne({ _id: orderId, userId });
+        if (!order) throw new Error("Order not found.");
+        
+        const allowedStatus = ['Pending', 'Processing', 'Shipped'];
+        if (!allowedStatus.includes(order.status)) {
+            throw new Error(`Order cannot be cancelled. Current status: ${order.status}`);
+        }
+
+        order.status = 'Cancelled';
+        order.cancellationReason = reason;
+        await order.save();
+
+        // Revert Stock
+        for (const item of order.orderedItems) {
+            await Product.updateOne(
+                { _id: item.product, "variants._id": item.variantId },
+                { $inc: { "variants.$.stock": item.quantity } }
+            );
+        }
+
+        return order;
+    }
+
+    async returnOrder(orderId, userId, reason) {
+        const order = await Order.findOne({ _id: orderId, userId });
+        if (!order) throw new Error("Order not found.");
+        
+        if (order.status !== 'Delivered') {
+            throw new Error("Only delivered orders can be returned.");
+        }
+
+        order.status = 'Return Request';
+        order.returnReason = reason;
+        await order.save();
+        return order;
     }
 }
 
