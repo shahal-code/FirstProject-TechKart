@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
@@ -99,7 +100,7 @@ class OrderService {
         // Revert Stock
         for (const item of order.orderedItems) {
             await Product.updateOne(
-                { _id: item.product, "variants._id": item.variantId },
+                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
                 { $inc: { "variants.$.stock": item.quantity } }
             );
         }
