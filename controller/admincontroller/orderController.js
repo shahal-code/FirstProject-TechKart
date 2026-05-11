@@ -69,6 +69,7 @@ export const updateStatus = async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating order status:", error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(400).json({ success: false, message: error.message || "Internal server error" });
     }
+
 };
