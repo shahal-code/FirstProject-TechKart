@@ -73,192 +73,218 @@
         .status-shipped { @apply bg-primary/10 text-primary border border-primary/20; }
         .status-delivered { @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20; }
         .status-cancelled { @apply bg-rose-500/10 text-rose-500 border border-rose-500/20; }
+
+        /* Force dark mode for select options */
+        select option {
+            background-color: #1a2234 !important;
+            color: white !important;
+        }
     </style>
 </head>
 
 <body class="flex min-h-screen">
-       <%- include('../../partials/admin/sidebar') %>
-      <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar min-w-0">
+    <%- include('../../partials/admin/sidebar') %>
+        <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar min-w-0">
             <!-- Header -->
             <%- include('../../partials/admin/header') %>
-        <div class="p-10 max-w-[1600px] mx-auto w-full space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="glass-morphism p-6 rounded-xl border-l-4 border-primary">
-                    <div class="flex justify-between items-start mb-4">
-                        <span
-                            class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">shopping_bag</span>
-                        <span class="text-xs font-bold text-emerald-500">+12%</span>
-                    </div>
-                    <h4 class="text-2xl font-bold tracking-tight">1,284</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Orders</p>
-                </div>
-                <div class="glass-morphism p-6 rounded-xl border-l-4 border-amber-500">
-                    <div class="flex justify-between items-start mb-4">
-                        <span
-                            class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-lg">pending_actions</span>
-                        <span class="text-xs font-bold text-amber-500">High Priority</span>
-                    </div>
-                    <h4 class="text-2xl font-bold tracking-tight">42</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Pending</p>
-                </div>
-                <div class="glass-morphism p-6 rounded-xl border-l-4 border-primary">
-                    <div class="flex justify-between items-start mb-4">
-                        <span
-                            class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">local_shipping</span>
-                        <span class="text-xs font-bold text-slate-400">8 In Transit</span>
-                    </div>
-                    <h4 class="text-2xl font-bold tracking-tight">156</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">In Transit</p>
-                </div>
-                <div class="glass-morphism p-6 rounded-xl border-l-4 border-emerald-500">
-                    <div class="flex justify-between items-start mb-4">
-                        <span
-                            class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-lg">check_circle</span>
-                        <span class="text-xs font-bold text-emerald-500">Completed</span>
-                    </div>
-                    <h4 class="text-2xl font-bold tracking-tight">1,086</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Completed</p>
-                </div>
-            </div>
-            <section class="glass-morphism rounded-xl overflow-hidden">
-            <!-- Filter Section -->
-            <div class="glass-morphism p-8 rounded-xl border border-white/5 mb-6">
-                <form action="/admin/orders" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                    <!-- Date Range -->
-                    <div class="space-y-2">
-                        <label class="label-text">Date Range</label>
-                        <div class="flex gap-2">
-                            <input type="date" name="startDate" class="input-field text-xs" value="<%= filters?.startDate || '' %>">
-                            <input type="date" name="endDate" class="input-field text-xs" value="<%= filters?.endDate || '' %>">
+                <div class="p-10 max-w-[1600px] mx-auto w-full space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-primary">
+                            <div class="flex justify-between items-start mb-4">
+                                <span
+                                    class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">shopping_bag</span>
+                                <span class="text-xs font-bold text-emerald-500">+12%</span>
+                            </div>
+                            <h4 class="text-2xl font-bold tracking-tight">1,284</h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Orders</p>
+                        </div>
+                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-amber-500">
+                            <div class="flex justify-between items-start mb-4">
+                                <span
+                                    class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-lg">pending_actions</span>
+                                <span class="text-xs font-bold text-amber-500">High Priority</span>
+                            </div>
+                            <h4 class="text-2xl font-bold tracking-tight">42</h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Pending</p>
+                        </div>
+                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-primary">
+                            <div class="flex justify-between items-start mb-4">
+                                <span
+                                    class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">local_shipping</span>
+                                <span class="text-xs font-bold text-slate-400">8 In Transit</span>
+                            </div>
+                            <h4 class="text-2xl font-bold tracking-tight">156</h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">In Transit</p>
+                        </div>
+                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-emerald-500">
+                            <div class="flex justify-between items-start mb-4">
+                                <span
+                                    class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-lg">check_circle</span>
+                                <span class="text-xs font-bold text-emerald-500">Completed</span>
+                            </div>
+                            <h4 class="text-2xl font-bold tracking-tight">1,086</h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Completed</p>
                         </div>
                     </div>
+                    <section class="glass-morphism rounded-xl overflow-hidden">
+                        <!-- Filter Section -->
+                        <div class="glass-morphism p-8 rounded-xl border border-white/5 mb-6">
+                            <form action="/admin/orders" method="GET"
+                                class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                                <!-- Date Range -->
+                                <div class="space-y-2">
+                                    <label class="label-text">Date Range</label>
+                                    <div class="flex gap-2">
+                                        <input type="date" name="startDate" class="input-field text-xs"
+                                            value="<%= filters?.startDate || '' %>">
+                                        <input type="date" name="endDate" class="input-field text-xs"
+                                            value="<%= filters?.endDate || '' %>">
+                                    </div>
+                                </div>
 
-                    <!-- Order Status -->
-                    <div class="space-y-2">
-                        <label class="label-text">Order Status</label>
-                        <div class="relative">
-                            <select name="status" class="input-field appearance-none pr-10">
-                                <option value="">All Status</option>
-                                <option value="Pending" <%= filters?.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                                <option value="Processing" <%= filters?.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                                <option value="Shipped" <%= filters?.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                                <option value="Delivered" <%= filters?.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                <option value="Cancelled" <%= filters?.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+                                <!-- Order Status -->
+                                <div class="space-y-2">
+                                    <label class="label-text">Order Status</label>
+                                    <div class="relative">
+                                        <select name="status" class="input-field appearance-none pr-10">
+                                            <option value="">All Status</option>
+                                            <option value="Pending" <%=filters?.status==='Pending' ? 'selected' : '' %>
+                                                >Pending</option>
+                                            <option value="Processing" <%=filters?.status==='Processing' ? 'selected'
+                                                : '' %>>Processing</option>
+                                            <option value="Shipped" <%=filters?.status==='Shipped' ? 'selected' : '' %>
+                                                >Shipped</option>
+                                            <option value="Delivered" <%=filters?.status==='Delivered' ? 'selected' : ''
+                                                %>>Delivered</option>
+                                            <option value="Cancelled" <%=filters?.status==='Cancelled' ? 'selected' : ''
+                                                %>>Cancelled</option>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Method -->
+                                <div class="space-y-2">
+                                    <label class="label-text">Payment Method</label>
+                                    <div class="relative">
+                                        <select name="paymentMethod" class="input-field appearance-none pr-10">
+                                            <option value="">All Methods</option>
+                                            <option value="COD" <%=filters?.paymentMethod==='COD' ? 'selected' : '' %>
+                                                >Cash on Delivery</option>
+                                            <option value="Online" <%=filters?.paymentMethod==='Online' ? 'selected'
+                                                : '' %>>Online Payment</option>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Action Buttons -->
+                                <div class="flex gap-3">
+                                    <button type="submit"
+                                        class="flex-1 bg-primary hover:bg-primary/80 text-white text-[10px] font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(0,85,255,0.2)]">
+                                        APPLY FILTERS
+                                    </button>
+                                    <a href="/admin/orders"
+                                        class="px-4 py-3 border border-white/10 hover:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 transition-all text-center">
+                                        RESET
+                                    </a>
+                                </div>
+                            </form>
                         </div>
-                    </div>
 
-                    <!-- Payment Method -->
-                    <div class="space-y-2">
-                        <label class="label-text">Payment Method</label>
-                        <div class="relative">
-                            <select name="paymentMethod" class="input-field appearance-none pr-10">
-                                <option value="">All Methods</option>
-                                <option value="COD" <%= filters?.paymentMethod === 'COD' ? 'selected' : '' %>>Cash on Delivery</option>
-                                <option value="Online" <%= filters?.paymentMethod === 'Online' ? 'selected' : '' %>>Online Payment</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+                        <!-- Search Bar Section -->
+                        <div
+                            class="glass-morphism p-6 rounded-xl border border-white/5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <form action="/admin/orders" method="GET" class="flex gap-4 flex-1">
+                                <div class="relative flex-1">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
+                                    <input name="search" type="text" class="input-field pl-12 py-3"
+                                        placeholder="Search Order ID, Customer Name..."
+                                        value="<%= filters?.search || '' %>">
+                                </div>
+                                <button type="submit"
+                                    class="bg-primary px-10 py-3 rounded-lg text-[10px] font-bold hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all uppercase tracking-widest">
+                                    Search
+                                </button>
+                            </form>
                         </div>
-                    </div>
 
-                    <!-- Filter Action Buttons -->
-                    <div class="flex gap-3">
-                        <button type="submit" class="flex-1 bg-primary hover:bg-primary/80 text-white text-[10px] font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(0,85,255,0.2)]">
-                            APPLY FILTERS
-                        </button>
-                        <a href="/admin/orders" class="px-4 py-3 border border-white/10 hover:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 transition-all text-center">
-                            RESET
-                        </a>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Search Bar Section -->
-            <div class="glass-morphism p-6 rounded-xl border border-white/5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <form action="/admin/orders" method="GET" class="flex gap-4 flex-1">
-                    <div class="relative flex-1">
-                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
-                        <input name="search" type="text" class="input-field pl-12 py-3" placeholder="Search Order ID, Customer Name..." value="<%= filters?.search || '' %>">
-                    </div>
-                    <button type="submit" class="bg-primary px-10 py-3 rounded-lg text-[10px] font-bold hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all uppercase tracking-widest">
-                        Search
-                    </button>
-                </form>
-            </div>
-
-            <section class="glass-morphism rounded-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-white/5 bg-white/[0.02]">
-                                <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Order ID</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Customer Name</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Product</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Order Date</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Status</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                    Total Amount</th>
-                                <th
-                                    class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
-                                    Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/[0.02]">
+                        <section class="glass-morphism rounded-xl overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-white/5 bg-white/[0.02]">
+                                            <th
+                                                class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Order ID</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Customer Name</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Product</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Order Date</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Status</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Total Amount</th>
+                                            <th
+                                                class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-white/5">
                             <% if (orders && orders.length > 0) { %>
                                 <% orders.forEach(order => { %>
-                                    <tr class="group hover:bg-white/[0.02] transition-all duration-300">
-                                        <td class="px-8 py-5">
-                                            <span class="text-xs font-black text-primary uppercase tracking-[0.2em] font-mono"><%= order.orderId %></span>
+                                    <tr class="hover:bg-white/[0.03] transition-colors group">
+                                        <td class="px-8 py-4">
+                                            <span class="text-sm font-bold text-primary font-mono"><%= order.orderId %></span>
                                         </td>
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-4">
                                             <div class="flex items-center gap-3">
-                                                <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary border border-primary/20">
+                                                <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
                                                     <%= (order.userId && order.userId.fullname) ? order.userId.fullname.split(' ').map(n => n[0]).join('') : 'U' %>
                                                 </div>
-                                                <span class="text-sm font-bold text-slate-200"><%= (order.userId && order.userId.fullname) ? order.userId.fullname : 'Unknown User' %></span>
+                                                <span class="text-sm font-medium text-slate-200"><%= (order.userId && order.userId.fullname) ? order.userId.fullname : 'Unknown User' %></span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-5">
-                                            <span class="text-sm font-medium text-slate-400 line-clamp-1">
+                                        <td class="px-6 py-4">
+                                            <span class="text-sm text-slate-300">
                                                 <%= order.orderedItems[0]?.product?.name || 'Product' %> 
                                                 <% if (order.orderedItems.length > 1) { %>
-                                                    <span class="text-[10px] text-slate-600 font-bold ml-1">(+<%= order.orderedItems.length - 1 %> more)</span>
+                                                    <span class="text-[10px] text-slate-500">(+<%= order.orderedItems.length - 1 %> more)</span>
                                                 <% } %>
                                             </span>
                                         </td>
-                                        <td class="px-6 py-5">
-                                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                                <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
-                                            </p>
+                                        <td class="px-6 py-4 text-sm text-slate-400">
+                                            <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
                                         </td>
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-4">
                                             <% 
-                                                let statusClass = 'status-pending';
-                                                if (order.status === 'Processing') statusClass = 'status-processing';
+                                                let statusClass = 'status-processing';
                                                 if (order.status === 'Shipped') statusClass = 'status-shipped';
                                                 if (order.status === 'Delivered') statusClass = 'status-delivered';
                                                 if (order.status === 'Cancelled') statusClass = 'status-cancelled';
                                             %>
-                                            <span class="status-badge <%= statusClass %> shadow-sm"><%= order.status %></span>
+                                            <span class="status-badge <%= statusClass %>"><%= order.status %></span>
                                         </td>
-                                        <td class="px-6 py-5">
-                                            <span class="text-sm font-black text-white">₹<%= order.finalAmount.toLocaleString() %></span>
-                                        </td>
-                                        <td class="px-8 py-5 text-right">
-                                            <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                        <td class="px-6 py-4 text-sm font-bold">₹<%= order.finalAmount.toLocaleString() %></td>
+                                        <td class="px-8 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
                                                 <a href="/admin/orders/<%= order._id %>"
-                                                    class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20">
-                                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                                    class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
+                                                    <span class="material-symbols-outlined text-xl">visibility</span>
                                                 </a>
                                                 <button onclick="updateStatus('<%= order._id %>', '<%= order.status %>')"
-                                                    class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20">
-                                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                                    class="p-1.5 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
+                                                    <span class="material-symbols-outlined text-xl">edit</span>
                                                 </button>
                                             </div>
                                         </td>
@@ -272,142 +298,109 @@
                                     </td>
                                 </tr>
                             <% } %>
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Dynamic Pagination -->
+                            <div class="p-6 border-t border-white/5 flex items-center justify-between">
+                                <% 
+                                    const showingStart = (page - 1) * 10 + 1;
+                                    const showingEnd = Math.min(page * 10, totalOrders);
+                                %>
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                    Showing <%= totalOrders > 0 ? showingStart : 0 %>-<%= showingEnd %> of <%= totalOrders %> results
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <% if (page > 1) { %>
+                                        <button onclick="window.location.href='?page=<%= page - 1 %>'"
+                                            class="size-8 rounded-lg border border-white/5 flex items-center justify-center hover:bg-white/5 text-slate-400 transition-all">
+                                            <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
+                                        </button>
+                                    <% } %>
+                                    
+                                    <% for(let i = 1; i <= totalPages; i++) { %>
+                                        <button onclick="window.location.href='?page=<%= i %>'"
+                                            class="size-8 rounded-lg border <%= page === i ? 'bg-primary border-primary text-white' : 'border-white/5 text-slate-500 hover:bg-white/5' %> text-[10px] font-black transition-all">
+                                            <%= i %>
+                                        </button>
+                                    <% } %>
+
+                                    <% if (page < totalPages) { %>
+                                        <button onclick="window.location.href='?page=<%= page + 1 %>'"
+                                            class="size-8 rounded-lg border border-white/5 flex items-center justify-center hover:bg-white/5 text-slate-400 transition-all">
+                                            <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </section>
                 </div>
-                <!-- Dynamic Pagination -->
-                <div class="p-6 border-t border-white/5 flex items-center justify-between">
-                    <% 
-                        const showingStart = (page - 1) * 10 + 1;
-                        const showingEnd = Math.min(page * 10, totalOrders);
-                    %>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        Showing <%= totalOrders > 0 ? showingStart : 0 %>-<%= showingEnd %> of <%= totalOrders %> results
-                    </p>
-                    
-                    <div class="flex items-center gap-2">
-                        <!-- Previous Page -->
-                        <% if (page > 1) { %>
-                            <a href="?page=<%= page - 1 %><%= Object.entries(filters).filter(([k]) => k !== 'page').map(([k, v]) => `&${k}=${v}`).join('') %>"
-                                class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all">
-                                <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
-                            </a>
-                        <% } else { %>
-                            <button class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 opacity-30 cursor-not-allowed" disabled>
-                                <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
-                            </button>
-                        <% } %>
+        </main>
+        <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full"></div>
+        <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full"></div>
 
-                        <!-- Page Numbers -->
-                        <% 
-                            let startPage = Math.max(1, page - 2);
-                            let endPage = Math.min(totalPages, startPage + 4);
-                            if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
-                        %>
-
-                        <% for (let i = startPage; i <= endPage; i++) { %>
-                            <a href="?page=<%= i %><%= Object.entries(filters).filter(([k]) => k !== 'page').map(([k, v]) => `&${k}=${v}`).join('') %>"
-                                class="h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all <%= i === page ? 'bg-primary text-white shadow-[0_0_15px_rgba(0,85,255,0.4)]' : 'border border-white/10 text-slate-400 hover:bg-white/5' %>">
-                                <%= i %>
-                            </a>
-                        <% } %>
-
-                        <!-- Next Page -->
-                        <% if (page < totalPages) { %>
-                            <a href="?page=<%= page + 1 %><%= Object.entries(filters).filter(([k]) => k !== 'page').map(([k, v]) => `&${k}=${v}`).join('') %>"
-                                class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all">
-                                <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
-                            </a>
-                        <% } else { %>
-                            <button class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 opacity-30 cursor-not-allowed" disabled>
-                                <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
-                            </button>
-                        <% } %>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-    <div
-        class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full">
-    </div>
-    <div
-        class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10 rounded-full">
-    </div>
-
-    <script>
-        async function updateStatus(orderId, currentStatus) {
-            const { value: newStatus } = await Swal.fire({
-                title: '<span class="text-white font-display">Update Order Status</span>',
-                html: '<div class="text-slate-400 text-sm mb-4">Select the new lifecycle state for this order.</div>',
-                input: 'select',
-                inputOptions: {
-                    'Pending': 'Pending',
-                    'Processing': 'Processing',
-                    'Shipped': 'Shipped',
-                    'Delivered': 'Delivered',
-                    'Cancelled': 'Cancelled',
-                    'Return Request': 'Return Request',
-                    'Returned': 'Returned'
-                },
-                inputValue: currentStatus,
-                showCancelButton: true,
-                confirmButtonText: 'Update Status',
-                cancelButtonText: 'Keep Current',
-                confirmButtonColor: '#0055ff',
-                cancelButtonColor: 'rgba(255,255,255,0.05)',
-                background: '#111827',
-                color: '#fff',
-                inputAttributes: {
-                    'style': 'color-scheme: dark; background-color: #0f172a !important;'
-                },
-                customClass: {
-                    popup: 'rounded-[2rem] border border-white/10 shadow-2xl backdrop-blur-xl',
-                    input: 'bg-slate-900 border-white/10 text-white rounded-xl focus:ring-primary focus:border-primary mx-auto w-[80%]',
-                    confirmButton: 'rounded-xl px-6 py-3 font-bold',
-                    cancelButton: 'rounded-xl px-6 py-3 font-bold text-slate-400'
-                }
-            });
-
-            if (newStatus && newStatus !== currentStatus) {
-                try {
-                    const response = await fetch('/admin/orders/update-status', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ orderId, status: newStatus })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Status Updated',
-                            text: `Order is now ${newStatus}`,
-                            background: '#111827',
-                            color: '#fff',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            customClass: {
-                                popup: 'rounded-[2rem] border border-white/10 shadow-2xl'
-                            }
-                        }).then(() => window.location.reload());
-                    } else {
-                        throw new Error(data.message);
+        <script>
+            async function updateStatus(orderId, currentStatus) {
+                const { value: newStatus } = await Swal.fire({
+                    title: 'Update Order Status',
+                    input: 'select',
+                    inputOptions: {
+                        'Pending': 'Pending',
+                        'Processing': 'Processing',
+                        'Shipped': 'Shipped',
+                        'Delivered': 'Delivered',
+                        'Cancelled': 'Cancelled',
+                        'Return Request': 'Return Request',
+                        'Returned': 'Returned'
+                    },
+                    inputValue: currentStatus,
+                    showCancelButton: true,
+                    confirmButtonColor: '#0055ff',
+                    cancelButtonColor: 'rgba(255,255,255,0.05)',
+                    background: '#1a2234',
+                    color: '#fff',
+                    inputAttributes: {
+                        'style': 'color-scheme: dark;'
+                    },
+                    customClass: {
+                        popup: 'rounded-2xl border border-white/10 shadow-2xl',
+                        input: 'bg-slate-800 text-white border-white/10 rounded-lg focus:ring-primary'
                     }
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Update Failed',
-                        text: error.message,
-                        background: '#111827',
-                        color: '#fff',
-                        customClass: {
-                            popup: 'rounded-[2rem] border border-white/10 shadow-2xl'
+                });
+
+                if (newStatus && newStatus !== currentStatus) {
+                    try {
+                        const response = await fetch('/admin/orders/update-status', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderId, status: newStatus })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Updated!',
+                                text: data.message,
+                                background: '#1a2234',
+                                color: '#fff',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => window.location.reload());
+                        } else {
+                            throw new Error(data.message);
                         }
-                    });
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error.message,
+                            background: '#1a2234',
+                            color: '#fff'
+                        });
+                    }
                 }
             }
-        }
-    </script>
+        </script>
 </body>
 
 </html>
