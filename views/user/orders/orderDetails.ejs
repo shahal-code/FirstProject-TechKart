@@ -143,14 +143,17 @@
                                 Shipping Address
                             </h3>
                             <div class="space-y-2">
-                                <p class="font-bold"><%= order.address.fullName %></p>
+                                <p class="font-bold"><%= order.shippingAddress.fullname %></p>
                                 <p class="text-white/60 text-sm leading-relaxed">
-                                    <%= order.address.streetAddress %><br>
-                                    <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %><br>
+                                    <%= order.shippingAddress.line1 %><br>
+                                    <% if (order.shippingAddress.line2) { %>
+                                        <%= order.shippingAddress.line2 %><br>
+                                    <% } %>
+                                    <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.postal_code %><br>
                                     India
                                 </p>
                                 <p class="text-white/60 text-sm mt-4">
-                                    <span class="font-bold text-white/80">Phone:</span> <%= order.address.phoneNumber %>
+                                    <span class="font-bold text-white/80">Phone:</span> <%= order.shippingAddress.phone %>
                                 </p>
                             </div>
                         </div>
