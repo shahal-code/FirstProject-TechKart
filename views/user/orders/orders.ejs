@@ -39,7 +39,7 @@
             @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5;
         }
         .status-pending { @apply bg-amber-500/10 text-amber-500 border border-amber-500/20; }
-        .status-processing { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
+        .status-out-for-delivery { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
         .status-shipped { @apply bg-indigo-500/10 text-indigo-500 border border-indigo-500/20; }
         .status-delivered { @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20; }
         .status-cancelled { @apply bg-rose-500/10 text-rose-500 border border-rose-500/20; }
@@ -135,7 +135,7 @@
                                             <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                         </a>
                                         
-                                        <% if (['Pending', 'Processing', 'Shipped'].includes(order.status)) { %>
+                                        <% if (['Pending', 'Shipped', 'Out for Delivery'].includes(order.status)) { %>
                                             <button onclick="cancelOrder('<%= order._id %>')" class="text-rose-500/60 hover:text-rose-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all py-1">
                                                 <span class="material-symbols-outlined text-sm">cancel</span>
                                                 Cancel Order

@@ -28,7 +28,7 @@
     <style>
         .status-badge { @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5; }
         .status-pending { @apply bg-amber-500/10 text-amber-500 border border-amber-500/20; }
-        .status-processing { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
+        .status-out-for-delivery { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
         .status-shipped { @apply bg-indigo-500/10 text-indigo-500 border border-indigo-500/20; }
         .status-delivered { @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20; }
         .status-cancelled { @apply bg-rose-500/10 text-rose-500 border border-rose-500/20; }
@@ -69,8 +69,8 @@
                             <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Fulfillment State</p>
                             <% 
                                 let statusClass = 'status-pending';
-                                if (order.status === 'Processing') statusClass = 'status-processing';
                                 if (order.status === 'Shipped') statusClass = 'status-shipped';
+                                if (order.status === 'Out for Delivery') statusClass = 'status-out-for-delivery';
                                 if (order.status === 'Delivered') statusClass = 'status-delivered';
                                 if (order.status === 'Cancelled') statusClass = 'status-cancelled';
                                 if (order.status === 'Return Request') statusClass = 'status-return-request';
@@ -117,7 +117,7 @@
                 <div class="p-10 rounded-[2.5rem] bg-card-bg border border-white/5 relative overflow-hidden">
                     <div class="flex items-center justify-between relative z-10">
                         <% 
-                            const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+                            const statuses = ['Pending', 'Shipped', 'Out for Delivery', 'Delivered'];
                             const currentIndex = statuses.indexOf(order.status);
                             const isCancelled = order.status === 'Cancelled';
                         %>
@@ -128,8 +128,8 @@
                                     <div class="size-12 rounded-2xl flex items-center justify-center transition-all duration-700 <%= index <= currentIndex ? 'bg-primary text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] scale-110' : 'bg-white/5 text-slate-600 border border-white/5' %>">
                                         <span class="material-symbols-outlined text-xl">
                                             <%= status === 'Pending' ? 'shopping_cart' : 
-                                                status === 'Processing' ? 'sync' : 
-                                                status === 'Shipped' ? 'local_shipping' : 'task_alt' %>
+                                                status === 'Shipped' ? 'local_shipping' : 
+                                                status === 'Out for Delivery' ? 'delivery_dining' : 'task_alt' %>
                                         </span>
                                     </div>
                                     <div class="text-center">

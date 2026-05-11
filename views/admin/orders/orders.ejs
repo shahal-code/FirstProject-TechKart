@@ -69,7 +69,7 @@
         .status-badge {
             @apply px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5;
         }
-        .status-processing { @apply bg-amber-500/10 text-amber-500 border border-amber-500/20; }
+        .status-out-for-delivery { @apply bg-blue-500/10 text-blue-500 border border-blue-500/20; }
         .status-shipped { @apply bg-primary/10 text-primary border border-primary/20; }
         .status-delivered { @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20; }
         .status-cancelled { @apply bg-rose-500/10 text-rose-500 border border-rose-500/20; }
@@ -148,16 +148,13 @@
                                     <div class="relative">
                                         <select name="status" class="input-field appearance-none pr-10">
                                             <option value="">All Status</option>
-                                            <option value="Pending" <%=filters?.status==='Pending' ? 'selected' : '' %>
-                                                >Pending</option>
-                                            <option value="Processing" <%=filters?.status==='Processing' ? 'selected'
-                                                : '' %>>Processing</option>
-                                            <option value="Shipped" <%=filters?.status==='Shipped' ? 'selected' : '' %>
-                                                >Shipped</option>
-                                            <option value="Delivered" <%=filters?.status==='Delivered' ? 'selected' : ''
-                                                %>>Delivered</option>
-                                            <option value="Cancelled" <%=filters?.status==='Cancelled' ? 'selected' : ''
-                                                %>>Cancelled</option>
+                                            <option value="Pending" <%=filters?.status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="Shipped" <%=filters?.status==='Shipped' ? 'selected' : '' %>>Shipped</option>
+                                            <option value="Out for Delivery" <%=filters?.status==='Out for Delivery' ? 'selected' : '' %>>Out for Delivery</option>
+                                            <option value="Delivered" <%=filters?.status==='Delivered' ? 'selected' : '' %>>Delivered</option>
+                                            <option value="Cancelled" <%=filters?.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                            <option value="Return Request" <%=filters?.status==='Return Request' ? 'selected' : '' %>>Return Request</option>
+                                            <option value="Returned" <%=filters?.status==='Returned' ? 'selected' : '' %>>Returned</option>
                                         </select>
                                         <span
                                             class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
@@ -268,10 +265,13 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <% 
-                                                let statusClass = 'status-processing';
+                                                let statusClass = 'status-pending';
                                                 if (order.status === 'Shipped') statusClass = 'status-shipped';
+                                                if (order.status === 'Out for Delivery') statusClass = 'status-out-for-delivery';
                                                 if (order.status === 'Delivered') statusClass = 'status-delivered';
                                                 if (order.status === 'Cancelled') statusClass = 'status-cancelled';
+                                                if (order.status === 'Return Request') statusClass = 'status-return-request';
+                                                if (order.status === 'Returned') statusClass = 'status-returned';
                                             %>
                                             <span class="status-badge <%= statusClass %>"><%= order.status %></span>
                                         </td>
@@ -348,6 +348,7 @@
                         'Pending': 'Pending',
                         'Processing': 'Processing',
                         'Shipped': 'Shipped',
+                        'Out for Delivery': 'Out for Delivery',
                         'Delivered': 'Delivered',
                         'Cancelled': 'Cancelled',
                         'Return Request': 'Return Request',

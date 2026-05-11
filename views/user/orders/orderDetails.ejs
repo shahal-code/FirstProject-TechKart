@@ -47,7 +47,7 @@
             @apply bg-amber-500/10 text-amber-500 border border-amber-500/20;
         }
 
-        .status-processing {
+        .status-out-for-delivery {
             @apply bg-blue-500/10 text-blue-500 border border-blue-500/20;
         }
 
@@ -83,7 +83,7 @@
                         <h1 class="text-xl font-bold tracking-tight">Order Details</h1>
                     </div>
                     <div class="flex items-center gap-4">
-                        <% if (['Pending', 'Processing' , 'Shipped' ].includes(order.status)) { %>
+                        <% if (['Pending', 'Shipped', 'Out for Delivery'].includes(order.status)) { %>
                             <button onclick="handleCancelOrder('<%= order._id %>')"
                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-rose-500/10">
                                 <span class="material-symbols-outlined text-lg">cancel</span>
@@ -125,7 +125,7 @@
                         <div class="flex flex-col items-end gap-2">
                             <span class="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Current
                                 Status</span>
-                            <% let statusKey=order.status.toLowerCase(); %>
+                            <% let statusKey = order.status.toLowerCase().replace(/\s+/g, '-'); %>
                                 <span class="status-badge status-<%= statusKey %> text-sm py-2 px-5">
                                     <span class="size-2 rounded-full bg-current"></span>
                                     <%= order.status %>
@@ -139,10 +139,10 @@
                             <!-- Order Timeline -->
                             <div class="glass-card rounded-3xl p-8 overflow-hidden relative">
                                 <div class="flex items-center justify-between relative z-10">
-                                    <% const statuses=['Pending', 'Processing' , 'Shipped' , 'Delivered' ]; const
-                                        currentIndex=statuses.indexOf(order.status); const
-                                        isCancelled=order.status==='Cancelled' ; const
-                                        isReturned=order.status==='Returned' ; %>
+                                    <% const statuses=['Pending', 'Shipped', 'Out for Delivery', 'Delivered']; 
+                                       const currentIndex=statuses.indexOf(order.status); 
+                                       const isCancelled=order.status==='Cancelled'; 
+                                       const isReturned=order.status==='Returned'; %>
 
                                         <% if (!isCancelled && !isReturned) { %>
                                             <% statuses.forEach((status, index)=> { %>
@@ -151,8 +151,8 @@
                                                         class="size-10 rounded-full flex items-center justify-center transition-all duration-500 <%= index <= currentIndex ? 'bg-primary text-white shadow-[0_0_20px_rgba(6,87,249,0.4)]' : 'bg-white/5 text-white/20 border border-white/5' %>">
                                                         <span class="material-symbols-outlined text-lg">
                                                             <%= status==='Pending' ? 'shopping_basket' :
-                                                                status==='Processing' ? 'precision_manufacturing' :
-                                                                status==='Shipped' ? 'local_shipping' : 'verified' %>
+                                                                status==='Shipped' ? 'local_shipping' :
+                                                                status==='Out for Delivery' ? 'delivery_dining' : 'verified' %>
                                                         </span>
                                                     </div>
                                                     <span
