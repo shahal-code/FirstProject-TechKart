@@ -1,14 +1,14 @@
 import * as OrderService from "../../services/admin/ordersService.js";
 
-export const loadOrders = async (req,res)=>{
-    try{
+export const loadOrders = async (req, res) => {
+    try {
         const { startDate, endDate, status, paymentMethod, search } = req.query;
-        const page=parseInt(req.query.page)||1;
-        const limit=10;
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
 
-        let query={};
+        let query = {};
 
-          // Filter by Status
+        // Filter by Status
         if (status) query.status = status;
         // Filter by Payment Method
         if (paymentMethod) query.paymentMethod = paymentMethod;
@@ -23,13 +23,13 @@ export const loadOrders = async (req,res)=>{
             }
         }
         //search logic
-          if (search) {
+        if (search) {
             query.$or = [
                 { orderId: { $regex: search, $options: 'i' } }
             ];
         }
 
-    const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(query, page, limit);
+        const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(query, page, limit);
         res.render("admin/orders/orders", {
             orders,
             page,
