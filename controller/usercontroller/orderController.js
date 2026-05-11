@@ -1,5 +1,6 @@
 import orderService from "../../services/user/orderService.js";
 import { generateInvoice } from "../../utils/invoiceGenerator.js";
+import Product from "../../models/productModel.js";
 
 export const getOrders = async (req, res) => {
     try {
@@ -10,7 +11,19 @@ export const getOrders = async (req, res) => {
 
         let query = {};
         if (search) {
-            query.orderId = { $regex: search, $options: "i" };
+            // Step 1: Find product IDs that match the search name
+            const matchingProducts = await Product.find({
+                name: { $regex: search, $options: "i" }
+            }).select('_id');
+            const productIds = matchingProducts.map(p => p._id);
+
+            // Step 2: Search by Order ID OR containing any matching Product ID
+            query = {
+                $or: [
+                    { orderId: { $regex: search, $options: "i" } },
+                    { "orderedItems.product": { $in: productIds } }
+                ]
+            };
         }
 
         const { orders, totalPages, totalOrders } = await orderService.getOrders(userId, query, page, limit);
