@@ -1,61 +1,28 @@
 import express from "express";
 import * as Dashboard from "../controller/admincontroller/dashboard.js";
 import * as Customers from "../controller/admincontroller/customers.js";
-import { validateLogin } from "../utils/validation.js";
+import * as AdminAuthController from "../controller/admincontroller/admin.auth.js";
 import * as adminAuth from "../middleware/adminAuth.js";
 import * as CategoryController from "../controller/admincontroller/categoryController.js";
 import * as ProductController from "../controller/admincontroller/productController.js";
 import { uploadProduct } from "../config/productMulter.js";
-import * as orderController from "../controller/admincontroller/orderController.js"
+import * as orderController from "../controller/admincontroller/orderController.js";
 
 const router = express.Router();
 
 router.use(adminAuth.noCache);
 
-router.get("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
-  const message = req.query.message || null;
-  const email = req.query.email || null;
-  res.render("admin/auth/login", { message, email });
-});
+router.get("/login", adminAuth.isAdminAlreadyLoggedIn, AdminAuthController.loadLogin);
 
-router.post("/login", adminAuth.isAdminAlreadyLoggedIn, (req, res) => {
-  const { email, password } = req.body;
+router.post("/login", adminAuth.isAdminAlreadyLoggedIn, AdminAuthController.login);
 
-  const validationError = validateLogin(req.body);
-  if (validationError) {
-    return res.redirect(303, `/admin/login?message=${encodeURIComponent(validationError)}&email=${encodeURIComponent(email)}`);
-  }
-
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "12345";
-
-  if (email === adminEmail && password === adminPassword) {
-    req.session.admin = true;
-    return req.session.save((err) => {
-      if (err) console.log("Admin session save error:", err);
-      res.redirect(303, "/admin/dashboard");
-    });
-  }
-
-  res.redirect(303, `/admin/login?message=${encodeURIComponent("Invalid login credentials")}&email=${encodeURIComponent(email)}`);
-});
-
-router.get("/dashboard", adminAuth.isAdminLoggedIn, Dashboard.loadDashboard);
+router.get("/dashboard", Dashboard.loadDashboard);
 
 router.get("/users", adminAuth.isAdminLoggedIn, Customers.getUsers);
 
 router.post("/users/:id/block", adminAuth.isAdminLoggedIn, Customers.blockUser);
 
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log("Logout error:", err);
-    }
-    res.clearCookie("admin.sid");
-    // res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
-    res.redirect("/admin/login");
-  });
-});
+router.get("/logout", AdminAuthController.logout);
 
 // Category
 router.get("/category", adminAuth.isAdminLoggedIn, CategoryController.categoryInfo);

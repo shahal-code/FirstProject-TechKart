@@ -103,7 +103,7 @@
                                             class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
                                             <% if(item.isUnavailable) { %> disabled <% } %>>+</button>
                                     </div>
-                                    <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
+                                    <button onclick="removeCartItem(' <%=item._id %>')" class="p-2 text-white/30
                                                 hover:text-red-500 transition-colors">
                                                 <span class="material-symbols-outlined">delete</span>
                                                 </button>
@@ -155,27 +155,30 @@
                             </div>
                         </div>
                         <div class="space-y-4">
-                            <% 
-                                const isEmpty = !cart || !cart.items || cart.items.length === 0;
-                                const hasUnavailable = cart && cart.items && cart.items.some(i => i.isUnavailable); 
+                            <% const isEmpty=!cart || !cart.items || cart.items.length===0; const hasUnavailable=cart &&
+                                cart.items && cart.items.some(i=> i.isUnavailable);
                                 const isDisabled = isEmpty || hasUnavailable;
-                            %>
-                            <a href="<%= isDisabled ? 'javascript:void(0)' : '/user/checkout' %>"
-                                onclick="<%= isEmpty ? 'return showEmptyCartWarning()' : (hasUnavailable ? 'return showUnavailableWarning()' : '') %>"
-                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 <%= isDisabled ? 'opacity-50 cursor-not-allowed' : '' %>">
-                                PROCEED TO CHECKOUT
-                                <span class="material-symbols-outlined">chevron_right</span>
-                            </a>
-                            <% if (hasUnavailable) { %>
-                                <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to proceed.</p>
-                            <% } else if (isEmpty) { %>
-                                <p class="text-white/30 text-[10px] text-center mt-2 uppercase tracking-widest font-black">Add items to checkout</p>
-                            <% } %>
-                                        <div class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
-                                            <span class="material-symbols-outlined">payments</span>
-                                            <span class="material-symbols-outlined">credit_card</span>
-                                            <span class="material-symbols-outlined">account_balance</span>
-                                        </div>
+                                %>
+                                <a href="<%= isDisabled ? 'javascript:void(0)' : '/user/checkout' %>"
+                                    onclick="<%= isEmpty ? 'return showEmptyCartWarning()' : (hasUnavailable ? 'return showUnavailableWarning()' : '') %>"
+                                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 <%= isDisabled ? 'opacity-50 cursor-not-allowed' : '' %>">
+                                    PROCEED TO CHECKOUT
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </a>
+                                <% if (hasUnavailable) { %>
+                                    <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to
+                                        proceed.</p>
+                                    <% } else if (isEmpty) { %>
+                                        <p
+                                            class="text-white/30 text-[10px] text-center mt-2 uppercase tracking-widest font-black">
+                                            Add items to checkout</p>
+                                        <% } %>
+                                            <div
+                                                class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
+                                                <span class="material-symbols-outlined">payments</span>
+                                                <span class="material-symbols-outlined">credit_card</span>
+                                                <span class="material-symbols-outlined">account_balance</span>
+                                            </div>
                         </div>
                     </div>
                     <div class="mt-8 glass p-6 rounded-xl">
