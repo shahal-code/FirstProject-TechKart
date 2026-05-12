@@ -333,7 +333,7 @@
                     <!-- Pagination -->
                     <div class="flex items-center justify-between">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">
-                            Showing <%= (page - 1) * 5 + 1 %> to <%= Math.min(page * 5, totalUsers) %> of <%= totalUsers
+                            Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalUsers) %> of <%= totalUsers
                                         %>
                                         customers
                         </p>

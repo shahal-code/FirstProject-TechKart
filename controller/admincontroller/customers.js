@@ -22,6 +22,7 @@ export const getUsers = async (req, res) => {
       page,
       totalPages,
       totalUsers,
+      limit,
       stats,
       search,
       activePage: "customers",

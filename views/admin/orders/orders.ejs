@@ -301,37 +301,42 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- Dynamic Pagination -->
+                            <!-- Pagination -->
                             <div class="p-6 border-t border-white/5 flex items-center justify-between">
-                                <% 
-                                    const showingStart = (page - 1) * 10 + 1;
-                                    const showingEnd = Math.min(page * 10, totalOrders);
-                                %>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    Showing <%= totalOrders > 0 ? showingStart : 0 %>-<%= showingEnd %> of <%= totalOrders %> results
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">
+                                    Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalOrders) %> of <%= totalOrders %> orders
                                 </p>
-                                <div class="flex items-center gap-2">
-                                    <% if (page > 1) { %>
-                                        <button onclick="window.location.href='?page=<%= page - 1 %>'"
-                                            class="size-8 rounded-lg border border-white/5 flex items-center justify-center hover:bg-white/5 text-slate-400 transition-all">
-                                            <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
-                                        </button>
-                                    <% } %>
-                                    
-                                    <% for(let i = 1; i <= totalPages; i++) { %>
-                                        <button onclick="window.location.href='?page=<%= i %>'"
-                                            class="size-8 rounded-lg border <%= page === i ? 'bg-primary border-primary text-white' : 'border-white/5 text-slate-500 hover:bg-white/5' %> text-[10px] font-black transition-all">
-                                            <%= i %>
-                                        </button>
-                                    <% } %>
+                                <% if (totalPages > 1) { %>
+                                    <div class="flex items-center gap-2">
+                                        <% 
+                                            const getQueryString = (p) => {
+                                                let q = `?page=${p}`;
+                                                if (filters.search) q += `&search=${filters.search}`;
+                                                if (filters.status) q += `&status=${filters.status}`;
+                                                if (filters.paymentMethod) q += `&paymentMethod=${filters.paymentMethod}`;
+                                                if (filters.startDate) q += `&startDate=${filters.startDate}`;
+                                                if (filters.endDate) q += `&endDate=${filters.endDate}`;
+                                                return q;
+                                            }
+                                        %>
+                                        <a href="<%= getQueryString(page - 1) %>"
+                                            class="px-6 py-2.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all text-[10px] font-bold uppercase tracking-widest <%= page === 1 ? 'pointer-events-none opacity-30' : '' %>">
+                                            Previous
+                                        </a>
 
-                                    <% if (page < totalPages) { %>
-                                        <button onclick="window.location.href='?page=<%= page + 1 %>'"
-                                            class="size-8 rounded-lg border border-white/5 flex items-center justify-center hover:bg-white/5 text-slate-400 transition-all">
-                                            <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
-                                        </button>
-                                    <% } %>
-                                </div>
+                                        <% for(let i = 1; i <= totalPages; i++) { %>
+                                            <a href="<%= getQueryString(i) %>"
+                                                class="h-10 w-10 flex items-center justify-center rounded-lg text-[10px] font-bold transition-all <%= page === i ? 'bg-primary text-white shadow-[0_0_20px_rgba(0,85,255,0.3)]' : 'border border-white/10 text-slate-400 hover:bg-white/5' %>">
+                                                <%= i %>
+                                            </a>
+                                        <% } %>
+
+                                        <a href="<%= getQueryString(page + 1) %>"
+                                            class="px-6 py-2.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all text-[10px] font-bold uppercase tracking-widest <%= page === totalPages ? 'pointer-events-none opacity-30' : '' %>">
+                                            Next
+                                        </a>
+                                    </div>
+                                <% } %>
                             </div>
                         </section>
                 </div>

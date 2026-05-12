@@ -52,6 +52,7 @@ export const loadOrders = async (req, res) => {
             page,
             totalPages,
             totalOrders,
+            limit,
             activePage: "orders",
             filters: req.query // This keeps your filter inputs filled on the page
         });

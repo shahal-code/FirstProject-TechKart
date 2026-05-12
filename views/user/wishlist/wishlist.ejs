@@ -60,14 +60,14 @@
 
             <% if (wishlist && wishlist.products && wishlist.products.length> 0) { %>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <% wishlist.products.forEach(item => { 
-                         const product = item.productId;
-                         if (!product) return;
-                         const variantIdStr = item.variantId ? item.variantId.toString() : null;
-                         const variant = product.variants.find(v => v._id.toString() === variantIdStr) || product.variants[0];
-                    %>
-                        <div
-                            data-product-id="<%= product._id %>" data-variant-id="<%= variant?._id %>"
+                    <% wishlist.products.forEach(item=> {
+                        const product = item.productId;
+                        if (!product) return;
+                        const variantIdStr = item.variantId ? item.variantId.toString() : null;
+                        const variant = product.variants.find(v => v._id.toString() === variantIdStr) ||
+                        product.variants[0];
+                        %>
+                        <div data-product-id="<%= product._id %>" data-variant-id="<%= variant?._id %>"
                             class="glass-card group rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500">
                             <div class="relative aspect-[4/3] overflow-hidden">
                                 <img src="<%= (variant && variant.images && variant.images.length > 0) ? variant.images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
@@ -86,33 +86,47 @@
                                 </div>
                                 <% if(variant) { %>
                                     <div class="flex flex-wrap gap-2 mb-3">
-                                        <% if(variant.ram) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.ram %></span><% } %>
-                                        <% if(variant.storage) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.storage %></span><% } %>
-                                        <% if(variant.processor) { %><span class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold"><%= variant.processor %></span><% } %>
+                                        <% if(variant.ram) { %><span
+                                                class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold">
+                                                <%= variant.ram %>
+                                            </span>
+                                            <% } %>
+                                                <% if(variant.storage) { %><span
+                                                        class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold">
+                                                        <%= variant.storage %>
+                                                    </span>
+                                                    <% } %>
+                                                        <% if(variant.processor) { %><span
+                                                                class="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 font-bold">
+                                                                <%= variant.processor %>
+                                                            </span>
+                                                            <% } %>
                                     </div>
-                                <% } %>
-                                <p class="text-gray-400 text-sm line-clamp-2 mb-8">
-                                    <%= product.description %>
-                                </p>
-
-                                <div class="flex gap-4">
-                                    <a href="/user/product/<%= product._id %>"
-                                        class="flex-1 py-4 bg-white text-black text-center font-black text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                        View Product
-                                    </a>
-                                    <% if (variant && variant.stock > 0) { %>
-                                        <button
-                                            onclick="moveToCart('<%= product._id %>', '<%= variant?._id %>')"
-                                            class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                            <span class="material-symbols-outlined">add_shopping_cart</span>
-                                        </button>
-                                    <% } else { %>
-                                        <button disabled
-                                            class="size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed" title="Out of Stock">
-                                            <span class="material-symbols-outlined">remove_shopping_cart</span>
-                                        </button>
                                     <% } %>
-                                </div>
+                                        <p class="text-gray-400 text-sm line-clamp-2 mb-8">
+                                            <%= product.description %>
+                                        </p>
+
+                                        <div class="flex gap-4">
+                                            <a href="/user/product/<%= product._id %>"
+                                                class="flex-1 py-4 bg-white text-black text-center font-black text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all duration-300">
+                                                View Product
+                                            </a>
+                                            <% if (variant && variant.stock> 0) { %>
+                                                <button
+                                                    onclick="moveToCart('<%= product._id %>', '<%= variant?._id %>')"
+                                                    class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
+                                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                                </button>
+                                                <% } else { %>
+                                                    <button disabled
+                                                        class="size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed"
+                                                        title="Out of Stock">
+                                                        <span
+                                                            class="material-symbols-outlined">remove_shopping_cart</span>
+                                                    </button>
+                                                    <% } %>
+                                        </div>
                             </div>
                         </div>
                         <% }) %>

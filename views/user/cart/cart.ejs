@@ -103,7 +103,7 @@
                                             class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/70"
                                             <% if(item.isUnavailable) { %> disabled <% } %>>+</button>
                                     </div>
-                                    <button onclick="removeCartItem(' <%=item._id %>')" class="p-2 text-white/30
+                                    <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
                                                 hover:text-red-500 transition-colors">
                                                 <span class="material-symbols-outlined">delete</span>
                                                 </button>
@@ -212,7 +212,11 @@
                     try {
                         const response = await fetch('/user/cart/update', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
                             body: JSON.stringify({ itemId, quantity: newQuantity })
                         });
 
@@ -270,7 +274,11 @@
                     try {
                         const response = await fetch('/user/cart/remove', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
                             body: JSON.stringify({ itemId })
                         });
 

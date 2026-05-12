@@ -20,6 +20,7 @@ export const loadProducts = async (req, res) => {
             page,
             totalPages,
             totalProducts,
+            limit,
             search,
             activePage: "products"
         });

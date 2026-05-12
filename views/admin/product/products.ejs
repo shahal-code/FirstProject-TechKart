@@ -220,42 +220,29 @@
 
                         <!-- Pagination -->
                         <div class="p-6 border-t border-white/5 flex items-center justify-between">
-
-                            <!-- Left: Page info text -->
-                            <p class="text-xs text-slate-500 font-medium">
-                                Showing Page <span class="text-white"><%= page %></span>
-                                of <span class="text-white"><%= totalPages %></span>
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">
+                                Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalProducts) %> of <%= totalProducts %> products
                             </p>
-
-                            <!-- Right: Buttons -->
-                            <div class="flex items-center gap-2">
-
-                                <!-- Previous Button (only show if page > 1) -->
-                                <% if (page > 1) { %>
-                                    <a href="/admin/product?page=<%= page - 1 %>&search=<%= search %>"
-                                        class="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
-                                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                            <% if (totalPages > 1) { %>
+                                <div class="flex items-center gap-2">
+                                    <a href="?page=<%= page - 1 %>&search=<%= search %>"
+                                        class="px-6 py-2.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all text-[10px] font-bold uppercase tracking-widest <%= page === 1 ? 'pointer-events-none opacity-30' : '' %>">
+                                        Previous
                                     </a>
-                                <% } %>
 
-                                <!-- Page Number Buttons (loop 1 to totalPages) -->
-                                <% for(let i = 1; i <= totalPages; i++) { %>
-                                    <a href="/admin/product?page=<%= i %>&search=<%= search %>"
-                                        class="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all
-                                        <%= i === page ? 'bg-primary text-white shadow-[0_0_15px_rgba(0,85,255,0.3)]' : 'text-slate-500 hover:text-white hover:bg-white/5' %>">
-                                        <%= i %>
+                                    <% for(let i = 1; i <= totalPages; i++) { %>
+                                        <a href="?page=<%= i %>&search=<%= search %>"
+                                            class="h-10 w-10 flex items-center justify-center rounded-lg text-[10px] font-bold transition-all <%= page === i ? 'bg-primary text-white shadow-[0_0_20px_rgba(0,85,255,0.3)]' : 'border border-white/10 text-slate-400 hover:bg-white/5' %>">
+                                            <%= i %>
+                                        </a>
+                                    <% } %>
+
+                                    <a href="?page=<%= page + 1 %>&search=<%= search %>"
+                                        class="px-6 py-2.5 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-all text-[10px] font-bold uppercase tracking-widest <%= page === totalPages ? 'pointer-events-none opacity-30' : '' %>">
+                                        Next
                                     </a>
-                                <% } %>
-
-                                <!-- Next Button (only show if page < totalPages) -->
-                                <% if (page < totalPages) { %>
-                                    <a href="/admin/product?page=<%= page + 1 %>&search=<%= search %>"
-                                        class="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
-                                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                    </a>
-                                <% } %>
-
-                            </div>
+                                </div>
+                            <% } %>
                         </div>
 
                     </section>

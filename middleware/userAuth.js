@@ -6,18 +6,32 @@ export const isAuthenticated = async (req, res, next) => {
     try {
       const user = await User.findById(req.session.user);
       if (user && !user.isBlocked) {
-        next();
+        res.locals.user = user;
+        return next();
       } else {
         req.session.destroy((err) => {
           if (err) console.log("Session destruction error:", err);
+          if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.status(401).json({ success: false, message: 'Account blocked' });
+          }
           res.redirect("/user/login?message=Your account has been blocked by the administrator");
         });
       }
     } catch (error) {
       console.log("Middleware Error:", error);
+      if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+        return res.status(401).json({ success: false, message: 'Authentication failed' });
+      }
       res.redirect("/user/login");
     }
   } else {
+    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required',
+        unauthenticated: true 
+      });
+    }
     res.redirect("/user/login");
   }
 };

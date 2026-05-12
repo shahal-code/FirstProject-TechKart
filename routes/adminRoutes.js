@@ -16,7 +16,7 @@ router.get("/login", adminAuth.isAdminAlreadyLoggedIn, AdminAuthController.loadL
 
 router.post("/login", adminAuth.isAdminAlreadyLoggedIn, AdminAuthController.login);
 
-router.get("/dashboard", Dashboard.loadDashboard);
+router.get("/dashboard", adminAuth.isAdminLoggedIn, Dashboard.loadDashboard);
 
 router.get("/users", adminAuth.isAdminLoggedIn, Customers.getUsers);
 
