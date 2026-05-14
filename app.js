@@ -54,9 +54,9 @@ const setLocals = (req, res, next) => {
 };
 
 //user session,passport,routes
-app.use("/user",userSession,passport.session(),userContext,setLocals,userRoutes);
+app.use("/user", userSession, passport.session(), userContext, setLocals, userRoutes);
 //admin session ,passport,routes
-app.use("/admin",adminSession,passport.session(),setLocals,adminRoutes);
+app.use("/admin", adminSession, passport.session(), setLocals, adminRoutes);
 
 app.use((req, res, next) => {
   res.locals.loginMethod = req.session ? req.session.loginMethod : null;

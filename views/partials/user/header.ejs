@@ -1,4 +1,5 @@
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/cartUtils.js"></script>
 
@@ -15,7 +16,8 @@
                 </div>
                 <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading">TECHKART</h2>
             </div>
-            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden md:flex flex-col flex-1 max-w-md !h-10' %>">
+            <form action="/user/shop" method="GET"
+                class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden md:flex flex-col flex-1 max-w-md !h-10' %>">
                 <div
                     class="flex w-full flex-1 items-stretch rounded-full h-full bg-white/5 border border-white/10 overflow-hidden focus-within:border-primary transition-colors">
                     <div class="text-gray-500 flex items-center justify-center pl-4">
@@ -40,16 +42,15 @@
                         href="/user/about">ABOUT US</a>
             </nav>
             <div class="flex items-center gap-3 md:gap-4">
-                <a href="/user/wishlist"
-                    onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>"
+                <a href="/user/wishlist" onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>"
                     class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300">
                     <span class="material-symbols-outlined text-xl">favorite</span>
                 </a>
-                <a href="/user/cart"
-                    onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>"
+                <a href="/user/cart" onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>"
                     class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 relative group">
                     <span class="material-symbols-outlined text-xl">shopping_cart</span>
-                    <span id="cart-badge" class="absolute -top-1 -right-1 size-4 bg-primary text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D] <%= locals.cartCount > 0 ? '' : 'hidden' %>">
+                    <span id="cart-badge"
+                        class="absolute -top-1 -right-1 size-4 bg-primary text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D] <%= locals.cartCount > 0 ? '' : 'hidden' %>">
                         <%= locals.cartCount || 0 %>
                     </span>
                 </a>
@@ -130,7 +131,8 @@
 
         <div class="mt-auto pt-6 border-t border-white/10">
             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 px-4">Search Catalog</p>
-            <form action="/user/shop" method="GET" class="<%= (locals.path === '/user/shop') ? 'hidden invisible' : 'relative mb-6' %>">
+            <form action="/user/shop" method="GET"
+                class="<%= (locals.path === '/user/shop') ? 'hidden invisible' : 'relative mb-6' %>">
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
                 <input name="search"
