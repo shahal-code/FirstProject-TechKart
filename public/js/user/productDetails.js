@@ -15,17 +15,17 @@ function updateSelection(type, value) {
 
     // Find the best matching variant
     const variant = variants.find(v =>
-        (!selectedFilters.ram     || v.ram     === selectedFilters.ram) &&
+        (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
         (!selectedFilters.storage || v.storage === selectedFilters.storage) &&
-        (!selectedFilters.size    || v.size    === selectedFilters.size) &&
-        (!selectedFilters.color   || v.color   === selectedFilters.color)
+        (!selectedFilters.size || v.size === selectedFilters.size) &&
+        (!selectedFilters.color || v.color === selectedFilters.color)
     ) || variants.find(v => v[type] === value);
 
     if (variant) {
         currentVariant = variant;
         updateUI();
     }
-    
+
     // Update button styles
     document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
         if (btn.getAttribute('data-value') === value) {
@@ -69,14 +69,14 @@ function updateUI() {
         const itemVarId = String(item.variantId.$oid || item.variantId);
         return itemVarId === currentVariantId;
     });
-    
+
     const inCartQty = cartItem ? cartItem.quantity : 0;
     const availableToBuy = Math.max(0, currentVariant.stock);
 
     const stockDot = document.getElementById('stock-dot');
     const stockStatus = document.getElementById('stock-status');
     const addToCartBtn = document.querySelector('button[onclick*="handleAddToCart"]');
-    const qtySelector = document.getElementById('qty-selector-container'); 
+    const qtySelector = document.getElementById('qty-selector-container');
 
     if (stockDot && stockStatus) {
         if (currentVariant.stock > 10) {
@@ -167,7 +167,7 @@ function updateQty(delta) {
     } else {
         currentQty = Math.min(maxQty, Math.max(1, currentQty + delta));
     }
-    
+
     const qtyEl = document.getElementById('quantity');
     if (qtyEl) qtyEl.textContent = currentQty;
 }

@@ -1,5 +1,16 @@
 // Shared AJAX utilities for Cart and Wishlist
-window.addToCart = async function(productId, variantId, quantity = 1, event = null) {
+
+window.showAuthToast = (message) => {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Authentication Required',
+        text: message || 'Please login to continue',
+        background: '#0D0D0D',
+        color: '#fff'
+    });
+};
+
+window.addToCart = async function(productId, variantId, quantity = 1, event = null, options = { showSuccessModal: true }) {
     if (event) {
         if (typeof event.preventDefault === 'function') event.preventDefault();
         if (typeof event.stopPropagation === 'function') event.stopPropagation();
@@ -7,27 +18,38 @@ window.addToCart = async function(productId, variantId, quantity = 1, event = nu
     try {
         const response = await fetch('/user/cart/add', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: JSON.stringify({ productId, variantId, quantity })
         });
 
+        if (response.status === 401) {
+            window.showAuthToast();
+            return { success: false, unauthenticated: true };
+        }
+
         const result = await response.json();
         if (result.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Added to Cart',
-                text: 'Product added to your cart!',
-                showCancelButton: true,
-                confirmButtonText: 'View Cart',
-                confirmButtonColor: '#0055FF',
-                background: '#0D0D0D',
-                color: '#fff'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                    window.location.href = '/user/cart';
-                }
-            });
-            
+            if (options.showSuccessModal) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart',
+                    text: 'Product added to your cart!',
+                    showCancelButton: true,
+                    confirmButtonText: 'View Cart',
+                    confirmButtonColor: '#0055FF',
+                    background: '#0D0D0D',
+                    color: '#fff'
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                        window.location.href = '/user/cart';
+                    }
+                });
+            }
+
             // Update cart badge if exists
             const badge = document.getElementById('cart-badge');
             if (badge) {
@@ -57,16 +79,26 @@ window.addToCart = async function(productId, variantId, quantity = 1, event = nu
 
 window.toggleWishlist = async function(event, productId, variantId) {
     if (event) {
-        event.preventDefault();
-        event.stopPropagation();
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
     }
-    
+
     try {
         const response = await fetch('/user/wishlist/add', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: JSON.stringify({ productId, variantId })
         });
+
+        if (response.status === 401) {
+            window.showAuthToast();
+            return;
+        }
+
         const data = await response.json();
         if (data.success) {
             // Visual toggle of the heart icon
@@ -74,11 +106,7 @@ window.toggleWishlist = async function(event, productId, variantId) {
             if (btn) {
                 const heartIcon = btn.querySelector('.material-symbols-outlined');
                 if (heartIcon) {
-                    if (data.action === 'added') {
-                        heartIcon.style.fontVariationSettings = "'FILL' 1";
-                    } else {
-                        heartIcon.style.fontVariationSettings = "'FILL' 0";
-                    }
+                    heartIcon.style.fontVariationSettings = data.action === 'added' ? "'FILL' 1" : "'FILL' 0";
                 }
             }
 
@@ -94,8 +122,8 @@ window.toggleWishlist = async function(event, productId, variantId) {
         } else {
             Swal.fire({
                 icon: 'warning',
-                title: 'Login Required',
-                text: data.message || 'Please login to manage your wishlist',
+                title: 'Error',
+                text: data.message || 'Something went wrong',
                 background: '#0D0D0D',
                 color: '#fff'
             });

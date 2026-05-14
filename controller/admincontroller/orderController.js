@@ -1,14 +1,16 @@
 import * as OrderService from "../../services/admin/ordersService.js";
+import User from "../../models/userModel.js";
+import Product from "../../models/productModel.js";
 
-export const loadOrders = async (req,res)=>{
-    try{
+export const loadOrders = async (req, res) => {
+    try {
         const { startDate, endDate, status, paymentMethod, search } = req.query;
-        const page=parseInt(req.query.page)||1;
-        const limit=10;
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
 
-        let query={};
+        let query = {};
 
-          // Filter by Status
+        // Filter by Status
         if (status) query.status = status;
         // Filter by Payment Method
         if (paymentMethod) query.paymentMethod = paymentMethod;
@@ -23,18 +25,34 @@ export const loadOrders = async (req,res)=>{
             }
         }
         //search logic
-          if (search) {
+        if (search) {
+            // Step 1: Find matching users
+            const matchingUsers = await User.find({
+                fullname: { $regex: search, $options: 'i' }
+            }).select('_id');
+            const userIds = matchingUsers.map(u => u._id);
+
+            // Step 2: Find matching products
+            const matchingProducts = await Product.find({
+                name: { $regex: search, $options: 'i' }
+            }).select('_id');
+            const productIds = matchingProducts.map(p => p._id);
+
+            // Step 3: Search by Order ID OR Customer ID OR Product ID
             query.$or = [
-                { orderId: { $regex: search, $options: 'i' } }
+                { orderId: { $regex: search, $options: 'i' } },
+                { userId: { $in: userIds } },
+                { "orderedItems.product": { $in: productIds } }
             ];
         }
 
-    const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(query, page, limit);
+        const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(query, page, limit);
         res.render("admin/orders/orders", {
             orders,
             page,
             totalPages,
             totalOrders,
+            limit,
             activePage: "orders",
             filters: req.query // This keeps your filter inputs filled on the page
         });
@@ -42,4 +60,34 @@ export const loadOrders = async (req,res)=>{
         console.error("Error loading admin orders:", error);
         res.status(500).render("admin/error", { message: "Failed to load orders" });
     }
+};
+
+export const getOrderDetails = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const order = await OrderService.getOrderById(orderId);
+        if (!order) {
+            return res.status(404).render("admin/error", { message: "Order not found" });
+        }
+        res.render("admin/orders/orderDetails", { order, activePage: "orders" });
+    } catch (error) {
+        console.error("Error fetching order details:", error);
+        res.status(500).render("admin/error", { message: "Failed to fetch order details" });
+    }
+};
+
+export const updateStatus = async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
+        const updatedOrder = await OrderService.updateOrderStatus(orderId, status);
+        if (updatedOrder) {
+            res.json({ success: true, message: "Order status updated successfully" });
+        } else {
+            res.status(400).json({ success: false, message: "Failed to update status" });
+        }
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        res.status(400).json({ success: false, message: error.message || "Internal server error" });
+    }
+
 };

@@ -20,6 +20,7 @@ export const categoryInfo = async (req, res) => {
       page,
       totalPages,
       totalCategories,
+      limit,
       search,
       activePage: "category",
       stats

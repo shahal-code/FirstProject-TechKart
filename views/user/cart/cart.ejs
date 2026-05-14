@@ -48,7 +48,7 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen flex flex-col">
-    <%- include('../partials/user/header') %>
+    <%- include('../../partials/user/header') %>
         <main class="flex-1 max-w-[1440px] mx-auto w-full px-6 lg:px-20 py-12">
             <div class="mb-10">
                 <h2 class="text-4xl md:text-5xl font-black tracking-tight">Shopping Cart</h2>
@@ -104,9 +104,9 @@
                                             <% if(item.isUnavailable) { %> disabled <% } %>>+</button>
                                     </div>
                                     <button onclick="removeCartItem('<%=item._id %>')" class="p-2 text-white/30
-                                                        hover:text-red-500 transition-colors">
-                                                        <span class="material-symbols-outlined">delete</span>
-                                                        </button>
+                                                hover:text-red-500 transition-colors">
+                                                <span class="material-symbols-outlined">delete</span>
+                                                </button>
                                 </div>
                             </div>
                             <% } } }) %>
@@ -150,25 +150,35 @@
                             <div class="h-px bg-white/10 my-6"></div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-bold">Total</span>
-                                <span id="summary-total" class="text-2xl font-black text-primary">₹<%= total.toFixed(2) %></span>
+                                <span id="summary-total" class="text-2xl font-black text-primary">₹<%= total.toFixed(2)
+                                        %></span>
                             </div>
                         </div>
                         <div class="space-y-4">
-                            <% const hasUnavailable = cart && cart.items && cart.items.some(i => i.isUnavailable); %>
-                            <button
-                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                <%= hasUnavailable ? 'disabled title="Please remove unavailable items to checkout"' : '' %>>
-                                PROCEED TO CHECKOUT
-                                <span class="material-symbols-outlined">chevron_right</span>
-                            </button>
-                            <% if (hasUnavailable) { %>
-                                <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to proceed.</p>
-                            <% } %>
-                            <div class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
-                                <span class="material-symbols-outlined">payments</span>
-                                <span class="material-symbols-outlined">credit_card</span>
-                                <span class="material-symbols-outlined">account_balance</span>
-                            </div>
+                            <% const isEmpty=!cart || !cart.items || cart.items.length===0; const hasUnavailable=cart &&
+                                cart.items && cart.items.some(i=> i.isUnavailable);
+                                const isDisabled = isEmpty || hasUnavailable;
+                                %>
+                                <a href="<%= isDisabled ? 'javascript:void(0)' : '/user/checkout' %>"
+                                    onclick="<%= isEmpty ? 'return showEmptyCartWarning()' : (hasUnavailable ? 'return showUnavailableWarning()' : '') %>"
+                                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 <%= isDisabled ? 'opacity-50 cursor-not-allowed' : '' %>">
+                                    PROCEED TO CHECKOUT
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </a>
+                                <% if (hasUnavailable) { %>
+                                    <p class="text-red-500 text-xs text-center mt-2">Please remove unavailable items to
+                                        proceed.</p>
+                                    <% } else if (isEmpty) { %>
+                                        <p
+                                            class="text-white/30 text-[10px] text-center mt-2 uppercase tracking-widest font-black">
+                                            Add items to checkout</p>
+                                        <% } %>
+                                            <div
+                                                class="flex items-center justify-center gap-4 pt-4 grayscale opacity-40">
+                                                <span class="material-symbols-outlined">payments</span>
+                                                <span class="material-symbols-outlined">credit_card</span>
+                                                <span class="material-symbols-outlined">account_balance</span>
+                                            </div>
                         </div>
                     </div>
                     <div class="mt-8 glass p-6 rounded-xl">
@@ -183,7 +193,7 @@
                 </div>
             </div>
         </main>
-        <%- include('../partials/user/footer') %>
+        <%- include('../../partials/user/footer') %>
 
             <script>
                 function handleQuantityChange(btn) {
@@ -202,7 +212,11 @@
                     try {
                         const response = await fetch('/user/cart/update', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
                             body: JSON.stringify({ itemId, quantity: newQuantity })
                         });
 
@@ -212,13 +226,13 @@
                             const qtyInput = document.getElementById(`qty-input-${itemId}`);
                             const minusBtn = document.getElementById(`minus-${itemId}`);
                             const plusBtn = document.getElementById(`plus-${itemId}`);
-                            
+
                             qtyInput.value = newQuantity;
                             minusBtn.disabled = newQuantity <= 1;
 
                             // Update summary
                             updateCartSummary(result.cart);
-                            
+
                             // Update badge if exists
                             if (typeof window.addToCart === 'function') {
                                 const badge = document.getElementById('cart-badge');
@@ -260,7 +274,11 @@
                     try {
                         const response = await fetch('/user/cart/remove', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
                             body: JSON.stringify({ itemId })
                         });
 
@@ -310,6 +328,30 @@
                     document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
                     document.getElementById('summary-tax').textContent = `₹${tax.toFixed(2)}`;
                     document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
+                }
+
+                function showEmptyCartWarning() {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Cart is Empty',
+                        text: 'Please add some premium tech to your cart before checking out!',
+                        background: '#0D0D0D',
+                        color: '#fff',
+                        confirmButtonColor: '#0055ff'
+                    });
+                    return false;
+                }
+
+                function showUnavailableWarning() {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Items Unavailable',
+                        text: 'Some items in your cart are no longer available. Please remove them to proceed.',
+                        background: '#0D0D0D',
+                        color: '#fff',
+                        confirmButtonColor: '#0055ff'
+                    });
+                    return false;
                 }
             </script>
 </body>

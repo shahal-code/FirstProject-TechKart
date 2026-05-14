@@ -6,7 +6,7 @@ export const getWishlistView = async (req, res) => {
         const userId = req.session.user;
         const wishlist = await wishlistService.getWishlist(userId);
 
-        res.render("user/wishlist", {
+        res.render("user/wishlist/wishlist", {
             wishlist,
             user: req.session.user || null,
             path: "/user/wishlist"
