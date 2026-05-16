@@ -140,6 +140,70 @@ class OrderService {
 
         order.status = 'Return Request';
         order.returnReason = reason;
+        
+        // Also update all individual items that are delivered
+        order.orderedItems.forEach(item => {
+            if (item.status === 'Delivered') {
+                item.status = 'Return Request';
+                item.returnReason = reason;
+            }
+        });
+
+        await order.save();
+        return order;
+    }
+
+    async cancelOrderItem(orderId, itemId, userId, reason) {
+        const order = await Order.findOne({ _id: orderId, userId });
+        if (!order) throw new Error("Order not found.");
+
+        const item = order.orderedItems.id(itemId);
+        if (!item) throw new Error("Item not found in order.");
+
+        const allowedStatus = ['Pending', 'Processing', 'Shipped', 'Out for Delivery'];
+        if (!allowedStatus.includes(item.status)) {
+            throw new Error(`Item cannot be cancelled. Current status: ${item.status}`);
+        }
+
+        item.status = 'Cancelled';
+        item.cancellationReason = reason;
+
+        // Revert Stock
+        await Product.updateOne(
+            { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+            { $inc: { "variants.$.stock": item.quantity } }
+        );
+
+        // Update overall order status if all items are cancelled
+        const allCancelled = order.orderedItems.every(i => i.status === 'Cancelled');
+        if (allCancelled) {
+            order.status = 'Cancelled';
+        }
+
+        await order.save();
+        return order;
+    }
+
+    async returnOrderItem(orderId, itemId, userId, reason) {
+        const order = await Order.findOne({ _id: orderId, userId });
+        if (!order) throw new Error("Order not found.");
+
+        const item = order.orderedItems.id(itemId);
+        if (!item) throw new Error("Item not found in order.");
+
+        if (item.status !== 'Delivered') {
+            throw new Error("Only delivered items can be returned.");
+        }
+
+        item.status = 'Return Request';
+        item.returnReason = reason;
+
+        // Update overall order status if all items are returned
+        const allReturned = order.orderedItems.every(i => i.status === 'Return Request' || i.status === 'Returned' || i.status === 'Cancelled');
+        if (allReturned) {
+            order.status = 'Return Request';
+        }
+
         await order.save();
         return order;
     }

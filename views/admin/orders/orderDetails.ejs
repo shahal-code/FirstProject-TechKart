@@ -331,6 +331,10 @@
                                                                         <%= variant?.storage || variant?.ram
                                                                             || 'Standard' %>
                                                                     </span>
+                                                                    <!-- Item Status -->
+                                                                    <span class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '-') %> text-[9px] py-1 px-3">
+                                                                        <%= item.status %>
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                             <div class="text-right">

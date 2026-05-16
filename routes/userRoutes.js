@@ -80,6 +80,8 @@ router.get('/orders', userAuth.isAuthenticated, userAuth.isBlocked, Order.getOrd
 router.get('/orders/:orderId', userAuth.isAuthenticated, userAuth.isBlocked, Order.getOrderDetails);
 router.post('/orders/:orderId/cancel', userAuth.isAuthenticated, userAuth.isBlocked, Order.cancelOrder);
 router.post('/orders/:orderId/return', userAuth.isAuthenticated, userAuth.isBlocked, Order.returnOrder);
+router.post('/orders/:orderId/items/:itemId/cancel', userAuth.isAuthenticated, userAuth.isBlocked, Order.cancelOrderItem);
+router.post('/orders/:orderId/items/:itemId/return', userAuth.isAuthenticated, userAuth.isBlocked, Order.returnOrderItem);
 router.get('/orders/:orderId/invoice', userAuth.isAuthenticated, userAuth.isBlocked, Order.downloadInvoice);
 
 

@@ -96,3 +96,33 @@ export const downloadInvoice = async (req, res) => {
         res.status(500).send("Failed to generate invoice.");
     }
 };
+
+export const cancelOrderItem = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { orderId, itemId } = req.params;
+        const { reason } = req.body;
+
+        await orderService.cancelOrderItem(orderId, itemId, userId, reason);
+
+        res.status(200).json({ success: true, message: "Item cancelled successfully." });
+    } catch (error) {
+        console.error("Error cancelling order item:", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const returnOrderItem = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { orderId, itemId } = req.params;
+        const { reason } = req.body;
+
+        await orderService.returnOrderItem(orderId, itemId, userId, reason);
+
+        res.status(200).json({ success: true, message: "Item return request submitted." });
+    } catch (error) {
+        console.error("Error returning order item:", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+};

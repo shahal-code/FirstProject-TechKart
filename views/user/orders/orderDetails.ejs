@@ -250,15 +250,29 @@
                                                 <div class="flex items-center justify-between mt-6">
                                                     <div class="flex flex-col">
                                                         <span
-                                                            class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Subtotal</span>
-                                                        <span class="text-lg font-black text-white">₹<%= (item.price *
-                                                                item.quantity).toLocaleString() %></span>
+                                                            class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Item Status</span>
+                                                        <span class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '-') %> text-[10px] py-1 px-3">
+                                                            <%= item.status %>
+                                                        </span>
                                                     </div>
-                                                    <% if (item.status==='Cancelled' ) { %>
-                                                        <span
-                                                            class="text-rose-500 text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-full">Item
-                                                            Cancelled</span>
+                                                    
+                                                    <div class="flex gap-3">
+                                                        <% if (['Pending', 'Shipped', 'Out for Delivery'].includes(item.status) && !['Cancelled', 'Return Request', 'Returned'].includes(order.status)) { %>
+                                                            <button onclick="handleCancelItem('<%= order._id %>', '<%= item._id %>')"
+                                                                class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-4 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-rose-500/10">
+                                                                <span class="material-symbols-outlined text-sm">cancel</span>
+                                                                Cancel Item
+                                                            </button>
                                                         <% } %>
+
+                                                        <% if (item.status === 'Delivered' && order.status !== 'Return Request' && order.status !== 'Returned') { %>
+                                                            <button onclick="handleReturnItem('<%= order._id %>', '<%= item._id %>')"
+                                                                class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 px-4 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-amber-500/10">
+                                                                <span class="material-symbols-outlined text-sm">keyboard_return</span>
+                                                                Return Item
+                                                            </button>
+                                                        <% } %>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -414,6 +428,78 @@
                     const data = await response.json();
                     if (data.success) {
                         await Swal.fire({ icon: 'success', title: 'Submitted', text: 'Your return request has been submitted.', background: '#0D0D0D', color: '#fff' });
+                        window.location.reload();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (error) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#0D0D0D', color: '#fff' });
+                }
+            }
+        }
+
+        async function handleCancelItem(orderId, itemId) {
+            const { value: reason } = await Swal.fire({
+                title: 'Cancel Item',
+                input: 'textarea',
+                inputLabel: 'Reason for cancellation',
+                inputPlaceholder: 'Why are you cancelling this item?',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                confirmButtonText: 'Confirm Cancellation',
+                background: '#0D0D0D',
+                color: '#fff',
+                inputValidator: (value) => {
+                    if (!value) return 'A reason is required!';
+                }
+            });
+
+            if (reason) {
+                try {
+                    const response = await fetch(`/user/orders/${orderId}/items/${itemId}/cancel`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reason })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        await Swal.fire({ icon: 'success', title: 'Cancelled', text: data.message, background: '#0D0D0D', color: '#fff' });
+                        window.location.reload();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (error) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#0D0D0D', color: '#fff' });
+                }
+            }
+        }
+
+        async function handleReturnItem(orderId, itemId) {
+            const { value: reason } = await Swal.fire({
+                title: 'Return Item',
+                input: 'textarea',
+                inputLabel: 'Reason for Return',
+                inputPlaceholder: 'Why do you want to return this item?',
+                showCancelButton: true,
+                confirmButtonColor: '#f59e0b',
+                confirmButtonText: 'Submit Return Request',
+                background: '#0D0D0D',
+                color: '#fff',
+                inputValidator: (value) => {
+                    if (!value) return 'A reason is required!';
+                }
+            });
+
+            if (reason) {
+                try {
+                    const response = await fetch(`/user/orders/${orderId}/items/${itemId}/return`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reason })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        await Swal.fire({ icon: 'success', title: 'Submitted', text: 'Return request submitted.', background: '#0D0D0D', color: '#fff' });
                         window.location.reload();
                     } else {
                         throw new Error(data.message);
