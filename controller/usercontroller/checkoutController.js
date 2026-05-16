@@ -21,28 +21,45 @@ export const getCheckoutView = async (req, res) => {
         // Calculate totals and filter items for the view
         let subtotal = 0;
         let unavailableNames = [];
+        let unavailableItemIds = [];
 
         const activeItems = cart.items.filter(item => {
-            if (item.isUnavailable) {
-                if (item.productId?.name) unavailableNames.push(item.productId.name);
+            const product = item.productId;
+            const category = product?.category_id;
+            
+            // Check if product or category is blocked
+            const isBlocked = !product || product.is_blocked || (category && category.is_blocked);
+            
+            if (isBlocked) {
+                if (product?.name) unavailableNames.push(product.name);
+                unavailableItemIds.push(item._id);
                 return false;
             }
             
-            const variant = item.productId?.variants?.find(v => v._id.toString() === item.variantId.toString());
+            const variant = product?.variants?.find(v => v._id.toString() === item.variantId.toString());
             if (variant) {
                 subtotal += variant.price * item.quantity;
                 return true;
             }
             
-            if (item.productId?.name) unavailableNames.push(item.productId.name);
+            if (product?.name) unavailableNames.push(product.name);
+            unavailableItemIds.push(item._id);
             return false;
         });
+
+        // Perform Database Cleanup: Remove blocked items from the actual cart in DB
+        if (unavailableItemIds.length > 0) {
+            for (const itemId of unavailableItemIds) {
+                await CartService.removeItem(userId, itemId.toString());
+            }
+            console.log(`Auto-cleaned ${unavailableItemIds.length} unavailable items from cart for user ${userId}`);
+        }
 
         // Update cart items to only show active ones in the view
         cart.items = activeItems;
 
         if (cart.items.length === 0) {
-            // If everything is gone, maybe tell them why on the cart page
+            // If everything is gone, redirect back to cart where they will see the empty state
             return res.redirect('/user/cart');
         }
 
