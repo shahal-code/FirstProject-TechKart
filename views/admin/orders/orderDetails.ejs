@@ -304,20 +304,22 @@
                                                     class="p-8 flex items-center gap-8 hover:bg-white/[0.02] transition-colors group">
                                                     <div
                                                         class="size-28 rounded-3xl bg-slate-900 border border-white/5 overflow-hidden flex-shrink-0 shadow-2xl relative">
-                                                        <% const variant=item.product.variants.find(v=> v._id.toString()
-                                                            === item.variantId.toString()); %>
-                                                            <img src="<%= variant?.images[0] %>"
-                                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                                            <div
-                                                                class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <% const variant = item.product?.variants?.find(v => v._id.toString() === item.variantId.toString()); %>
+                                                        <% if (item.product && variant) { %>
+                                                            <img src="<%= variant.images[0] %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                                        <% } else { %>
+                                                            <div class="w-full h-full bg-white/5 flex items-center justify-center">
+                                                                <span class="material-symbols-outlined text-white/20 text-4xl">inventory_2</span>
                                                             </div>
+                                                        <% } %>
+                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                                     </div>
                                                     <div class="flex-1">
                                                         <div class="flex justify-between items-start">
                                                             <div>
                                                                 <h4
                                                                     class="text-xl font-black text-white tracking-tight group-hover:text-primary transition-colors">
-                                                                    <%= item.product.name %>
+                                                                    <%= item.product?.name || "Product Unavailable" %>
                                                                 </h4>
                                                                 <div class="flex items-center gap-3 mt-3">
                                                                     <span
