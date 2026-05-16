@@ -293,6 +293,19 @@
     <%- include('../../partials/user/footer') %>
 
     <script>
+        // Alert for unavailable items
+        const unavailableItems = <%- JSON.stringify(unavailableNames) %>;
+        if (unavailableItems && unavailableItems.length > 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Items Removed',
+                text: `The following products are no longer available and have been removed from your order: ${unavailableItems.join(', ')}`,
+                background: '#161b22',
+                color: '#fff',
+                confirmButtonColor: '#0055ff'
+            });
+        }
+
         async function removeFromCheckout(itemId) {
             try {
                 const response = await fetch('/user/cart/remove', {

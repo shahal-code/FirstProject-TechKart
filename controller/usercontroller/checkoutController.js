@@ -20,14 +20,21 @@ export const getCheckoutView = async (req, res) => {
 
         // Calculate totals and filter items for the view
         let subtotal = 0;
+        let unavailableNames = [];
+
         const activeItems = cart.items.filter(item => {
-            if (item.isUnavailable) return false;
+            if (item.isUnavailable) {
+                if (item.productId?.name) unavailableNames.push(item.productId.name);
+                return false;
+            }
             
             const variant = item.productId?.variants?.find(v => v._id.toString() === item.variantId.toString());
             if (variant) {
                 subtotal += variant.price * item.quantity;
                 return true;
             }
+            
+            if (item.productId?.name) unavailableNames.push(item.productId.name);
             return false;
         });
 
@@ -35,6 +42,7 @@ export const getCheckoutView = async (req, res) => {
         cart.items = activeItems;
 
         if (cart.items.length === 0) {
+            // If everything is gone, maybe tell them why on the cart page
             return res.redirect('/user/cart');
         }
 
@@ -49,6 +57,7 @@ export const getCheckoutView = async (req, res) => {
             tax,
             discount: 0, 
             total,
+            unavailableNames,
             path: '/user/checkout'
         });
     } catch (error) {
