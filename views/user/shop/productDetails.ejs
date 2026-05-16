@@ -352,11 +352,11 @@
                                 </button>
                             <% } %>
                             
-                            <button
+                            <!-- <button
                                 onclick="handleBuyNow('<%= product._id %>', event)"
                                 class="w-full py-5 border border-white/10 text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/5 transition-all <%= hasStock ? '' : 'hidden' %>">
                                 Buy Now
-                            </button>
+                            </button> -->
 
                             <button
                                 onclick="toggleWishlist(event, '<%= product._id %>', '<%= firstVariant ? (firstVariant._id.$oid || firstVariant._id) : '' %>')"

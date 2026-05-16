@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
+import Wishlist from "../models/wishlistModel.js";
 
 export const isAuthenticated = async (req, res, next) => {
   if (req.session.user) {
@@ -91,6 +92,8 @@ export const userContext = async (req, res, next) => {
     const userId = req.session.user;
     let user = null;
     let cartCount = 0;
+    let wishlistCount = 0;
+    let wishlistProductIds = [];
 
     if (userId) {
       user = await User.findById(userId);
@@ -98,10 +101,18 @@ export const userContext = async (req, res, next) => {
       if (cart && cart.items) {
         cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
       }
+
+      const wishlist = await Wishlist.findOne({ userId });
+      if (wishlist && wishlist.products) {
+        wishlistCount = wishlist.products.length;
+        wishlistProductIds = wishlist.products.map(p => p.productId.toString());
+      }
     }
 
     res.locals.user = user;
     res.locals.cartCount = cartCount;
+    res.locals.wishlistCount = wishlistCount;
+    res.locals.wishlistProductIds = wishlistProductIds;
     next();
   } catch (error) {
     console.error("User Context Middleware Error:", error);

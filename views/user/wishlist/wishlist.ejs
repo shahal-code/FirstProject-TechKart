@@ -54,7 +54,7 @@
 
         <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-16">
             <div class="mb-12">
-                <h1 class="text-5xl font-black premium-heading tracking-tight mb-2">My Wishlist</h1>
+                <h1 class="text-5xl font-black premium-heading tracking-tight mb-2">My Wishlist <%= wishlist.products.length %> </h1>
                 <p class="text-gray-400">Save your favorite tech for later.</p>
             </div>
 
@@ -169,6 +169,17 @@
                         });
                         const data = await response.json();
                         if (data.success) {
+                            // Update wishlist badge
+                            const badge = document.getElementById('wishlist-badge');
+                            if (badge && typeof data.wishlistCount !== 'undefined') {
+                                badge.textContent = data.wishlistCount;
+                                if (data.wishlistCount > 0) {
+                                    badge.classList.remove('hidden');
+                                } else {
+                                    badge.classList.add('hidden');
+                                }
+                            }
+
                             const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
                             if (itemRow) {
                                 itemRow.style.opacity = '0';
