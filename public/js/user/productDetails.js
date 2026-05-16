@@ -11,10 +11,12 @@ let currentVariant = variants[0];
 let currentQty = 1;
 
 function updateSelection(type, value) {
+    console.log(`--- Variant Selection: ${type} = ${value} ---`);
     selectedFilters[type] = value;
 
     // 1. Find all variants that match the attribute the user just clicked
-    const matches = variants.filter(v => v[type] === value);
+    const matches = variants.filter(v => String(v[type]) === String(value));
+    console.log(`Found ${matches.length} matches for ${type}=${value}`);
 
     if (matches.length === 0) return;
 
@@ -24,10 +26,13 @@ function updateSelection(type, value) {
 
     matches.forEach(v => {
         let score = 0;
-        if (v.ram === selectedFilters.ram) score++;
-        if (v.storage === selectedFilters.storage) score++;
-        if (v.size === selectedFilters.size) score++;
-        if (v.color === selectedFilters.color) score++;
+        // Check matching with other filters (excluding the one we just clicked)
+        if (type !== 'ram' && String(v.ram) === String(selectedFilters.ram)) score++;
+        if (type !== 'storage' && String(v.storage) === String(selectedFilters.storage)) score++;
+        if (type !== 'size' && String(v.size) === String(selectedFilters.size)) score++;
+        if (type !== 'color' && String(v.color) === String(selectedFilters.color)) score++;
+
+        console.log(`Variant ${v.sku}: Score ${score} (${v.ram}, ${v.storage}, ${v.color})`);
 
         if (score > maxScore) {
             maxScore = score;
@@ -36,6 +41,7 @@ function updateSelection(type, value) {
     });
 
     const variant = bestMatch;
+    console.log(`Best match found: ${variant.sku}`);
 
     if (variant) {
         currentVariant = variant;
@@ -104,41 +110,40 @@ function updateUI() {
 
     const stockDot = document.getElementById('stock-dot');
     const stockStatus = document.getElementById('stock-status');
-    const addToCartBtn = document.querySelector('button[onclick*="handleAddToCart"]');
+    const addToCartBtn = document.getElementById('mainAddToCartBtn');
     const qtySelector = document.getElementById('qty-selector-container');
+
+    const updateBtnState = (isAvailable, text) => {
+        if (!addToCartBtn) return;
+        addToCartBtn.disabled = !isAvailable;
+        addToCartBtn.textContent = text;
+        if (isAvailable) {
+            addToCartBtn.classList.add('bg-primary', 'text-white', 'hover:bg-blue-600', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
+            addToCartBtn.classList.remove('bg-white/10', 'text-gray-500', 'cursor-not-allowed', 'opacity-50');
+        } else {
+            addToCartBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-blue-600', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
+            addToCartBtn.classList.add('bg-white/10', 'text-gray-500', 'cursor-not-allowed', 'opacity-50');
+        }
+    };
 
     if (stockDot && stockStatus) {
         if (currentVariant.stock > 10) {
             stockDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse';
             stockStatus.textContent = 'In Stock';
             stockStatus.className = 'text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500';
-            if (addToCartBtn) {
-                addToCartBtn.disabled = availableToBuy <= 0;
-                addToCartBtn.textContent = availableToBuy <= 0 ? 'Max in Cart' : 'Add to Cart';
-                if (availableToBuy <= 0) addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                else addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            updateBtnState(availableToBuy > 0, availableToBuy > 0 ? 'Add to Cart' : 'Max in Cart');
             if (qtySelector) qtySelector.style.display = availableToBuy > 0 ? 'flex' : 'none';
         } else if (currentVariant.stock > 0) {
             stockDot.className = 'w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)] animate-pulse';
             stockStatus.textContent = `Only ${currentVariant.stock} Left`;
             stockStatus.className = 'text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500';
-            if (addToCartBtn) {
-                addToCartBtn.disabled = availableToBuy <= 0;
-                addToCartBtn.textContent = availableToBuy <= 0 ? 'Max in Cart' : 'Add to Cart';
-                if (availableToBuy <= 0) addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                else addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            updateBtnState(availableToBuy > 0, availableToBuy > 0 ? 'Add to Cart' : 'Max in Cart');
             if (qtySelector) qtySelector.style.display = availableToBuy > 0 ? 'flex' : 'none';
         } else {
             stockDot.className = 'w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)] animate-pulse';
             stockStatus.textContent = 'Out of Stock';
             stockStatus.className = 'text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500';
-            if (addToCartBtn) {
-                addToCartBtn.disabled = true;
-                addToCartBtn.textContent = 'Out of Stock';
-                addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
+            updateBtnState(false, 'Out of Stock');
             if (qtySelector) qtySelector.style.display = 'none';
         }
     }
