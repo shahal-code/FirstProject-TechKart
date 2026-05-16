@@ -69,52 +69,42 @@ export const updateOrderStatus = async (orderId, status) => {
     const order = await Order.findById(orderId);
     if (!order) return null;
 
-    // If order is being cancelled or returned, restore stock
-    if (status === 'Cancelled' || status === 'Returned') {
-        if (order.status !== 'Cancelled' && order.status !== 'Returned') {
-            for (const item of order.orderedItems) {
-                await Product.updateOne(
-                    { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
-                    { $inc: { "variants.$.stock": item.quantity } }
-                );
-            }
+    const activeStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Out for Delivery'];
+    const terminalStatuses = ['Cancelled', 'Returned'];
+
+    for (const item of order.orderedItems) {
+        const oldItemStatus = item.status;
+
+        // If item was active and is now being cancelled/returned, restore stock
+        if (terminalStatuses.includes(status) && activeStatuses.includes(oldItemStatus)) {
+            await Product.updateOne(
+                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                { $inc: { "variants.$.stock": item.quantity } }
+            );
         }
-    }
-    // If order was cancelled/returned and is now being moved back to an active state, decrease stock
-    else if (order.status === 'Cancelled' || order.status === 'Returned') {
-        const activeStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
-        if (activeStatuses.includes(status)) {
-            // Check if stock is available before decreasing
-            for (const item of order.orderedItems) {
-                const variantObjectId = new mongoose.Types.ObjectId(item.variantId);
-                const product = await Product.findOne({ _id: item.product, "variants._id": variantObjectId });
+        // If item was cancelled/returned and is now being revived, deduct stock
+        else if (activeStatuses.includes(status) && terminalStatuses.includes(oldItemStatus)) {
+            const variantObjectId = new mongoose.Types.ObjectId(item.variantId);
+            const product = await Product.findOne({ _id: item.product, "variants._id": variantObjectId });
+            const variant = product.variants.id(variantObjectId);
 
-                if (!product) throw new Error("Product or variant not found.");
-
-                const variant = product.variants.id(variantObjectId);
-                if (variant.stock < item.quantity) {
-                    throw new Error(`Insufficient stock to revive order for product: ${product.name}`);
-                }
+            if (variant.stock < item.quantity) {
+                throw new Error(`Insufficient stock to revive item: ${product.name}`);
             }
 
-            for (const item of order.orderedItems) {
-                await Product.updateOne(
-                    { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
-                    { $inc: { "variants.$.stock": -item.quantity } }
-                );
-            }
+            await Product.updateOne(
+                { _id: item.product, "variants._id": variantObjectId },
+                { $inc: { "variants.$.stock": -item.quantity } }
+            );
         }
+        item.status = status;
     }
 
-    // If global status is updated, update all individual items too
     order.status = status;
-    order.orderedItems.forEach(item => {
-        if (item.status !== 'Cancelled' && item.status !== 'Returned') {
-            item.status = status;
-        }
-    });
-
-    return await order.save();
+    order.markModified("orderedItems");
+    console.log(`Updating Order ${orderId} to status: ${status}`);
+    await order.save();
+    return order;
 };
 
 export const updateOrderItemStatus = async (orderId, itemId, status) => {
@@ -126,6 +116,8 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
 
     const oldStatus = item.status;
     if (oldStatus === status) return order;
+
+    console.log(`Updating Item ${itemId} in Order ${orderId} from ${oldStatus} to ${status}`);
 
     // Stock Management
     if (status === 'Cancelled' || status === 'Returned') {
@@ -160,13 +152,22 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     if (uniqueStatuses.length === 1) {
         order.status = uniqueStatuses[0];
     } else {
-        // Mixed statuses - if any item is processing/shipped, order is active
-        if (statuses.includes('Delivered')) order.status = 'Shipped'; // Or partial delivery logic
-        else if (statuses.includes('Shipped')) order.status = 'Shipped';
-        else if (statuses.includes('Out for Delivery')) order.status = 'Out for Delivery';
-        else if (statuses.includes('Pending')) order.status = 'Pending';
+        const terminalStatuses = ['Delivered', 'Returned', 'Cancelled'];
+        const allTerminal = statuses.every(s => terminalStatuses.includes(s));
+
+        if (allTerminal) {
+            if (statuses.includes('Delivered')) order.status = 'Delivered';
+            else if (statuses.includes('Returned')) order.status = 'Returned';
+            else order.status = 'Cancelled';
+        } else {
+            if (statuses.includes('Out for Delivery')) order.status = 'Out for Delivery';
+            else if (statuses.includes('Shipped')) order.status = 'Shipped';
+            else if (statuses.includes('Processing')) order.status = 'Processing';
+            else order.status = 'Pending';
+        }
     }
 
+    order.markModified("orderedItems");
     await order.save();
     return order;
 };
