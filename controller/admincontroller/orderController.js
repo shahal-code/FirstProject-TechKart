@@ -50,5 +50,19 @@ export const updateStatus = async (req, res) => {
         console.error("Error updating order status:", error);
         res.status(400).json({ success: false, message: error.message || "Internal server error" });
     }
+};
 
+export const updateOrderItemStatus = async (req, res) => {
+    try {
+        const { orderId, itemId, status } = req.body;
+        const updatedOrder = await OrderService.updateOrderItemStatus(orderId, itemId, status);
+        if (updatedOrder) {
+            res.json({ success: true, message: "Item status updated successfully" });
+        } else {
+            res.status(400).json({ success: false, message: "Failed to update item status" });
+        }
+    } catch (error) {
+        console.error("Error updating order item status:", error);
+        res.status(400).json({ success: false, message: error.message || "Internal server error" });
+    }
 };

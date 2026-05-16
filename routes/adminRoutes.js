@@ -54,6 +54,7 @@ router.delete("/product/delete/:id", adminAuth.isAdminLoggedIn, ProductControlle
 router.get("/orders", adminAuth.isAdminLoggedIn, orderController.loadOrders);
 router.get("/orders/:orderId", adminAuth.isAdminLoggedIn, orderController.getOrderDetails);
 router.post("/orders/update-status", adminAuth.isAdminLoggedIn, orderController.updateStatus);
+router.post("/orders/update-item-status", adminAuth.isAdminLoggedIn, orderController.updateOrderItemStatus);
 
 
 

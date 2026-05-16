@@ -105,5 +105,68 @@ export const updateOrderStatus = async (orderId, status) => {
             }
         }
     }
-    return await Order.findByIdAndUpdate(orderId, { status }, { returnDocument: "after" });
+
+    // If global status is updated, update all individual items too
+    order.status = status;
+    order.orderedItems.forEach(item => {
+        if (item.status !== 'Cancelled' && item.status !== 'Returned') {
+            item.status = status;
+        }
+    });
+
+    return await order.save();
+};
+
+export const updateOrderItemStatus = async (orderId, itemId, status) => {
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found.");
+
+    const item = order.orderedItems.id(itemId);
+    if (!item) throw new Error("Item not found in order.");
+
+    const oldStatus = item.status;
+    if (oldStatus === status) return order;
+
+    // Stock Management
+    if (status === 'Cancelled' || status === 'Returned') {
+        if (oldStatus !== 'Cancelled' && oldStatus !== 'Returned') {
+            await Product.updateOne(
+                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                { $inc: { "variants.$.stock": item.quantity } }
+            );
+        }
+    } else if (oldStatus === 'Cancelled' || oldStatus === 'Returned') {
+        // Re-deduct stock if revived
+        const variantObjectId = new mongoose.Types.ObjectId(item.variantId);
+        const product = await Product.findOne({ _id: item.product, "variants._id": variantObjectId });
+        const variant = product.variants.id(variantObjectId);
+
+        if (variant.stock < item.quantity) {
+            throw new Error("Insufficient stock to revive this item.");
+        }
+
+        await Product.updateOne(
+            { _id: item.product, "variants._id": variantObjectId },
+            { $inc: { "variants.$.stock": -item.quantity } }
+        );
+    }
+
+    item.status = status;
+
+    // If all items have the same status, update the global order status
+    const statuses = order.orderedItems.map(i => i.status);
+    const uniqueStatuses = [...new Set(statuses)];
+    
+    if (uniqueStatuses.length === 1) {
+        order.status = uniqueStatuses[0];
+    } else {
+        // Mixed statuses - if any item is processing/shipped, order is active
+        if (statuses.includes('Delivered')) order.status = 'Shipped'; // Or partial delivery logic
+        else if (statuses.includes('Shipped')) order.status = 'Shipped';
+        else if (statuses.includes('Out for Delivery')) order.status = 'Out for Delivery';
+        else if (statuses.includes('Pending')) order.status = 'Pending';
+    }
+
+    await order.save();
+    return order;
 };
