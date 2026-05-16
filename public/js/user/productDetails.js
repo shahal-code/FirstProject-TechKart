@@ -13,22 +13,51 @@ let currentQty = 1;
 function updateSelection(type, value) {
     selectedFilters[type] = value;
 
-    // Find the best matching variant
-    const variant = variants.find(v =>
-        (!selectedFilters.ram || v.ram === selectedFilters.ram) &&
-        (!selectedFilters.storage || v.storage === selectedFilters.storage) &&
-        (!selectedFilters.size || v.size === selectedFilters.size) &&
-        (!selectedFilters.color || v.color === selectedFilters.color)
-    ) || variants.find(v => v[type] === value);
+    // 1. Find all variants that match the attribute the user just clicked
+    const matches = variants.filter(v => v[type] === value);
+
+    if (matches.length === 0) return;
+
+    // 2. From those matches, pick the one that matches the MOST of our other current filters
+    let bestMatch = matches[0];
+    let maxScore = -1;
+
+    matches.forEach(v => {
+        let score = 0;
+        if (v.ram === selectedFilters.ram) score++;
+        if (v.storage === selectedFilters.storage) score++;
+        if (v.size === selectedFilters.size) score++;
+        if (v.color === selectedFilters.color) score++;
+
+        if (score > maxScore) {
+            maxScore = score;
+            bestMatch = v;
+        }
+    });
+
+    const variant = bestMatch;
 
     if (variant) {
         currentVariant = variant;
+        
+        // Sync ALL filters to the found variant so the UI stays consistent
+        selectedFilters.ram = variant.ram;
+        selectedFilters.storage = variant.storage;
+        selectedFilters.size = variant.size;
+        selectedFilters.color = variant.color;
+        
         updateUI();
+        updateButtonStyles();
     }
+}
 
-    // Update button styles
-    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(btn => {
-        if (btn.getAttribute('data-value') === value) {
+function updateButtonStyles() {
+    // Update all button styles based on current selectedFilters
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        const type = btn.getAttribute('data-type');
+        const value = btn.getAttribute('data-value');
+        
+        if (selectedFilters[type] === value) {
             btn.classList.add('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
             btn.classList.remove('border-white/10', 'text-slate-500');
         } else {
