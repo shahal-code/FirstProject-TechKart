@@ -66,3 +66,24 @@ export const updateOrderItemStatus = async (req, res) => {
         res.status(400).json({ success: false, message: error.message || "Internal server error" });
     }
 };
+
+export const loadReturns = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+
+        const { orders, totalPages, totalOrders } = await OrderService.getReturnRequests(page, limit);
+
+        res.render("admin/orders/returns", {
+            orders,
+            page,
+            totalPages,
+            totalOrders,
+            limit,
+            activePage: "returns"
+        });
+    } catch (error) {
+        console.error("Error loading return requests:", error);
+        res.status(500).render("admin/error", { message: "Failed to load return requests" });
+    }
+};

@@ -7,10 +7,21 @@ import * as CategoryController from "../controller/admincontroller/categoryContr
 import * as ProductController from "../controller/admincontroller/productController.js";
 import { uploadProduct } from "../config/productMulter.js";
 import * as orderController from "../controller/admincontroller/orderController.js";
+import Order from "../models/ordersModel.js";
 
 const router = express.Router();
 
 router.use(adminAuth.noCache);
+
+router.use(async (req, res, next) => {
+    try {
+        const returnCount = await Order.countDocuments({ "orderedItems.status": "Return Request" });
+        res.locals.returnCount = returnCount;
+    } catch (error) {
+        res.locals.returnCount = 0;
+    }
+    next();
+});
 
 router.get("/login", adminAuth.isAdminAlreadyLoggedIn, AdminAuthController.loadLogin);
 
@@ -56,6 +67,7 @@ router.get("/orders/:orderId", adminAuth.isAdminLoggedIn, orderController.getOrd
 router.post("/orders/update-status", adminAuth.isAdminLoggedIn, orderController.updateStatus);
 router.post("/orders/update-item-status", adminAuth.isAdminLoggedIn, orderController.updateOrderItemStatus);
 
+router.get("/returns", adminAuth.isAdminLoggedIn, orderController.loadReturns);
 
 
 export default router;
