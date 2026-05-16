@@ -161,10 +161,26 @@
                     <!-- Pagination -->
                     <% if (totalPages > 1) { %>
                         <div class="flex justify-center items-center gap-2 pt-10">
+                            <!-- Previous Arrow -->
+                            <% if (page > 1) { %>
+                                <a href="?page=<%= page - 1 %><%= locals.search ? '&search='+locals.search : '' %>" 
+                                   class="size-10 rounded-xl flex items-center justify-center bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                    <span class="material-symbols-outlined text-xl">chevron_left</span>
+                                </a>
+                            <% } %>
+
                             <% for(let i=1; i<=totalPages; i++) { %>
                                 <a href="?page=<%= i %><%= locals.search ? '&search='+locals.search : '' %>" 
                                    class="size-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all <%= page === i ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' %>">
                                     <%= i %>
+                                </a>
+                            <% } %>
+
+                            <!-- Next Arrow -->
+                            <% if (page < totalPages) { %>
+                                <a href="?page=<%= page + 1 %><%= locals.search ? '&search='+locals.search : '' %>" 
+                                   class="size-10 rounded-xl flex items-center justify-center bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                    <span class="material-symbols-outlined text-xl">chevron_right</span>
                                 </a>
                             <% } %>
                         </div>

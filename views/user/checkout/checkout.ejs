@@ -220,12 +220,19 @@
                                     const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
                                     if(variant) {
                             %>
-                                <div class="flex gap-4">
+                                <div class="flex gap-4 relative group/item">
                                     <div class="size-20 rounded-xl bg-surface-dark border border-white/5 flex-shrink-0 overflow-hidden">
                                         <img src="<%= variant.images[0] %>" alt="<%= product.name %>" class="w-full h-full object-cover">
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="font-bold text-sm truncate"><%= product.name %></h4>
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-sm truncate"><%= product.name %></h4>
+                                            <button type="button" onclick="removeFromCheckout('<%= item._id %>')" 
+                                                    class="text-white/20 hover:text-rose-500 transition-colors p-1 -mr-1" 
+                                                    title="Remove from Order">
+                                                <span class="material-symbols-outlined text-base">close</span>
+                                            </button>
+                                        </div>
                                         <p class="text-white/40 text-[10px] uppercase tracking-wider mt-1">
                                             QTY: <%= item.quantity %> • 
                                             <% if(variant.color) { %><%= variant.color %> <% } %>
@@ -286,6 +293,31 @@
     <%- include('../../partials/user/footer') %>
 
     <script>
+        async function removeFromCheckout(itemId) {
+            try {
+                const response = await fetch('/user/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error("Remove Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Failed to remove item',
+                    background: '#161b22',
+                    color: '#fff'
+                });
+            }
+        }
+
         document.getElementById('checkout-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
