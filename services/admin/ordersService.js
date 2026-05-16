@@ -2,16 +2,54 @@ import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Product from "../../models/productModel.js";
 
-export const getAllOrders = async (query, page, limit) => {
-
+export const getAllOrders = async (queryParams, page, limit) => {
+    const { startDate, endDate, status, paymentMethod, search } = queryParams;
     const skip = (page - 1) * limit;
+
+    let query = {};
+
+    // Filter by Status
+    if (status) query.status = status;
+    // Filter by Payment Method
+    if (paymentMethod) query.paymentMethod = paymentMethod;
+    // Filter by Date Range
+    if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = new Date(startDate);
+        if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            query.createdAt.$lte = end;
+        }
+    }
+
+    // Search Logic
+    if (search) {
+        // We need User model here, assuming it's available or we can import it
+        const User = (await import("../../models/userModel.js")).default;
+        const matchingUsers = await User.find({
+            fullname: { $regex: search, $options: 'i' }
+        }).select('_id');
+        const userIds = matchingUsers.map(u => u._id);
+
+        const matchingProducts = await Product.find({
+            name: { $regex: search, $options: 'i' }
+        }).select('_id');
+        const productIds = matchingProducts.map(p => p._id);
+
+        query.$or = [
+            { orderId: { $regex: search, $options: 'i' } },
+            { userId: { $in: userIds } },
+            { "orderedItems.product": { $in: productIds } }
+        ];
+    }
 
     const orders = await Order.find(query)
         .populate("userId")
         .populate("orderedItems.product")
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
+        .limit(limit);
 
     const totalOrders = await Order.countDocuments(query);
     const totalPages = Math.ceil(totalOrders / limit);

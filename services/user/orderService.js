@@ -71,15 +71,32 @@ class OrderService {
         return order;
     }
 
-    async getOrders(userId, query = {}, page = 1, limit = 10) {
+    async getOrders(userId, queryParams = {}, page = 1, limit = 10) {
+        const { search } = queryParams;
         const skip = (page - 1) * limit;
-        const orders = await Order.find({ userId, ...query })
+        
+        let query = { userId };
+        
+        if (search) {
+            // Find product IDs that match the search name
+            const matchingProducts = await Product.find({
+                name: { $regex: search, $options: "i" }
+            }).select('_id');
+            const productIds = matchingProducts.map(p => p._id);
+
+            query.$or = [
+                { orderId: { $regex: search, $options: "i" } },
+                { "orderedItems.product": { $in: productIds } }
+            ];
+        }
+
+        const orders = await Order.find(query)
             .populate('orderedItems.product')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        const totalOrders = await Order.countDocuments({ userId, ...query });
+        const totalOrders = await Order.countDocuments(query);
         const totalPages = Math.ceil(totalOrders / limit);
 
         return { orders, totalPages, totalOrders };

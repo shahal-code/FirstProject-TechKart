@@ -1,39 +1,21 @@
 import orderService from "../../services/user/orderService.js";
 import { generateInvoice } from "../../utils/invoiceGenerator.js";
-import Product from "../../models/productModel.js";
+
 
 export const getOrders = async (req, res) => {
     try {
         const userId = req.session.user;
         const page = parseInt(req.query.page) || 1;
-        const search = req.query.search || "";
         const limit = 5;
 
-        let query = {};
-        if (search) {
-            // Step 1: Find product IDs that match the search name
-            const matchingProducts = await Product.find({
-                name: { $regex: search, $options: "i" }
-            }).select('_id');
-            const productIds = matchingProducts.map(p => p._id);
-
-            // Step 2: Search by Order ID OR containing any matching Product ID
-            query = {
-                $or: [
-                    { orderId: { $regex: search, $options: "i" } },
-                    { "orderedItems.product": { $in: productIds } }
-                ]
-            };
-        }
-
-        const { orders, totalPages, totalOrders } = await orderService.getOrders(userId, query, page, limit);
+        const { orders, totalPages, totalOrders } = await orderService.getOrders(userId, req.query, page, limit);
 
         res.render("user/orders/orders", {
             orders,
             page,
             totalPages,
             totalOrders,
-            search,
+            search: req.query.search || "",
             path: "/user/orders"
         });
     } catch (error) {

@@ -168,10 +168,15 @@ async function getFeaturedProducts(limit = 3) {
         .lean();
 }
 
+async function checkProductAvailability(productId) {
+    return await Product.findById(productId).populate('category_id').lean();
+}
+
 export {
     getShopData,
     getProductDetails,
-    getFeaturedProducts
+    getFeaturedProducts,
+    checkProductAvailability
 };
 
 

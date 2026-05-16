@@ -1,5 +1,5 @@
-import Cart from "../../models/cartModel.js";
-import Address from "../../models/addressModel.js";
+import * as AddressService from "../../services/user/addressService.js";
+import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 
 /**
@@ -10,8 +10,8 @@ export const getCheckoutView = async (req, res) => {
         const userId = req.session.user;
 
         const [addresses, cart] = await Promise.all([
-            Address.find({ user_id: userId }),
-            Cart.findOne({ userId }).populate('items.productId')
+            AddressService.getAddressesByUserId(userId),
+            CartService.getCart(userId)
         ]);
 
         if (!cart || cart.items.length === 0) {
@@ -21,6 +21,7 @@ export const getCheckoutView = async (req, res) => {
         // Calculate totals for the view
         let subtotal = 0;
         cart.items.forEach(item => {
+            if (item.isUnavailable) return; // Skip blocked items
             const variant = item.productId.variants.find(v => v._id.toString() === item.variantId.toString());
             if (variant) subtotal += variant.price * item.quantity;
         });
@@ -34,7 +35,7 @@ export const getCheckoutView = async (req, res) => {
             cart,
             subtotal,
             tax,
-            discount: 0, // Placeholder for future coupon logic
+            discount: 0, 
             total,
             path: '/user/checkout'
         });
@@ -56,7 +57,7 @@ export const placeOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing required fields." });
         }
 
-        const address = await Address.findById(addressId);
+        const address = await AddressService.getAddressById(addressId);
         if (!address) {
             return res.status(400).json({ success: false, message: "Selected address is invalid." });
         }
