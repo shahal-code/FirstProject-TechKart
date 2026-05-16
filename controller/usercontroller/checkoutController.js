@@ -14,17 +14,29 @@ export const getCheckoutView = async (req, res) => {
             CartService.getCart(userId)
         ]);
 
-        if (!cart || cart.items.length === 0) {
+        if (!cart) {
             return res.redirect('/user/cart');
         }
 
-        // Calculate totals for the view
+        // Calculate totals and filter items for the view
         let subtotal = 0;
-        cart.items.forEach(item => {
-            if (item.isUnavailable) return; // Skip blocked items
-            const variant = item.productId.variants.find(v => v._id.toString() === item.variantId.toString());
-            if (variant) subtotal += variant.price * item.quantity;
+        const activeItems = cart.items.filter(item => {
+            if (item.isUnavailable) return false;
+            
+            const variant = item.productId?.variants?.find(v => v._id.toString() === item.variantId.toString());
+            if (variant) {
+                subtotal += variant.price * item.quantity;
+                return true;
+            }
+            return false;
         });
+
+        // Update cart items to only show active ones in the view
+        cart.items = activeItems;
+
+        if (cart.items.length === 0) {
+            return res.redirect('/user/cart');
+        }
 
         const tax = subtotal * 0.18;
         const total = subtotal + tax;

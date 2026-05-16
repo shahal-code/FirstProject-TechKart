@@ -74,9 +74,9 @@ class OrderService {
     async getOrders(userId, queryParams = {}, page = 1, limit = 10) {
         const { search } = queryParams;
         const skip = (page - 1) * limit;
-        
+
         let query = { userId };
-        
+
         if (search) {
             // Find product IDs that match the search name
             const matchingProducts = await Product.find({
@@ -109,7 +109,7 @@ class OrderService {
     async cancelOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
         if (!order) throw new Error("Order not found.");
-        
+
         const allowedStatus = ['Pending', 'Processing', 'Shipped'];
         if (!allowedStatus.includes(order.status)) {
             throw new Error(`Order cannot be cancelled. Current status: ${order.status}`);
@@ -133,14 +133,14 @@ class OrderService {
     async returnOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
         if (!order) throw new Error("Order not found.");
-        
+
         if (order.status !== 'Delivered') {
             throw new Error("Only delivered orders can be returned.");
         }
 
         order.status = 'Return Request';
         order.returnReason = reason;
-        
+
         // Also update all individual items that are delivered
         order.orderedItems.forEach(item => {
             if (item.status === 'Delivered') {
