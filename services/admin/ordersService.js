@@ -170,3 +170,24 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     await order.save();
     return order;
 };
+
+export const getReturnRequests = async (page, limit) => {
+    const skip = (page - 1) * limit;
+
+    // Find orders where at least one item has a return request
+    const query = {
+        "orderedItems.status": "Return Request"
+    };
+
+    const orders = await Order.find(query)
+        .populate("userId")
+        .populate("orderedItems.product")
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const totalOrders = await Order.countDocuments(query);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return { orders, totalPages, totalOrders };
+};
