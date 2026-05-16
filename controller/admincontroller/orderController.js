@@ -7,7 +7,7 @@ export const loadOrders = async (req, res) => {
         const limit = 5;
 
         const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(req.query, page, limit);
-        
+
         res.render("admin/orders/orders", {
             orders,
             page,

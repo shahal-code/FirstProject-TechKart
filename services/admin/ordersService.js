@@ -156,7 +156,7 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     // If all items have the same status, update the global order status
     const statuses = order.orderedItems.map(i => i.status);
     const uniqueStatuses = [...new Set(statuses)];
-    
+
     if (uniqueStatuses.length === 1) {
         order.status = uniqueStatuses[0];
     } else {
