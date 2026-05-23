@@ -21,7 +21,7 @@ export const load_addAddress = async (req, res) => {
         const formData = req.session.formData || null;
         delete req.session.validationErrors;
         delete req.session.formData;
-        res.render("user/address/addNewAddress", { user, errors, formData });
+        res.render("user/address/addNewAddress", { user, errors, formData,req });
     } catch (error) {
         console.error("Error loading add address page:", error.message);
         res.status(500).send("Internal Server Error");
@@ -30,13 +30,21 @@ export const load_addAddress = async (req, res) => {
 
 export const addAddress = async (req, res) => {
     try {
+        const from=req.query.from;
         const errors = validateAddressData(req.body);
         if (errors) {
             req.session.validationErrors = errors;
             req.session.formData = req.body;
-            return res.redirect("/user/address/add");
+
+            return res.redirect(from==="checkout"
+                ?"/user/address/add?from=checkout"
+                :"/user/address/add"
+            );
         }
         await AddressService.addAddress(req.session.user, req.body);
+        if(from==="checkout"){
+            return res.redirect("/user/checkout");
+        }
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error adding address:", error.message);
@@ -46,14 +54,22 @@ export const addAddress = async (req, res) => {
 
 export const load_editAddress = async (req, res) => {
     try {
-        const { id } = req.params;
+      const { id } = req.params;
+        // validate id
+        if (!id) {
+            return res.redirect("/user/address");
+        }
         const address = await AddressService.getAddressById(id);
+        // address not found
+        if (!address) {
+            return res.redirect("/user/address");
+        }
         const user = await ProfileService.getProfile(req.session.user);
         const errors = req.session.validationErrors || null;
         const formData = req.session.formData || null;
         delete req.session.validationErrors;
         delete req.session.formData;
-        res.render("user/address/editAddress", { address, user, errors, formData });
+        res.render("user/address/editAddress", { address, user, errors, formData, req });
     } catch (error) {
         console.error("Error loading edit address page:", error.message);
         res.status(500).send("Internal Server Error");
@@ -63,13 +79,20 @@ export const load_editAddress = async (req, res) => {
 export const editAddress = async (req, res) => {
     try {
         const { id } = req.params;
+        const from=req.query.from;
         const errors = validateAddressData(req.body);
         if (errors) {
             req.session.validationErrors = errors;
             req.session.formData = req.body;
-            return res.redirect(`/user/address/edit/${id}`);
+            return res.redirect(from==="checkout"
+                ?`/user/address/edit/${id}?from=checkout`
+                :`/user/address/edit/${id}`
+            )
         }
         await AddressService.updateAddress(id, req.session.user, req.body);
+        if(from==="checkout"){
+            return res.redirect("/user/checkout")
+        }
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error editing address:", error.message);

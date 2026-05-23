@@ -91,7 +91,7 @@
                             <span class="size-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">1</span>
                             <h3 class="text-2xl font-bold">Shipping Address</h3>
                         </div>
-                        <a href="/user/address/add" class="text-primary hover:underline text-sm font-bold flex items-center gap-1 transition-all">
+                        <a href="/user/address/add?from=checkout" class="text-primary hover:underline text-sm font-bold flex items-center gap-1 transition-all">
                             <span class="material-symbols-outlined text-lg">add</span>
                             ADD NEW
                         </a>
@@ -109,7 +109,7 @@
                                                 <%= address.address_type || 'HOME' %>
                                             </span>
                                             <div class="flex gap-2">
-                                                <a href="/user/address/edit/<%= address._id %>" class="text-white/30 hover:text-white transition-colors">
+                                                <a href="/user/address/edit/<%= address._id %>?from=checkout" class="text-white/30 hover:text-white transition-colors">
                                                     <span class="material-symbols-outlined text-lg">edit</span>
                                                 </a>
                                             </div>
@@ -134,7 +134,7 @@
                             <div class="col-span-2 glass p-10 rounded-xl text-center border-dashed border-white/20">
                                 <span class="material-symbols-outlined text-4xl text-white/20 mb-3">location_off</span>
                                 <p class="text-white/50 mb-4">No addresses found in your profile</p>
-                                <a href="/user/address/add" class="inline-block bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-all">
+                                <a href="/user/address/add?from=checkout" class="inline-block bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-all">
                                     Add Your First Address
                                 </a>
                             </div>

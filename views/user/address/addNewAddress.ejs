@@ -137,7 +137,7 @@
                                 </ul>
                             </div>
                         <% } %>
-                        <form class="flex flex-col gap-8" action="/user/address/add" method="POST">
+                        <form class="flex flex-col gap-8" action="/user/address/add?from=<%= req.query.from %>" method="POST">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div class="flex flex-col gap-4">
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Full Name</label>
