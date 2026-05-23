@@ -78,7 +78,8 @@
 
                 <div class="p-8 max-w-7xl mx-auto w-full space-y-8 pb-20">
                     <!-- Order Header -->
-                       <% if (order.status==='Delivered' ) { %>
+                    <!--invoice -->
+                       <% if (["Shipped","Out for Delivery","Delivered"].includes(order.status)) { %>
                                     <button onclick="downloadInvoice('<%= order._id %>')"
                                         class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-primary/10">
                                         <span class="material-symbols-outlined text-lg">download</span>
