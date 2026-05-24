@@ -1,5 +1,6 @@
 import * as OrderService from "../../services/admin/ordersService.js";
-
+import Order from "../../models/ordersModel.js";
+import { generateInvoice } from "../../utils/invoiceGenerator.js";
 
 export const loadOrders = async (req, res) => {
     try {
@@ -86,5 +87,28 @@ export const loadReturns = async (req, res) => {
     } catch (error) {
         console.error("Error loading return requests:", error);
         res.status(500).render("admin/error", { message: "Failed to load return requests" });
+    }
+};
+
+export const downloadInvoiceAdmin = async (req, res) => {
+
+    try {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId)
+            .populate("userId")
+            .populate("orderedItems.product");
+
+        if (!order) {
+            return res.status(404).send("Invoice not available.");
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename=invoice-${order.orderId}.pdf`
+        );
+        generateInvoice(res, order);
+    } catch (error) {
+        console.error("Admin Invoice Download Error:", error);
+        res.status(500).send("Failed to generate invoice.");
     }
 };
