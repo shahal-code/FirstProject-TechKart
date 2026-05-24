@@ -72,7 +72,7 @@ export const loadReturns = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
 
-        const { orders, totalPages, totalOrders } = await OrderService.getReturnRequests(page, limit);
+        const { orders, totalPages, totalOrders } = await OrderService.getReturnRequests(req.query, page, limit);
 
         res.render("admin/orders/returns", {
             orders,
@@ -80,7 +80,8 @@ export const loadReturns = async (req, res) => {
             totalPages,
             totalOrders,
             limit,
-            activePage: "returns"
+            activePage: "returns",
+            search:req.query.search || ""
         });
     } catch (error) {
         console.error("Error loading return requests:", error);

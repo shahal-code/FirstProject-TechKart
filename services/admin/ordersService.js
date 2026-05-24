@@ -172,13 +172,49 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     return order;
 };
 
-export const getReturnRequests = async (page, limit) => {
+export const getReturnRequests = async (queryParams ,page, limit) => {
     const skip = (page - 1) * limit;
 
+    const {search}=queryParams;
+
     // Find orders where at least one item has a return request
-    const query = {
+    let query = {
         "orderedItems.status": "Return Request"
     };
+
+    if(search){
+        const cleanSearch = search.replace("#","").trim();
+        const User=(await import ("../../models/userModel.js")).default
+
+
+        const matchingUsers=await User.find({
+            fullname:{$regex:cleanSearch,$options:"i"}
+        }).select("_id");
+
+        const userIds=matchingUsers.map(u=>u._id);
+
+        const matchingProduct=await Product.find({
+            name:{$regex:cleanSearch,$options:"i"}
+        }).select("_id");
+
+        let productIds=matchingProduct.map(p=>p._id);
+
+          query = {
+            $and: [
+                { "orderedItems.status": "Return Request" },
+
+                {
+                    $or: [
+                        { orderId: { $regex: cleanSearch, $options: "i" } },
+                        { userId: { $in: userIds } },
+                        { "orderedItems.product": { $in: productIds } },
+                        { "orderedItems.returnReason": { $regex: cleanSearch, $options: "i" } }
+                    ]
+                }
+            ]
+        };
+    }
+    
 
     const orders = await Order.find(query)
         .populate("userId")
