@@ -68,6 +68,9 @@ export const isBlocked = async (req, res, next) => {
       const user = await User.findById(req.session.user);
       if (user && user.isBlocked) {
         return req.session.destroy((err) => {
+          if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.status(403).json({ success: false, message: 'Account blocked' });
+          }
           res.redirect("/user/login?message=Your account has been blocked");
         });
       }

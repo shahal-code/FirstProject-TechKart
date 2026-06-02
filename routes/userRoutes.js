@@ -10,6 +10,8 @@ import * as Profile from "../controller/usercontroller/profile.js";
 import * as Address from "../controller/usercontroller/address.js";
 import * as Checkout from "../controller/usercontroller/checkoutController.js"
 import * as Order from "../controller/usercontroller/orderController.js";
+import * as Payment from "../controller/usercontroller/paymentController.js";
+
 
 // Authentication
 router
@@ -74,6 +76,10 @@ router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartCo
 router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);
 router.post('/checkout/place-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.placeOrder);
 router.get('/checkout/order-success', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getOrderSuccessView);
+
+//payments
+router.post('/payment/create-order',userAuth.isAuthenticated,userAuth.isBlocked,Payment.createOrder);
+router.post('/payment/verify',userAuth.isAuthenticated,userAuth.isBlocked,Payment.verifyPayment);
 
 // Orders
 router.get('/orders', userAuth.isAuthenticated, userAuth.isBlocked, Order.getOrders);

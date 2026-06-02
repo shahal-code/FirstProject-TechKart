@@ -1,6 +1,7 @@
 import * as AddressService from "../../services/user/addressService.js";
 import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
+import * as PaymentService from "../../services/user/paymentServices.js";
 
 /**
  * Render Checkout Page
@@ -67,7 +68,7 @@ export const getCheckoutView = async (req, res) => {
         const total = subtotal + tax;
 
         res.render('user/checkout/checkout', {
-            user: req.user,
+            user: res.locals.user || req.user,
             addresses,
             cart,
             subtotal,
@@ -75,7 +76,9 @@ export const getCheckoutView = async (req, res) => {
             discount: 0, 
             total,
             unavailableNames,
-            path: '/user/checkout'
+            path: '/user/checkout',
+                razorpayKey: process.env.RAZORPAY_KEY_ID
+
         });
     } catch (error) {
         console.error("Checkout Page Error:", error);
@@ -89,7 +92,13 @@ export const getCheckoutView = async (req, res) => {
 export const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { addressId, paymentMethod } = req.body;
+        const {
+            addressId,
+            paymentMethod,
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature
+        } = req.body;
 
         if (!addressId || !paymentMethod) {
             return res.status(400).json({ success: false, message: "Missing required fields." });
@@ -98,6 +107,22 @@ export const placeOrder = async (req, res) => {
         const address = await AddressService.getAddressById(addressId);
         if (!address) {
             return res.status(400).json({ success: false, message: "Selected address is invalid." });
+        }
+
+        if (paymentMethod === "UPI") {
+            if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+                return res.status(400).json({ success: false, message: "Payment verification details are required." });
+            }
+
+            const isPaymentValid = PaymentService.verifyRazorpaySignature({
+                orderId: razorpay_order_id,
+                paymentId: razorpay_payment_id,
+                signature: razorpay_signature
+            });
+
+            if (!isPaymentValid) {
+                return res.status(400).json({ success: false, message: "Payment verification failed." });
+            }
         }
 
         // Use the service to handle logic

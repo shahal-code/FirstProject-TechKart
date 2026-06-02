@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script id="tailwind-config">
+        
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -69,6 +70,8 @@
         ::-webkit-scrollbar-thumb { background: #161B22; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #1D232C; }
     </style>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen flex flex-col">
@@ -331,6 +334,152 @@
             }
         }
 
+        function showOrderError(error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Failed',
+                text: error.message,
+                background: '#161b22',
+                color: '#fff',
+                confirmButtonColor: '#0055ff'
+            });
+        }
+
+        function restoreSubmitButton(submitBtn, originalBtnContent) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnContent;
+        }
+
+        async function readJsonResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+
+            if (!contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || 'Server returned a non-JSON response');
+            }
+
+            return await response.json();
+        }
+
+        async function placeOrder(data) {
+            const response = await fetch('/user/checkout/place-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await readJsonResponse(response);
+
+            if (!result.success) {
+                throw new Error(result.message || 'Something went wrong');
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Order Placed!',
+                text: 'Your order has been placed successfully.',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#161b22',
+                color: '#fff'
+            }).then(() => {
+                window.location.href = result.redirectUrl || '/user/dashboard';
+            });
+        }
+
+        async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
+            if (typeof Razorpay === 'undefined') {
+                throw new Error('Razorpay checkout is not loaded. Please refresh and try again.');
+            }
+
+            const response = await fetch('/user/payment/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ amount: <%= total %> })
+            });
+
+            const result = await readJsonResponse(response);
+
+            if (!result.success) {
+                throw new Error(result.message || 'Unable to create payment order');
+            }
+
+            const options = {
+                key: "<%= razorpayKey %>",
+                amount: result.order.amount,
+                currency: result.order.currency,
+                order_id: result.order.id,
+                name: "TechKart",
+                description: "Order payment",
+                method: "upi",
+                prefill: {
+                    name: <%- JSON.stringify(user?.fullname || '') %>,
+                    email: <%- JSON.stringify(user?.email || '') %>,
+                    contact: <%- JSON.stringify(user?.phone || '') %>
+                },
+                config: {
+                    display: {
+                        blocks: {
+                            upi_only: {
+                                name: "Pay via UPI",
+                                instruments: [
+                                    {
+                                        method: "upi"
+                                    }
+                                ]
+                            }
+                        },
+                        sequence: ["block.upi_only"],
+                        preferences: {
+                            show_default_blocks: false
+                        }
+                    }
+                },
+                handler: async function(paymentResponse) {
+                    try {
+                        const verifyResponse = await fetch('/user/payment/verify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(paymentResponse)
+                        });
+
+                        const verifyResult = await readJsonResponse(verifyResponse);
+
+                        if (!verifyResult.success) {
+                            throw new Error(verifyResult.message || 'Payment verification failed');
+                        }
+
+                        await placeOrder({
+                            ...data,
+                            razorpay_order_id: paymentResponse.razorpay_order_id,
+                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                            razorpay_signature: paymentResponse.razorpay_signature
+                        });
+                    } catch (error) {
+                        showOrderError(error);
+                        restoreSubmitButton(submitBtn, originalBtnContent);
+                    }
+                },
+                modal: {
+                    ondismiss: function() {
+                        restoreSubmitButton(submitBtn, originalBtnContent);
+                    }
+                }
+            };
+
+            const razorpay = new Razorpay(options);
+            razorpay.open();
+        }
+
         document.getElementById('checkout-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -372,40 +521,14 @@
             submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> PROCESSING...';
 
             try {
-                const response = await fetch('/user/checkout/place-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Order Placed!',
-                        text: 'Your order has been placed successfully.',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        background: '#161b22',
-                        color: '#fff'
-                    }).then(() => {
-                        window.location.href = result.redirectUrl || '/user/dashboard';
-                    });
+                if (data.paymentMethod === "UPI") {
+                    await handleRazorpayPayment(data, submitBtn, originalBtnContent);
                 } else {
-                    throw new Error(result.message || 'Something went wrong');
+                    await placeOrder(data);
                 }
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Order Failed',
-                    text: error.message,
-                    background: '#161b22',
-                    color: '#fff',
-                    confirmButtonColor: '#0055ff'
-                });
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnContent;
+                showOrderError(error);
+                restoreSubmitButton(submitBtn, originalBtnContent);
             }
         });
 
