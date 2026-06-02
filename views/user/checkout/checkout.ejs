@@ -417,7 +417,6 @@
                 order_id: result.order.id,
                 name: "TechKart",
                 description: "Order payment",
-                method: "upi",
                 prefill: {
                     name: <%- JSON.stringify(user?.fullname || '') %>,
                     email: <%- JSON.stringify(user?.email || '') %>,
@@ -426,18 +425,22 @@
                 config: {
                     display: {
                         blocks: {
-                            upi_only: {
-                                name: "Pay via UPI",
+                            upi_qr: {
+                                name: "Scan and Pay via UPI",
                                 instruments: [
+                                    {
+                                        method: "upi",
+                                        flows: ["qr"]
+                                    },
                                     {
                                         method: "upi"
                                     }
                                 ]
                             }
                         },
-                        sequence: ["block.upi_only"],
+                        sequence: ["block.upi_qr", "upi"],
                         preferences: {
-                            show_default_blocks: false
+                            show_default_blocks: true
                         }
                     }
                 },
