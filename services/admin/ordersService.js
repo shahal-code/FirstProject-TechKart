@@ -98,6 +98,7 @@ export const updateOrderStatus = async (orderId, status) => {
             );
         }
         item.status = status;
+        
     }
 
     order.status = status;
