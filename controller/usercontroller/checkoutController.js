@@ -150,7 +150,14 @@ export const placeOrder = async (req, res) => {
         }
 
         // Use the service to handle logic
-        const order = await OrderService.createOrder(userId, address, paymentMethod);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon);
+
+        // If success, save coupon usage and clear session
+        if (req.session.appliedCoupon) {
+            await Coupon.updateOne({ _id: req.session.appliedCoupon._id }, { $push: { usedBy: userId } });
+            delete req.session.appliedCoupon;
+            await new Promise((resolve) => req.session.save(resolve));
+        }
 
         res.json({
             success: true,
@@ -203,7 +210,14 @@ export const placeOrderFailed = async (req, res) => {
         }
 
         // Create order with 'Failed' status by passing true as the 4th parameter
-        const order = await OrderService.createOrder(userId, address, paymentMethod, true);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon);
+
+        // If success, save coupon usage and clear session
+        if (req.session.appliedCoupon) {
+            await Coupon.updateOne({ _id: req.session.appliedCoupon._id }, { $push: { usedBy: userId } });
+            delete req.session.appliedCoupon;
+            await new Promise((resolve) => req.session.save(resolve));
+        }
 
         res.json({
             success: true,

@@ -4,7 +4,7 @@ import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 
 class OrderService {
-    async createOrder(userId, address, paymentMethod, paymentFailed = false) {
+    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
         // Fetch Cart
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
@@ -32,8 +32,22 @@ class OrderService {
 
         // Final Calculations
         const tax = subtotal * 0.18;
-        const finalAmount = subtotal + tax;
-        
+        let finalAmount = subtotal + tax;
+        let discount = 0;
+
+        if (appliedCoupon && finalAmount >= appliedCoupon.minPurchaseAmount) {
+            if (appliedCoupon.discountType === 'percentage') {
+                discount = (finalAmount * appliedCoupon.discountValue) / 100;
+                if (appliedCoupon.maxDiscountAmount && discount > appliedCoupon.maxDiscountAmount) {
+                    discount = appliedCoupon.maxDiscountAmount;
+                }
+            } else {
+                discount = appliedCoupon.discountValue;
+            }
+            finalAmount = finalAmount - discount;
+            if (finalAmount < 0) finalAmount = 0;
+        }
+
         let paymentStatus = paymentMethod === 'COD' ? 'Pending' : 'Paid';
         if (paymentFailed) {
             paymentStatus = 'Failed';
@@ -45,6 +59,7 @@ class OrderService {
             orderId: `ORD-${Date.now().toString().slice(-8)}`, // Simple unique ID
             orderedItems,
             totalPrice: subtotal,
+            discount,
             finalAmount,
             shippingAddress: {
                 fullname: address.fullname,
