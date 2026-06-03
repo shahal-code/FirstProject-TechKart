@@ -535,13 +535,49 @@
                         }
                     },
                     modal: {
-                        ondismiss: function () {
-                            restoreSubmitButton(submitBtn, originalBtnContent);
+                        ondismiss: async function () {
+                            try {
+                                const failResponse = await fetch('/user/checkout/place-order-failed', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                });
+                                const result = await readJsonResponse(failResponse);
+                                if (result.success) {
+                                    window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
+                                } else {
+                                    restoreSubmitButton(submitBtn, originalBtnContent);
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                restoreSubmitButton(submitBtn, originalBtnContent);
+                            }
                         }
                     }
                 };
 
                 const razorpay = new Razorpay(options);
+                razorpay.on('payment.failed', async function (response) {
+                    try {
+                        const failResponse = await fetch('/user/checkout/place-order-failed', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        const result = await readJsonResponse(failResponse);
+                        if (result.success) {
+                            window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
                 razorpay.open();
         }
 
