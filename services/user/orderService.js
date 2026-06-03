@@ -4,7 +4,7 @@ import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 
 class OrderService {
-    async createOrder(userId, address, paymentMethod) {
+    async createOrder(userId, address, paymentMethod, paymentFailed = false) {
         // Fetch Cart
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
@@ -33,6 +33,11 @@ class OrderService {
         // Final Calculations
         const tax = subtotal * 0.18;
         const finalAmount = subtotal + tax;
+        
+        let paymentStatus = paymentMethod === 'COD' ? 'Pending' : 'Paid';
+        if (paymentFailed) {
+            paymentStatus = 'Failed';
+        }
 
         //  Save Order
         const order = new Order({
@@ -52,7 +57,7 @@ class OrderService {
             },
             paymentMethod,
             status: 'Pending',
-            paymentStatus: paymentMethod === 'COD' ? 'Pending' : 'Paid'
+            paymentStatus
         });
 
         await order.save();
@@ -104,6 +109,18 @@ class OrderService {
 
     async getOrderById(orderId, userId) {
         return await Order.findOne({ _id: orderId, userId }).populate('orderedItems.product');
+    }
+
+    async getOrderByDisplayId(displayId, userId) {
+        return await Order.findOne({ orderId: displayId, userId }).populate('orderedItems.product');
+    }
+
+    async updatePaymentStatus(displayId, userId, status) {
+        const order = await Order.findOne({ orderId: displayId, userId });
+        if (!order) throw new Error("Order not found");
+        order.paymentStatus = status;
+        await order.save();
+        return order;
     }
 
     async cancelOrder(orderId, userId, reason) {
