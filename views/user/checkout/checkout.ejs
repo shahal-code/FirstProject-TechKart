@@ -418,7 +418,7 @@
                 name: "TechKart",
                 description: "Order payment",
                 prefill: {
-                    name: <%- JSON.stringify(user?.fullname || '') %>,
+                    name: <%- JSON.stringify((user?.fullname || '').replace(/[^a-zA-Z\\s]/g, '').trim() || 'Customer') %>,
                     email: <%- JSON.stringify(user?.email || '') %>,
                     contact: <%- JSON.stringify(user?.phone || '') %>
                 },
