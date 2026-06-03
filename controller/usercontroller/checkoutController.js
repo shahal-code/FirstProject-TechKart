@@ -2,6 +2,7 @@ import * as AddressService from "../../services/user/addressService.js";
 import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 import * as PaymentService from "../../services/user/paymentServices.js";
+import Coupon from "../../models/couponModel.js";
 
 /**
  * Render Checkout Page
@@ -65,7 +66,29 @@ export const getCheckoutView = async (req, res) => {
         }
 
         const tax = subtotal * 0.18;
-        const total = subtotal + tax;
+        let total = subtotal + tax;
+        let discount = 0;
+        let appliedCoupon = req.session.appliedCoupon;
+
+        // Calculate discount if a coupon is in session
+        if (appliedCoupon) {
+            if (total >= appliedCoupon.minPurchaseAmount) {
+                if (appliedCoupon.discountType === 'percentage') {
+                    discount = (total * appliedCoupon.discountValue) / 100;
+                    if (appliedCoupon.maxDiscountAmount && discount > appliedCoupon.maxDiscountAmount) {
+                        discount = appliedCoupon.maxDiscountAmount;
+                    }
+                } else {
+                    discount = appliedCoupon.discountValue;
+                }
+                total = total - discount;
+                if (total < 0) total = 0;
+            } else {
+                // Cart total is too low, remove coupon silently
+                delete req.session.appliedCoupon;
+                appliedCoupon = null;
+            }
+        }
 
         res.render('user/checkout/checkout', {
             user: res.locals.user || req.user,
@@ -73,11 +96,12 @@ export const getCheckoutView = async (req, res) => {
             cart,
             subtotal,
             tax,
-            discount: 0, 
+            discount, 
             total,
+            appliedCoupon,
             unavailableNames,
             path: '/user/checkout',
-                razorpayKey: process.env.RAZORPAY_KEY_ID
+            razorpayKey: process.env.RAZORPAY_KEY_ID
 
         });
     } catch (error) {
@@ -256,5 +280,62 @@ export const retryOrder = async (req, res) => {
             success: false,
             message: error.message || "Failed to update payment status."
         });
+    }
+};
+
+/**
+ * Apply Coupon
+ */
+export const applyCoupon = async (req, res) => {
+    try {
+        const { code, cartTotal } = req.body;
+        const userId = req.session.user;
+
+        if (!code) {
+            return res.status(400).json({ success: false, message: "Please enter a coupon code." });
+        }
+
+        const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true });
+        
+        if (!coupon) {
+            return res.status(404).json({ success: false, message: "Invalid or expired coupon." });
+        }
+
+        if (new Date() > coupon.expirationDate) {
+            return res.status(400).json({ success: false, message: "This coupon has expired." });
+        }
+
+        if (coupon.usedBy.includes(userId)) {
+            return res.status(400).json({ success: false, message: "You have already used this coupon." });
+        }
+
+        if (cartTotal < coupon.minPurchaseAmount) {
+            return res.status(400).json({ success: false, message: `Minimum purchase of ₹${coupon.minPurchaseAmount} required.` });
+        }
+
+        req.session.appliedCoupon = coupon;
+        req.session.save((err) => {
+            if (err) throw err;
+            res.json({ success: true, message: "Coupon applied successfully!" });
+        });
+    } catch (error) {
+        console.error("Apply Coupon Error:", error);
+        res.status(500).json({ success: false, message: "Failed to apply coupon." });
+    }
+};
+
+/**
+ * Remove Coupon
+ */
+export const removeCoupon = async (req, res) => {
+    try {
+        delete req.session.appliedCoupon;
+        req.session.save((err) => {
+            if (err) throw err;
+            res.json({ success: true, message: "Coupon removed successfully!" });
+        });
+    } catch (error) {
+        console.error("Remove Coupon Error:", error);
+        res.status(500).json({ success: false, message: "Failed to remove coupon." });
     }
 };

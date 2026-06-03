@@ -79,7 +79,8 @@ router.post('/checkout/place-order-failed', userAuth.isAuthenticated, userAuth.i
 router.post('/checkout/retry-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.retryOrder);
 router.get('/checkout/order-success', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getOrderSuccessView);
 router.get('/checkout/payment-failure', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getPaymentFailureView);
-
+router.post('/checkout/apply-coupon', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.applyCoupon);
+router.post('/checkout/remove-coupon', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.removeCoupon);
 //payments
 router.post('/payment/create-order',userAuth.isAuthenticated,userAuth.isBlocked,Payment.createOrder);
 router.post('/payment/verify',userAuth.isAuthenticated,userAuth.isBlocked,Payment.verifyPayment);
