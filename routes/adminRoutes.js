@@ -8,6 +8,7 @@ import * as ProductController from "../controller/admincontroller/productControl
 import { uploadProduct } from "../config/productMulter.js";
 import * as orderController from "../controller/admincontroller/orderController.js";
 import * as CouponController from "../controller/admincontroller/couponController.js";
+import * as ReportController from "../controller/admincontroller/reportController.js";
 import Order from "../models/ordersModel.js";
 
 const router = express.Router();
@@ -79,6 +80,9 @@ router.post("/coupons/create", adminAuth.isAdminLoggedIn, CouponController.creat
 router.post("/coupons/update/:id", adminAuth.isAdminLoggedIn, CouponController.updateCoupon);
 router.post("/coupons/toggle/:id", adminAuth.isAdminLoggedIn, CouponController.toggleCouponStatus);
 router.delete("/coupons/delete/:id", adminAuth.isAdminLoggedIn, CouponController.deleteCoupon);
+
+// Reports
+router.get("/reports", adminAuth.isAdminLoggedIn, ReportController.loadReports);
 
 
 export default router;
