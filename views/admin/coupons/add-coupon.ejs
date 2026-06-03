@@ -40,6 +40,8 @@
         }
         .input-field:focus { outline: none; box-shadow: 0 0 0 1px #0055ff; border-color: #0055ff; }
         .input-field::placeholder { color: #475569; }
+        .input-field.input-error { border-color: #f43f5e !important; box-shadow: 0 0 0 1px #f43f5e !important; }
+        .field-error { color: #f43f5e; font-size: 0.75rem; margin-top: 0.375rem; display: none; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -72,13 +74,15 @@
             </div>
 
             <section class="glass-morphism rounded-3xl p-10 border border-white/5 relative overflow-hidden">
-                <form id="addCouponForm" class="grid grid-cols-2 gap-6 relative z-10">
+                <form id="addCouponForm" class="grid grid-cols-2 gap-6 relative z-10" novalidate>
 
                     <!-- Coupon Code -->
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Coupon Code</label>
                         <input type="text" id="couponCode" placeholder="e.g. SUMMER25"
-                            class="input-field !uppercase font-bold" />
+                            class="input-field !uppercase font-bold"
+                            oninput="clearError('couponCode')" />
+                        <p id="couponCodeError" class="field-error">Coupon code is required.</p>
                         <p class="text-[10px] text-slate-500 mt-2 italic">Will be saved in uppercase automatically.</p>
                     </div>
 
@@ -87,32 +91,40 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Discount Type</label>
                         <select id="discountType" onchange="updateValueLabel()" class="input-field appearance-none">
                             <option value="percentage">Percentage (%)</option>
-                            <option value="flat">Fixed Amount (₹)</option>
+                            <option value="flat">Fixed Amount (&#8377;)</option>
                         </select>
                     </div>
 
                     <!-- Discount Value -->
                     <div>
                         <label id="valueLabel" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Discount Value (%)</label>
-                        <input type="number" id="discountValue" min="1" placeholder="e.g. 20" class="input-field" />
+                        <input type="number" id="discountValue" min="1" placeholder="e.g. 20"
+                            class="input-field"
+                            oninput="clearError('discountValue')" />
+                        <p id="discountValueError" class="field-error">Please enter a valid discount value.</p>
                     </div>
 
                     <!-- Min Purchase -->
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Min. Purchase Amount (₹)</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Min. Purchase Amount (&#8377;)</label>
                         <input type="number" id="minPurchaseAmount" min="0" placeholder="e.g. 500" class="input-field" />
                     </div>
 
                     <!-- Max Discount -->
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Max Discount Cap (₹) <span class="normal-case text-slate-600 font-normal">optional</span></label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
+                            Max Discount Cap (&#8377;) <span class="normal-case text-slate-600 font-normal">optional</span>
+                        </label>
                         <input type="number" id="maxDiscountAmount" min="0" placeholder="Leave blank for no cap" class="input-field" />
                     </div>
 
                     <!-- Expiration Date -->
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Expiration Date</label>
-                        <input type="date" id="expirationDate" class="input-field" />
+                        <input type="date" id="expirationDate"
+                            class="input-field"
+                            onchange="clearError('expirationDate')" />
+                        <p id="expirationDateError" class="field-error">Expiration date is required.</p>
                     </div>
 
                     <!-- Buttons -->
@@ -128,8 +140,6 @@
                     </div>
 
                 </form>
-
-                <!-- Background Glow -->
                 <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none -z-10 rounded-full"></div>
             </section>
         </div>
@@ -139,20 +149,47 @@
         function updateValueLabel() {
             const type = document.getElementById('discountType').value;
             document.getElementById('valueLabel').textContent =
-                type === 'percentage' ? 'Discount Value (%)' : 'Discount Value (₹)';
+                type === 'percentage' ? 'Discount Value (%)' : 'Discount Value (\u20b9)';
+        }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.add('input-error');
+            if (error) { error.textContent = message; error.style.display = 'block'; }
+        }
+
+        function clearError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.remove('input-error');
+            if (error) error.style.display = 'none';
+        }
+
+        function validateForm() {
+            let valid = true;
+            const code = document.getElementById('couponCode').value.trim();
+            const discountValue = document.getElementById('discountValue').value;
+            const expirationDate = document.getElementById('expirationDate').value;
+
+            clearError('couponCode'); clearError('discountValue'); clearError('expirationDate');
+
+            if (!code) { showError('couponCode', 'Coupon code is required.'); valid = false; }
+            if (!discountValue || parseFloat(discountValue) <= 0) { showError('discountValue', 'Please enter a valid discount value.'); valid = false; }
+            if (!expirationDate) { showError('expirationDate', 'Expiration date is required.'); valid = false; }
+
+            return valid;
         }
 
         async function submitCoupon() {
+            if (!validateForm()) return;
+
             const code = document.getElementById('couponCode').value.trim().toUpperCase();
             const discountType = document.getElementById('discountType').value;
             const discountValue = parseFloat(document.getElementById('discountValue').value);
             const minPurchaseAmount = parseFloat(document.getElementById('minPurchaseAmount').value) || 0;
             const maxDiscountAmount = parseFloat(document.getElementById('maxDiscountAmount').value) || null;
             const expirationDate = document.getElementById('expirationDate').value;
-
-            if (!code || !discountValue || !expirationDate) {
-                return Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Code, Value and Expiry Date are required.', background: '#0f1420', color: '#fff' });
-            }
 
             try {
                 const res = await fetch('/admin/coupons/create', {
