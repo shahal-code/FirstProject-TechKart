@@ -6,13 +6,31 @@ import Coupon from "../../models/couponModel.js";
 export const loadCoupons = async (req, res) => {
     try {
         const coupons = await Coupon.find().sort({ createdAt: -1 });
-        res.render("admin/coupons/coupons", {
-            coupons,
-            activePage: "coupons"
-        });
+        res.render("admin/coupons/coupons", { coupons, activePage: "coupons" });
     } catch (error) {
         console.error("Load Coupons Error:", error);
         res.status(500).send("Server Error");
+    }
+};
+
+/**
+ * Render Add Coupon Page
+ */
+export const getAddCouponPage = (req, res) => {
+    res.render("admin/coupons/add-coupon", { activePage: "coupons" });
+};
+
+/**
+ * Render Edit Coupon Page
+ */
+export const getEditCouponPage = async (req, res) => {
+    try {
+        const coupon = await Coupon.findById(req.params.id);
+        if (!coupon) return res.redirect('/admin/coupons');
+        res.render("admin/coupons/edit-coupon", { coupon, activePage: "coupons" });
+    } catch (error) {
+        console.error("Edit Coupon Page Error:", error);
+        res.redirect('/admin/coupons');
     }
 };
 

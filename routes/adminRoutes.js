@@ -73,6 +73,8 @@ router.get("/returns", adminAuth.isAdminLoggedIn, orderController.loadReturns);
 
 // Coupons
 router.get("/coupons", adminAuth.isAdminLoggedIn, CouponController.loadCoupons);
+router.get("/coupons/add", adminAuth.isAdminLoggedIn, CouponController.getAddCouponPage);
+router.get("/coupons/edit/:id", adminAuth.isAdminLoggedIn, CouponController.getEditCouponPage);
 router.post("/coupons/create", adminAuth.isAdminLoggedIn, CouponController.createCoupon);
 router.post("/coupons/update/:id", adminAuth.isAdminLoggedIn, CouponController.updateCoupon);
 router.post("/coupons/toggle/:id", adminAuth.isAdminLoggedIn, CouponController.toggleCouponStatus);
