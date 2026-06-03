@@ -75,7 +75,10 @@ router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartCo
 // Checkout
 router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);
 router.post('/checkout/place-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.placeOrder);
+router.post('/checkout/place-order-failed', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.placeOrderFailed);
+router.post('/checkout/retry-order', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.retryOrder);
 router.get('/checkout/order-success', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getOrderSuccessView);
+router.get('/checkout/payment-failure', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getPaymentFailureView);
 
 //payments
 router.post('/payment/create-order',userAuth.isAuthenticated,userAuth.isBlocked,Payment.createOrder);

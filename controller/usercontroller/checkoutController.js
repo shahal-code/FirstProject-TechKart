@@ -160,3 +160,101 @@ export const getOrderSuccessView = async (req, res) => {
         res.redirect('/user/shop');
     }
 };
+
+/**
+ * Handle Failed Payment Order Creation
+ */
+export const placeOrderFailed = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { addressId, paymentMethod } = req.body;
+
+        if (!addressId || !paymentMethod) {
+            return res.status(400).json({ success: false, message: "Missing required fields." });
+        }
+
+        const address = await AddressService.getAddressById(addressId);
+        if (!address) {
+            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+        }
+
+        // Create order with 'Failed' status by passing true as the 4th parameter
+        const order = await OrderService.createOrder(userId, address, paymentMethod, true);
+
+        res.json({
+            success: true,
+            message: "Order placed with failed payment.",
+            redirectUrl: `/user/checkout/payment-failure?id=${order.orderId}`
+        });
+
+    } catch (error) {
+        console.error("Failed Order Placement Error:", error);
+        res.status(400).json({
+            success: false,
+            message: error.message || "Failed to process order failure."
+        });
+    }
+};
+
+/**
+ * Render Payment Failure Page
+ */
+export const getPaymentFailureView = async (req, res) => {
+    try {
+        const orderId = req.query.id;
+        const userId = req.session.user;
+        if (!orderId) return res.redirect('/user/shop');
+        
+        const order = await OrderService.getOrderByDisplayId(orderId, userId);
+        if (!order) return res.redirect('/user/shop');
+
+        res.render('user/checkout/paymentFailure', { 
+            orderId,
+            order,
+            user: res.locals.user || req.user,
+            razorpayKey: process.env.RAZORPAY_KEY_ID,
+            path: '/user/checkout/payment-failure'
+        });
+    } catch (error) {
+        console.error("Payment Failure Page Error:", error);
+        res.redirect('/user/shop');
+    }
+};
+
+/**
+ * Handle Retry Payment
+ */
+export const retryOrder = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            return res.status(400).json({ success: false, message: "Missing required verification fields." });
+        }
+
+        const isPaymentValid = PaymentService.verifyRazorpaySignature({
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id,
+            signature: razorpay_signature
+        });
+
+        if (!isPaymentValid) {
+            return res.status(400).json({ success: false, message: "Payment verification failed." });
+        }
+
+        await OrderService.updatePaymentStatus(orderId, userId, 'Paid');
+
+        res.json({
+            success: true,
+            message: "Payment successful!",
+            redirectUrl: `/user/checkout/order-success?id=${orderId}`
+        });
+    } catch (error) {
+        console.error("Retry Order Error:", error);
+        res.status(400).json({
+            success: false,
+            message: error.message || "Failed to update payment status."
+        });
+    }
+};
