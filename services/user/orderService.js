@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
+import CouponService from "./couponService.js";
 
 class OrderService {
     async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
@@ -36,14 +37,7 @@ class OrderService {
         let discount = 0;
 
         if (appliedCoupon && finalAmount >= appliedCoupon.minPurchaseAmount) {
-            if (appliedCoupon.discountType === 'percentage') {
-                discount = (finalAmount * appliedCoupon.discountValue) / 100;
-                if (appliedCoupon.maxDiscountAmount && discount > appliedCoupon.maxDiscountAmount) {
-                    discount = appliedCoupon.maxDiscountAmount;
-                }
-            } else {
-                discount = appliedCoupon.discountValue;
-            }
+            discount = CouponService.calculateDiscount(appliedCoupon, finalAmount);
             finalAmount = finalAmount - discount;
             if (finalAmount < 0) finalAmount = 0;
         }
@@ -77,6 +71,9 @@ class OrderService {
 
         await order.save();
 
+        if (appliedCoupon) {
+            await CouponService.markCouponAsUsed(appliedCoupon._id, userId);
+        }
         // Atomic Stock Update
         for (const item of cart.items) {
             await Product.updateOne(

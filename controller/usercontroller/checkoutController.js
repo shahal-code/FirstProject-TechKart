@@ -2,7 +2,7 @@ import * as AddressService from "../../services/user/addressService.js";
 import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 import * as PaymentService from "../../services/user/paymentServices.js";
-import Coupon from "../../models/couponModel.js";
+import CouponService from "../../services/user/couponService.js";
 
 /**
  * Render Checkout Page
@@ -73,14 +73,7 @@ export const getCheckoutView = async (req, res) => {
         // Calculate discount if a coupon is in session
         if (appliedCoupon) {
             if (total >= appliedCoupon.minPurchaseAmount) {
-                if (appliedCoupon.discountType === 'percentage') {
-                    discount = (total * appliedCoupon.discountValue) / 100;
-                    if (appliedCoupon.maxDiscountAmount && discount > appliedCoupon.maxDiscountAmount) {
-                        discount = appliedCoupon.maxDiscountAmount;
-                    }
-                } else {
-                    discount = appliedCoupon.discountValue;
-                }
+                discount = CouponService.calculateDiscount(appliedCoupon, total);
                 total = total - discount;
                 if (total < 0) total = 0;
             } else {
@@ -152,9 +145,8 @@ export const placeOrder = async (req, res) => {
         // Use the service to handle logic
         const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon);
 
-        // If success, save coupon usage and clear session
+        // If success, clear session
         if (req.session.appliedCoupon) {
-            await Coupon.updateOne({ _id: req.session.appliedCoupon._id }, { $push: { usedBy: userId } });
             delete req.session.appliedCoupon;
             await new Promise((resolve) => req.session.save(resolve));
         }
@@ -212,9 +204,8 @@ export const placeOrderFailed = async (req, res) => {
         // Create order with 'Failed' status by passing true as the 4th parameter
         const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon);
 
-        // If success, save coupon usage and clear session
+        // If success, clear session
         if (req.session.appliedCoupon) {
-            await Coupon.updateOne({ _id: req.session.appliedCoupon._id }, { $push: { usedBy: userId } });
             delete req.session.appliedCoupon;
             await new Promise((resolve) => req.session.save(resolve));
         }
@@ -309,23 +300,7 @@ export const applyCoupon = async (req, res) => {
             return res.status(400).json({ success: false, message: "Please enter a coupon code." });
         }
 
-        const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true });
-        
-        if (!coupon) {
-            return res.status(404).json({ success: false, message: "Invalid or expired coupon." });
-        }
-
-        if (new Date() > coupon.expirationDate) {
-            return res.status(400).json({ success: false, message: "This coupon has expired." });
-        }
-
-        if (coupon.usedBy.includes(userId)) {
-            return res.status(400).json({ success: false, message: "You have already used this coupon." });
-        }
-
-        if (cartTotal < coupon.minPurchaseAmount) {
-            return res.status(400).json({ success: false, message: `Minimum purchase of ₹${coupon.minPurchaseAmount} required.` });
-        }
+        const coupon = await CouponService.validateCoupon(code, userId, cartTotal);
 
         req.session.appliedCoupon = coupon;
         req.session.save((err) => {
