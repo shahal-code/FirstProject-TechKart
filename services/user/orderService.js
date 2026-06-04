@@ -171,7 +171,7 @@ class OrderService {
         }
 
         // Calculate refund
-        if (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded') {
+        if (order.paymentMethod !== 'COD' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
             let refundAmount = 0;
             const allActive = order.orderedItems.every(i => i.status !== 'Cancelled' && i.status !== 'Returned');
             
@@ -256,7 +256,7 @@ class OrderService {
         item.cancellationReason = reason;
 
         // Refund for the item
-        if (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded') {
+        if (order.paymentMethod !== 'COD' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
             const refundAmount = item.price * item.quantity;
             await walletService.creditWallet(
                 userId,

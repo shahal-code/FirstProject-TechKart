@@ -102,7 +102,7 @@ export const updateOrderStatus = async (orderId, status) => {
     }
 
     // Refund logic for full return
-    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+    if (order.paymentMethod !== 'COD' && status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
         let refundAmount = 0;
         
         // If all items are being returned now and none were cancelled
@@ -174,7 +174,7 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     item.status = status;
 
     // Refund for single item return
-    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+    if (order.paymentMethod !== 'COD' && status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
         const refundAmount = item.price * item.quantity;
         await walletService.creditWallet(
             order.userId,
