@@ -20,8 +20,8 @@ export const loadOffers = async (req, res) => {
  */
 export const getAddOfferPage = async (req, res) => {
     try {
-        const products = await Product.find({ isListed: true }).select('productName _id');
-        const categories = await Category.find({ isListed: true }).select('name _id');
+        const products = await Product.find({ is_unlisted: false, is_blocked: false }).select('name _id');
+        const categories = await Category.find({ is_blocked: false }).select('name _id');
         res.render("admin/offers/add-offer", { products, categories, activePage: "offers" });
     } catch (error) {
         console.error("Load Add Offer Page Error:", error);
@@ -37,8 +37,8 @@ export const getEditOfferPage = async (req, res) => {
         const offer = await Offer.findById(req.params.id);
         if (!offer) return res.redirect('/admin/offers');
         
-        const products = await Product.find({ isListed: true }).select('productName _id');
-        const categories = await Category.find({ isListed: true }).select('name _id');
+        const products = await Product.find({ is_unlisted: false, is_blocked: false }).select('name _id');
+        const categories = await Category.find({ is_blocked: false }).select('name _id');
         
         res.render("admin/offers/edit-offer", { offer, products, categories, activePage: "offers" });
     } catch (error) {

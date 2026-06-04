@@ -102,7 +102,7 @@
                             <% if (typeof products !== 'undefined' && products.length > 0) { %>
                                 <optgroup label="Products" class="hidden" id="optgroup-product">
                                     <% products.forEach(p => { %>
-                                        <option value="<%= p._id %>"><%= p.productName %></option>
+                                        <option value="<%= p._id %>"><%= p.name %></option>
                                     <% }) %>
                                 </optgroup>
                             <% } %>

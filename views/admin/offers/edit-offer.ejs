@@ -101,7 +101,7 @@
                             <% if (typeof products !== 'undefined' && products.length > 0) { %>
                                 <optgroup label="Products" class="<%= offer.offerType === 'product' ? '' : 'hidden' %>" id="optgroup-product">
                                     <% products.forEach(p => { %>
-                                        <option value="<%= p._id %>" <%= offer.applicableTo && offer.applicableTo.toString() === p._id.toString() ? 'selected' : '' %>><%= p.productName %></option>
+                                        <option value="<%= p._id %>" <%= offer.applicableTo && offer.applicableTo.toString() === p._id.toString() ? 'selected' : '' %>><%= p.name %></option>
                                     <% }) %>
                                 </optgroup>
                             <% } %>
