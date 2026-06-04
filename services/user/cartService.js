@@ -2,6 +2,7 @@ import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
 import Wishlist from "../../models/wishlistModel.js";
+import { applyOffers } from "./productServices.js";
 
 // Fetch user's cart
 export const getCart = async (userId) => {
@@ -20,6 +21,7 @@ export const getCart = async (userId) => {
     }
 
     // Flag unavailable items instead of silently removing them
+    const productsToApply = [];
     cart.items.forEach(item => {
         if (!item.productId || 
             item.productId.is_blocked === true || 
@@ -27,8 +29,14 @@ export const getCart = async (userId) => {
             item.productId.category_id.is_blocked === true) {
             
             item.isUnavailable = true;
+        } else {
+            productsToApply.push(item.productId);
         }
     });
+
+    if (productsToApply.length > 0) {
+        await applyOffers(productsToApply);
+    }
     return cart;
 };
 

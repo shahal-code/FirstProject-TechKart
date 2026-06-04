@@ -2,6 +2,7 @@ import * as AddressService from "../../services/user/addressService.js";
 import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 import * as PaymentService from "../../services/user/paymentServices.js";
+import CouponService from "../../services/user/couponService.js";
 
 /**
  * Render Checkout Page
@@ -65,7 +66,22 @@ export const getCheckoutView = async (req, res) => {
         }
 
         const tax = subtotal * 0.18;
-        const total = subtotal + tax;
+        let total = subtotal + tax;
+        let discount = 0;
+        let appliedCoupon = req.session.appliedCoupon;
+
+        // Calculate discount if a coupon is in session
+        if (appliedCoupon) {
+            if (total >= appliedCoupon.minPurchaseAmount) {
+                discount = CouponService.calculateDiscount(appliedCoupon, total);
+                total = total - discount;
+                if (total < 0) total = 0;
+            } else {
+                // Cart total is too low, remove coupon silently
+                delete req.session.appliedCoupon;
+                appliedCoupon = null;
+            }
+        }
 
         res.render('user/checkout/checkout', {
             user: res.locals.user || req.user,
@@ -73,11 +89,12 @@ export const getCheckoutView = async (req, res) => {
             cart,
             subtotal,
             tax,
-            discount: 0, 
+            discount, 
             total,
+            appliedCoupon,
             unavailableNames,
             path: '/user/checkout',
-                razorpayKey: process.env.RAZORPAY_KEY_ID
+            razorpayKey: process.env.RAZORPAY_KEY_ID
 
         });
     } catch (error) {
@@ -126,7 +143,13 @@ export const placeOrder = async (req, res) => {
         }
 
         // Use the service to handle logic
-        const order = await OrderService.createOrder(userId, address, paymentMethod);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon);
+
+        // If success, clear session
+        if (req.session.appliedCoupon) {
+            delete req.session.appliedCoupon;
+            await new Promise((resolve) => req.session.save(resolve));
+        }
 
         res.json({
             success: true,
@@ -179,7 +202,13 @@ export const placeOrderFailed = async (req, res) => {
         }
 
         // Create order with 'Failed' status by passing true as the 4th parameter
-        const order = await OrderService.createOrder(userId, address, paymentMethod, true);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon);
+
+        // If success, clear session
+        if (req.session.appliedCoupon) {
+            delete req.session.appliedCoupon;
+            await new Promise((resolve) => req.session.save(resolve));
+        }
 
         res.json({
             success: true,
@@ -256,5 +285,46 @@ export const retryOrder = async (req, res) => {
             success: false,
             message: error.message || "Failed to update payment status."
         });
+    }
+};
+
+/**
+ * Apply Coupon
+ */
+export const applyCoupon = async (req, res) => {
+    try {
+        const { code, cartTotal } = req.body;
+        const userId = req.session.user;
+
+        if (!code) {
+            return res.status(400).json({ success: false, message: "Please enter a coupon code." });
+        }
+
+        const coupon = await CouponService.validateCoupon(code, userId, cartTotal);
+
+        req.session.appliedCoupon = coupon;
+        req.session.save((err) => {
+            if (err) throw err;
+            res.json({ success: true, message: "Coupon applied successfully!" });
+        });
+    } catch (error) {
+        console.error("Apply Coupon Error:", error);
+        res.status(500).json({ success: false, message: "Failed to apply coupon." });
+    }
+};
+
+/**
+ * Remove Coupon
+ */
+export const removeCoupon = async (req, res) => {
+    try {
+        delete req.session.appliedCoupon;
+        req.session.save((err) => {
+            if (err) throw err;
+            res.json({ success: true, message: "Coupon removed successfully!" });
+        });
+    } catch (error) {
+        console.error("Remove Coupon Error:", error);
+        res.status(500).json({ success: false, message: "Failed to remove coupon." });
     }
 };

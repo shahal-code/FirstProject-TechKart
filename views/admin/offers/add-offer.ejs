@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TechKart Admin - Add Offer</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#0055ff", "background-dark": "#0d0d0d" },
+                    fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body { font-family: 'Space Grotesk', sans-serif; background-color: #0d0d0d; color: #ffffff; }
+        .glass-morphism {
+            background: rgba(23, 33, 54, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .input-field {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.875rem;
+            color: white;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus { outline: none; box-shadow: 0 0 0 1px #0055ff; border-color: #0055ff; }
+        .input-field::placeholder { color: #475569; }
+        .input-field.input-error { border-color: #f43f5e !important; box-shadow: 0 0 0 1px #f43f5e !important; }
+        .field-error { color: #f43f5e; font-size: 0.75rem; margin-top: 0.375rem; display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+
+<body class="flex min-h-screen bg-[#0D0D0D]">
+    <%- include('../../partials/admin/sidebar') %>
+
+    <main class="flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
+        <%- include('../../partials/admin/header') %>
+
+        <div class="p-10 max-w-4xl mx-auto w-full space-y-8">
+            <nav class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                <a href="/admin/offers" class="hover:text-primary transition-colors">Offers</a>
+                <span class="material-symbols-outlined text-xs">chevron_right</span>
+                <span class="text-slate-300">Add New Offer</span>
+            </nav>
+
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">Create Offer</h2>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-medium mt-1">Set up a new promotional offer</p>
+                </div>
+                <a href="/admin/offers" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Back to List
+                </a>
+            </div>
+
+            <section class="glass-morphism rounded-3xl p-10 border border-white/5 relative overflow-hidden">
+                <form id="addOfferForm" class="grid grid-cols-2 gap-6 relative z-10" novalidate>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Offer Name</label>
+                        <input type="text" id="name" placeholder="e.g. Summer Sale 2024" class="input-field font-bold" oninput="clearError('name')" />
+                        <p id="nameError" class="field-error">Offer name is required.</p>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Description</label>
+                        <textarea id="description" rows="2" placeholder="Optional description..." class="input-field"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Offer Type</label>
+                        <select id="offerType" onchange="toggleApplicableFields()" class="input-field appearance-none">
+                            <option value="product">Product Offer</option>
+                            <option value="category">Category Offer</option>
+                            <option value="referral">Referral Offer</option>
+                        </select>
+                    </div>
+
+                    <div id="applicableToContainer">
+                        <label id="applicableToLabel" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Applicable To</label>
+                        <select id="applicableTo" class="input-field appearance-none" onchange="clearError('applicableTo')">
+                            <option value="">Select Option</option>
+                            <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                                <optgroup label="Products" class="hidden" id="optgroup-product">
+                                    <% products.forEach(p => { %>
+                                        <option value="<%= p._id %>"><%= p.name %></option>
+                                    <% }) %>
+                                </optgroup>
+                            <% } %>
+                            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                <optgroup label="Categories" class="hidden" id="optgroup-category">
+                                    <% categories.forEach(c => { %>
+                                        <option value="<%= c._id %>"><%= c.name %></option>
+                                    <% }) %>
+                                </optgroup>
+                            <% } %>
+                        </select>
+                        <p id="applicableToError" class="field-error">Please select an applicable item.</p>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Discount Type</label>
+                        <select id="discountType" onchange="updateValueLabel()" class="input-field appearance-none">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="flat">Fixed Amount (&#8377;)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label id="valueLabel" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Discount Value (%)</label>
+                        <input type="number" id="discountValue" min="1" placeholder="e.g. 20" class="input-field" oninput="clearError('discountValue')" />
+                        <p id="discountValueError" class="field-error">Please enter a valid discount value.</p>
+                    </div>
+
+                    <div id="maxDiscountContainer">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
+                            Max Discount Cap (&#8377;) <span class="normal-case text-slate-600 font-normal">optional</span>
+                        </label>
+                        <input type="number" id="maxDiscountAmount" min="0" placeholder="Leave blank for no cap" class="input-field" />
+                    </div>
+
+                    <div id="maxUsesContainer" class="hidden">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
+                            Max Uses <span class="normal-case text-slate-600 font-normal">optional</span>
+                        </label>
+                        <input type="number" id="maxUses" min="1" placeholder="Leave blank for unlimited" class="input-field" />
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Start Date</label>
+                        <input type="date" id="startDate" class="input-field" onchange="clearError('startDate')" />
+                        <p id="startDateError" class="field-error">Start date is required.</p>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">End Date</label>
+                        <input type="date" id="endDate" class="input-field" onchange="clearError('endDate')" />
+                        <p id="endDateError" class="field-error">End date is required.</p>
+                    </div>
+
+                    <!-- Referral Specific Fields -->
+                    <div id="referralFields" class="col-span-2 hidden grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Code</label>
+                            <input type="text" id="referralCode" placeholder="e.g. REF50" class="input-field uppercase" oninput="clearError('referralCode')" />
+                            <p id="referralCodeError" class="field-error">Referral code is required for referral offers.</p>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Token</label>
+                            <input type="text" id="referralToken" placeholder="Generated automatically or enter custom" class="input-field" />
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 pt-2 flex gap-4">
+                        <button type="button" onclick="submitOffer()"
+                            class="flex-1 bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all shadow-[0_8px_25px_rgba(0,85,255,0.3)]">
+                            Create Offer
+                        </button>
+                        <button type="button" onclick="window.location.href='/admin/offers'"
+                            class="px-8 py-4 rounded-2xl border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest">
+                            Cancel
+                        </button>
+                    </div>
+
+                </form>
+                <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none -z-10 rounded-full"></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function updateValueLabel() {
+            const type = document.getElementById('discountType').value;
+            document.getElementById('valueLabel').textContent = type === 'percentage' ? 'Discount Value (%)' : 'Discount Value (\u20b9)';
+            const maxDiscountContainer = document.getElementById('maxDiscountContainer');
+            if(type === 'flat') {
+                maxDiscountContainer.style.display = 'none';
+                document.getElementById('maxDiscountAmount').value = '';
+            } else {
+                maxDiscountContainer.style.display = 'block';
+            }
+        }
+
+        function toggleApplicableFields() {
+            const type = document.getElementById('offerType').value;
+            const container = document.getElementById('applicableToContainer');
+            const referralFields = document.getElementById('referralFields');
+            const maxUsesContainer = document.getElementById('maxUsesContainer');
+            
+            const optgroupProduct = document.getElementById('optgroup-product');
+            const optgroupCategory = document.getElementById('optgroup-category');
+
+            document.getElementById('applicableTo').value = '';
+            
+            if (type === 'referral') {
+                container.classList.add('hidden');
+                referralFields.classList.remove('hidden');
+                referralFields.classList.add('grid');
+                maxUsesContainer.classList.remove('hidden');
+            } else {
+                container.classList.remove('hidden');
+                referralFields.classList.add('hidden');
+                referralFields.classList.remove('grid');
+                maxUsesContainer.classList.add('hidden');
+                
+                if (type === 'product' && optgroupProduct) {
+                    optgroupProduct.classList.remove('hidden');
+                    if(optgroupCategory) optgroupCategory.classList.add('hidden');
+                    document.getElementById('applicableToLabel').textContent = 'Applicable Product';
+                } else if (type === 'category' && optgroupCategory) {
+                    optgroupCategory.classList.remove('hidden');
+                    if(optgroupProduct) optgroupProduct.classList.add('hidden');
+                    document.getElementById('applicableToLabel').textContent = 'Applicable Category';
+                }
+            }
+        }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.add('input-error');
+            if (error) { error.textContent = message; error.style.display = 'block'; }
+        }
+
+        function clearError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.remove('input-error');
+            if (error) error.style.display = 'none';
+        }
+
+        function validateForm() {
+            let valid = true;
+            const name = document.getElementById('name').value.trim();
+            const discountValue = document.getElementById('discountValue').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const offerType = document.getElementById('offerType').value;
+
+            ['name', 'discountValue', 'startDate', 'endDate', 'applicableTo', 'referralCode'].forEach(clearError);
+
+            if (!name) { showError('name', 'Offer name is required.'); valid = false; }
+            if (!discountValue || parseFloat(discountValue) <= 0) { showError('discountValue', 'Please enter a valid discount value.'); valid = false; }
+            if (!startDate) { showError('startDate', 'Start date is required.'); valid = false; }
+            if (!endDate) { showError('endDate', 'End date is required.'); valid = false; }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                showError('endDate', 'End date must be after start date.');
+                valid = false;
+            }
+
+            if (offerType !== 'referral') {
+                const applicableTo = document.getElementById('applicableTo').value;
+                if (!applicableTo) { showError('applicableTo', 'Please select an item.'); valid = false; }
+            } else {
+                const refCode = document.getElementById('referralCode').value.trim();
+                if (!refCode) { showError('referralCode', 'Referral code is required.'); valid = false; }
+            }
+
+            return valid;
+        }
+
+        async function submitOffer() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const offerType = document.getElementById('offerType').value;
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountValue').value);
+            const maxDiscountAmount = parseFloat(document.getElementById('maxDiscountAmount').value) || null;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            const payload = { name, description, offerType, discountType, discountValue, maxDiscountAmount, startDate, endDate };
+
+            if (offerType !== 'referral') {
+                payload.applicableTo = document.getElementById('applicableTo').value;
+            } else {
+                payload.referralCode = document.getElementById('referralCode').value.trim().toUpperCase();
+                payload.referralToken = document.getElementById('referralToken').value.trim();
+                payload.maxUses = parseFloat(document.getElementById('maxUses').value) || null;
+            }
+
+            try {
+                const res = await fetch('/admin/offers/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Created!', text: data.message, background: '#0f1420', color: '#fff', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.href = '/admin/offers');
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.message, background: '#0f1420', color: '#fff' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.', background: '#0f1420', color: '#fff' });
+            }
+        }
+
+        // Initialize display logic
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleApplicableFields();
+            updateValueLabel();
+        });
+    </script>
+</body>
+</html>

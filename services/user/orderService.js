@@ -2,12 +2,19 @@ import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
+import CouponService from "./couponService.js";
+import { applyOffers } from "./productServices.js";
 
 class OrderService {
-    async createOrder(userId, address, paymentMethod, paymentFailed = false) {
+    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
         // Fetch Cart
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
+
+        const productsToApply = cart.items.map(item => item.productId).filter(Boolean);
+        if (productsToApply.length > 0) {
+            await applyOffers(productsToApply);
+        }
 
         // Validate Stock and Prepare Items
         let subtotal = 0;
@@ -32,8 +39,15 @@ class OrderService {
 
         // Final Calculations
         const tax = subtotal * 0.18;
-        const finalAmount = subtotal + tax;
-        
+        let finalAmount = subtotal + tax;
+        let discount = 0;
+
+        if (appliedCoupon && finalAmount >= appliedCoupon.minPurchaseAmount) {
+            discount = CouponService.calculateDiscount(appliedCoupon, finalAmount);
+            finalAmount = finalAmount - discount;
+            if (finalAmount < 0) finalAmount = 0;
+        }
+
         let paymentStatus = paymentMethod === 'COD' ? 'Pending' : 'Paid';
         if (paymentFailed) {
             paymentStatus = 'Failed';
@@ -45,6 +59,7 @@ class OrderService {
             orderId: `ORD-${Date.now().toString().slice(-8)}`, // Simple unique ID
             orderedItems,
             totalPrice: subtotal,
+            discount,
             finalAmount,
             shippingAddress: {
                 fullname: address.fullname,
@@ -62,6 +77,9 @@ class OrderService {
 
         await order.save();
 
+        if (appliedCoupon) {
+            await CouponService.markCouponAsUsed(appliedCoupon._id, userId);
+        }
         // Atomic Stock Update
         for (const item of cart.items) {
             await Product.updateOne(

@@ -315,16 +315,40 @@
 
                         <div class="h-px bg-white/10 my-6"></div>
 
+                        <!-- Coupon Section -->
+                        <div class="mb-6">
+                            <% if (appliedCoupon) { %>
+                                <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Coupon Applied 🎉</div>
+                                        <div class="font-bold tracking-widest"><%= appliedCoupon.code %></div>
+                                    </div>
+                                    <button type="button" onclick="removeCoupon()" class="text-[10px] font-bold text-rose-400 hover:text-rose-300 transition-colors uppercase tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">
+                                        Remove
+                                    </button>
+                                </div>
+                            <% } else { %>
+                                <div class="flex gap-2">
+                                    <input type="text" id="couponCode" placeholder="ENTER COUPON" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold uppercase focus:ring-primary focus:border-primary transition-all">
+                                    <button type="button" onclick="applyCoupon()" class="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 font-bold px-6 py-3 rounded-xl transition-colors text-[10px] uppercase tracking-widest">
+                                        Apply
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+
                         <!-- Price Calculations -->
                         <div class="space-y-4 mb-8">
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-white/50">Subtotal</span>
                                 <span class="font-medium">₹<%= subtotal.toFixed(2) %></span>
                             </div>
+                            <% if (discount > 0) { %>
                             <div class="flex justify-between items-center text-sm">
-                                <span class="text-white/50">Discount</span>
-                                <span class="font-medium text-emerald-500">- ₹<%= (discount || 0).toFixed(2) %></span>
+                                <span class="text-white/50">Discount (<%= appliedCoupon.code %>)</span>
+                                <span class="font-medium text-emerald-500">- ₹<%= discount.toFixed(2) %></span>
                             </div>
+                            <% } %>
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-white/50">Shipping</span>
                                 <span
@@ -398,6 +422,44 @@
                             background: '#161b22',
                             color: '#fff'
                         });
+                    }
+                }
+
+                async function applyCoupon() {
+                    const code = document.getElementById('couponCode').value.trim();
+                    if (!code) {
+                        Swal.fire({ icon: 'warning', title: 'Empty Code', text: 'Please enter a coupon code.', background: '#161b22', color: '#fff' });
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/user/checkout/apply-coupon', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code, cartTotal: <%= subtotal %> })
+                        });
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            Swal.fire({ icon: 'success', title: 'Success!', text: result.message, background: '#161b22', color: '#fff', timer: 1500, showConfirmButton: false })
+                            .then(() => window.location.reload());
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Oops...', text: result.message, background: '#161b22', color: '#fff' });
+                        }
+                    } catch (error) {
+                        console.error("Apply Coupon Error:", error);
+                    }
+                }
+
+                async function removeCoupon() {
+                    try {
+                        const response = await fetch('/user/checkout/remove-coupon', { method: 'POST' });
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.error("Remove Coupon Error:", error);
                     }
                 }
 
