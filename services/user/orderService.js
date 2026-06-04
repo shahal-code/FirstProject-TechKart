@@ -3,12 +3,18 @@ import Order from "../../models/ordersModel.js";
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 import CouponService from "./couponService.js";
+import { applyOffers } from "./productServices.js";
 
 class OrderService {
     async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
         // Fetch Cart
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
+
+        const productsToApply = cart.items.map(item => item.productId).filter(Boolean);
+        if (productsToApply.length > 0) {
+            await applyOffers(productsToApply);
+        }
 
         // Validate Stock and Prepare Items
         let subtotal = 0;
