@@ -11,6 +11,7 @@ import * as Address from "../controller/usercontroller/address.js";
 import * as Checkout from "../controller/usercontroller/checkoutController.js"
 import * as Order from "../controller/usercontroller/orderController.js";
 import * as Payment from "../controller/usercontroller/paymentController.js";
+import * as Wallet from "../controller/usercontroller/walletController.js";
 
 
 // Authentication
@@ -84,6 +85,10 @@ router.post('/checkout/remove-coupon', userAuth.isAuthenticated, userAuth.isBloc
 //payments
 router.post('/payment/create-order',userAuth.isAuthenticated,userAuth.isBlocked,Payment.createOrder);
 router.post('/payment/verify',userAuth.isAuthenticated,userAuth.isBlocked,Payment.verifyPayment);
+
+// Wallet
+router.get('/wallet', userAuth.isAuthenticated, userAuth.isBlocked, Wallet.getWalletView);
+router.get('/wallet/balance', userAuth.isAuthenticated, userAuth.isBlocked, Wallet.getWalletBalance);
 
 // Orders
 router.get('/orders', userAuth.isAuthenticated, userAuth.isBlocked, Order.getOrders);
