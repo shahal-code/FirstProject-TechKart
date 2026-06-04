@@ -8,6 +8,7 @@ import * as ProductController from "../controller/admincontroller/productControl
 import { uploadProduct } from "../config/productMulter.js";
 import * as orderController from "../controller/admincontroller/orderController.js";
 import * as CouponController from "../controller/admincontroller/couponController.js";
+import * as OfferController from "../controller/admincontroller/offerController.js";
 import * as ReportController from "../controller/admincontroller/reportController.js";
 import Order from "../models/ordersModel.js";
 
@@ -80,6 +81,15 @@ router.post("/coupons/create", adminAuth.isAdminLoggedIn, CouponController.creat
 router.post("/coupons/update/:id", adminAuth.isAdminLoggedIn, CouponController.updateCoupon);
 router.post("/coupons/toggle/:id", adminAuth.isAdminLoggedIn, CouponController.toggleCouponStatus);
 router.delete("/coupons/delete/:id", adminAuth.isAdminLoggedIn, CouponController.deleteCoupon);
+
+// Offers
+router.get("/offers", adminAuth.isAdminLoggedIn, OfferController.loadOffers);
+router.get("/offers/add", adminAuth.isAdminLoggedIn, OfferController.getAddOfferPage);
+router.get("/offers/edit/:id", adminAuth.isAdminLoggedIn, OfferController.getEditOfferPage);
+router.post("/offers/create", adminAuth.isAdminLoggedIn, OfferController.createOffer);
+router.put("/offers/edit/:id", adminAuth.isAdminLoggedIn, OfferController.updateOffer);
+router.post("/offers/toggle/:id", adminAuth.isAdminLoggedIn, OfferController.toggleOfferStatus);
+router.delete("/offers/delete/:id", adminAuth.isAdminLoggedIn, OfferController.deleteOffer);
 
 // Reports
 router.get("/reports", adminAuth.isAdminLoggedIn, ReportController.loadReports);
