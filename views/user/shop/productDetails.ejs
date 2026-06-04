@@ -165,11 +165,11 @@
                                                 '0' %>
                                         </span>
                                         <% if(product.variants && product.variants.length> 0 &&
-                                            product.variants[0].oldPrice) {
+                                            (product.variants[0].oldPrice || product.variants[0].originalPrice)) {
                                             %>
                                             <span id="displayOldPrice"
                                                 class="text-2xl text-slate-600 line-through font-medium tracking-tight">
-                                                ₹<%= product.variants[0].oldPrice %>
+                                                ₹<%= product.variants[0].originalPrice || product.variants[0].oldPrice %>
                                             </span>
                                             <% } %>
                                     </div>
@@ -649,8 +649,12 @@
                                                         <%= rel.name %>
                                                     </h3>
                                                 </a>
-                                                <span class="text-primary font-bold text-2xl">₹<%=
-                                                        rel.variants[0]?.price || '0' %></span>
+                                                <div class="flex items-center gap-2">
+                                                    <% if (rel.variants[0]?.originalPrice && rel.variants[0]?.originalPrice > rel.variants[0]?.price) { %>
+                                                        <span class="text-gray-500 line-through text-sm">₹<%= rel.variants[0]?.originalPrice %></span>
+                                                    <% } %>
+                                                    <span class="text-primary font-bold text-2xl">₹<%= rel.variants[0]?.price || '0' %></span>
+                                                </div>
                                             </div>
                                             <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
                                                 <%= rel.description %>
