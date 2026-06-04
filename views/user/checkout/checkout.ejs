@@ -210,9 +210,10 @@
                             </label>
 
                             <!-- UPI -->
-                            <label class="relative cursor-pointer block">
+                            <% const upiDisabled = total > 500000; %>
+                            <label class="relative <%= upiDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer' %> block" id="upi-label">
                                 <input type="radio" name="paymentMethod" value="UPI"
-                                    class="payment-radio absolute opacity-0" required>
+                                    class="payment-radio absolute opacity-0" <%= upiDisabled ? 'disabled' : '' %> required>
                                 <div
                                     class="payment-method-card glass p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 border border-white/10">
                                     <div
@@ -221,7 +222,11 @@
                                     </div>
                                     <div class="flex-1">
                                         <h4 class="font-bold">UPI Payment</h4>
-                                        <p class="text-white/40 text-xs">GPay, PhonePe, Paytm, and more</p>
+                                        <% if (upiDisabled) { %>
+                                            <p class="text-amber-400 text-xs font-semibold">⚠ Not available — order exceeds ₹5,00,000 limit</p>
+                                        <% } else { %>
+                                            <p class="text-white/40 text-xs">GPay, PhonePe, Paytm, and more</p>
+                                        <% } %>
                                     </div>
                                     <div
                                         class="radio-indicator size-5 rounded-full border-2 border-white/20 flex items-center justify-center">
@@ -452,9 +457,26 @@
                     });
                 }
 
+                const RAZORPAY_MAX_AMOUNT = 500000; // ₹5,00,000
+
                 async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
                     if (typeof Razorpay === 'undefined') {
                         throw new Error('Razorpay checkout is not loaded. Please refresh and try again.');
+                    }
+
+                    const orderTotal = <%= total %>;
+                    if (orderTotal > RAZORPAY_MAX_AMOUNT) {
+                        restoreSubmitButton(submitBtn, originalBtnContent);
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Amount Limit Exceeded',
+                            html: `UPI/Online payment is limited to <b>₹5,00,000</b> per transaction.<br><br>Your order total is <b>₹${orderTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</b>.<br><br>Please select <b>Cash on Delivery</b> instead.`,
+                            background: '#161b22',
+                            color: '#fff',
+                            confirmButtonColor: '#0055ff',
+                            confirmButtonText: 'Got it'
+                        });
+                        return;
                     }
 
                     const response = await fetch('/user/payment/create-order', {
