@@ -2,7 +2,6 @@ import Order from "../../models/ordersModel.js";
 import User from "../../models/userModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
-import moment from "moment";
 
 export const getDashboardStats = async () => {
   try {
@@ -80,33 +79,38 @@ export const getChartData = async (filter) => {
   try {
     const validStatuses = ['Delivered', 'Shipped', 'Out for Delivery'];
     let startDate;
-    let formatStr;
     let groupFormat;
     let labels = [];
     
-    // Set dates and aggregation format based on filter
-    const now = moment();
+    const now = new Date();
     
     if (filter === 'yearly') {
       // Last 5 years
-      startDate = moment().subtract(4, 'years').startOf('year').toDate();
+      startDate = new Date(now.getFullYear() - 4, 0, 1);
       groupFormat = "%Y";
       for (let i = 4; i >= 0; i--) {
-        labels.push(moment().subtract(i, 'years').format('YYYY'));
+        labels.push((now.getFullYear() - i).toString());
       }
     } else if (filter === 'weekly') {
       // Last 7 days
-      startDate = moment().subtract(6, 'days').startOf('day').toDate();
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 6);
+      startDate.setHours(0, 0, 0, 0);
       groupFormat = "%Y-%m-%d";
       for (let i = 6; i >= 0; i--) {
-        labels.push(moment().subtract(i, 'days').format('YYYY-MM-DD'));
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        labels.push(d.toISOString().split('T')[0]); // YYYY-MM-DD
       }
     } else {
       // Monthly - Default to last 12 months
-      startDate = moment().subtract(11, 'months').startOf('month').toDate();
+      startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
       groupFormat = "%Y-%m";
       for (let i = 11; i >= 0; i--) {
-        labels.push(moment().subtract(i, 'months').format('YYYY-MM'));
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        labels.push(`${year}-${month}`);
       }
     }
 
@@ -140,9 +144,18 @@ export const getChartData = async (filter) => {
 
     // Format labels for display
     if (filter === 'weekly') {
-      labels = labels.map(l => moment(l).format('ddd, MMM D'));
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      labels = labels.map(l => {
+        const d = new Date(l);
+        return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+      });
     } else if (filter === 'monthly') {
-      labels = labels.map(l => moment(l).format('MMM YYYY'));
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      labels = labels.map(l => {
+        const [year, month] = l.split('-');
+        return `${months[parseInt(month) - 1]} ${year}`;
+      });
     }
 
     return { labels, revenueData };
