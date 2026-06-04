@@ -54,6 +54,14 @@ class OrderService {
             paymentStatus = 'Failed';
         }
 
+        // Wallet Balance Check
+        if (paymentMethod === 'Wallet' && !paymentFailed) {
+            const wallet = await walletService.getOrCreateWallet(userId);
+            if (wallet.balance < finalAmount) {
+                throw new Error("Insufficient wallet balance.");
+            }
+        }
+
         //  Save Order
         const order = new Order({
             userId,
@@ -81,6 +89,17 @@ class OrderService {
         if (appliedCoupon) {
             await CouponService.markCouponAsUsed(appliedCoupon._id, userId);
         }
+
+        // Wallet Deduction
+        if (paymentMethod === 'Wallet' && !paymentFailed) {
+            await walletService.debitWallet(
+                userId,
+                finalAmount,
+                `Payment for order ${order.orderId}`,
+                order.orderId
+            );
+        }
+
         // Atomic Stock Update
         for (const item of cart.items) {
             await Product.updateOne(
