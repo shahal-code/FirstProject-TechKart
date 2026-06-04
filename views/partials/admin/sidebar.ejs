@@ -31,11 +31,12 @@
                 href="/admin/returns">
                 <span class="material-symbols-outlined">keyboard_return</span>
                 <span class="font-medium text-sm flex-1">Return Requests</span>
-                <% if (locals.returnCount > 0) { %>
-                    <span class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.4)] animate-pulse">
+                <% if (locals.returnCount> 0) { %>
+                    <span
+                        class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.4)] animate-pulse">
                         <%= returnCount %>
                     </span>
-                <% } %>
+                    <% } %>
             </a>
             <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'customers' ? activeClasses : inactiveClasses %> transition-all group"
                 href="/admin/users">
@@ -58,7 +59,7 @@
                 <span class="font-medium text-sm">Category</span>
             </a>
             <a class="flex items-center gap-4 px-4 py-3 rounded-lg <%= locals.activePage === 'offer' ? activeClasses : inactiveClasses %> transition-all group"
-                href="#">
+                href="/admin/offers">
                 <span class="material-symbols-outlined">redeem</span>
                 <span class="font-medium text-sm">Offer</span>
             </a>
