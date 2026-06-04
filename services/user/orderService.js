@@ -4,6 +4,7 @@ import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 import CouponService from "./couponService.js";
 import { applyOffers } from "./productServices.js";
+import * as walletService from "./walletService.js";
 
 class OrderService {
     async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
@@ -150,18 +151,50 @@ class OrderService {
             throw new Error(`Order cannot be cancelled. Current status: ${order.status}`);
         }
 
-        order.status = 'Cancelled';
-        order.cancellationReason = reason;
-        await order.save();
+        // Calculate refund
+        if (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded') {
+            let refundAmount = 0;
+            const allActive = order.orderedItems.every(i => i.status !== 'Cancelled' && i.status !== 'Returned');
+            
+            if (allActive) {
+                // If cancelling the whole untouched order, refund the exact final amount (accounts for discounts)
+                refundAmount = order.finalAmount;
+            } else {
+                // If partially cancelled before, refund only the remaining active items
+                order.orderedItems.forEach(item => {
+                    if (item.status !== 'Cancelled' && item.status !== 'Returned') {
+                        refundAmount += (item.price * item.quantity);
+                    }
+                });
+            }
 
-        // Revert Stock
-        for (const item of order.orderedItems) {
-            await Product.updateOne(
-                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
-                { $inc: { "variants.$.stock": item.quantity } }
-            );
+            if (refundAmount > 0) {
+                await walletService.creditWallet(
+                    userId,
+                    refundAmount,
+                    `Refund for cancelled order ${order.orderId}`,
+                    order.orderId
+                );
+            }
+            order.paymentStatus = 'Refunded';
         }
 
+        order.status = 'Cancelled';
+        order.cancellationReason = reason;
+
+        // Revert Stock and mark items
+        for (const item of order.orderedItems) {
+            if (item.status !== 'Cancelled' && item.status !== 'Returned') {
+                item.status = 'Cancelled';
+                item.cancellationReason = reason;
+                await Product.updateOne(
+                    { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                    { $inc: { "variants.$.stock": item.quantity } }
+                );
+            }
+        }
+
+        await order.save();
         return order;
     }
 
@@ -203,6 +236,18 @@ class OrderService {
         item.status = 'Cancelled';
         item.cancellationReason = reason;
 
+        // Refund for the item
+        if (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded') {
+            const refundAmount = item.price * item.quantity;
+            await walletService.creditWallet(
+                userId,
+                refundAmount,
+                `Refund for cancelled item in order ${order.orderId}`,
+                order.orderId
+            );
+            order.paymentStatus = 'Partially Refunded';
+        }
+
         // Revert Stock
         await Product.updateOne(
             { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
@@ -213,6 +258,9 @@ class OrderService {
         const allCancelled = order.orderedItems.every(i => i.status === 'Cancelled');
         if (allCancelled) {
             order.status = 'Cancelled';
+            if (order.paymentStatus === 'Partially Refunded') {
+                order.paymentStatus = 'Refunded';
+            }
         }
 
         await order.save();

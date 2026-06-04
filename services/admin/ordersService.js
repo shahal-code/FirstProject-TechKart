@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Product from "../../models/productModel.js";
+import * as walletService from "../user/walletService.js";
 
 export const getAllOrders = async (queryParams, page, limit) => {
     const { startDate, endDate, status, paymentMethod, search } = queryParams;
@@ -98,7 +99,33 @@ export const updateOrderStatus = async (orderId, status) => {
             );
         }
         item.status = status;
+    }
+
+    // Refund logic for full return
+    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+        let refundAmount = 0;
         
+        // If all items are being returned now and none were cancelled
+        const hasCancelled = order.orderedItems.some(i => i.cancellationReason);
+        if (!hasCancelled) {
+            refundAmount = order.finalAmount;
+        } else {
+            order.orderedItems.forEach(item => {
+                if (item.status === 'Returned') {
+                    refundAmount += (item.price * item.quantity);
+                }
+            });
+        }
+        
+        if (refundAmount > 0) {
+            await walletService.creditWallet(
+                order.userId,
+                refundAmount,
+                `Refund for returned order ${order.orderId}`,
+                order.orderId
+            );
+        }
+        order.paymentStatus = 'Refunded';
     }
 
     order.status = status;
@@ -146,19 +173,37 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
 
     item.status = status;
 
+    // Refund for single item return
+    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+        const refundAmount = item.price * item.quantity;
+        await walletService.creditWallet(
+            order.userId,
+            refundAmount,
+            `Refund for returned item in order ${order.orderId}`,
+            order.orderId
+        );
+        order.paymentStatus = 'Partially Refunded';
+    }
+
     // If all items have the same status, update the global order status
     const statuses = order.orderedItems.map(i => i.status);
     const uniqueStatuses = [...new Set(statuses)];
 
     if (uniqueStatuses.length === 1) {
         order.status = uniqueStatuses[0];
+        if (order.status === 'Returned' && order.paymentStatus === 'Partially Refunded') {
+            order.paymentStatus = 'Refunded';
+        }
     } else {
         const terminalStatuses = ['Delivered', 'Returned', 'Cancelled'];
         const allTerminal = statuses.every(s => terminalStatuses.includes(s));
 
         if (allTerminal) {
             if (statuses.includes('Delivered')) order.status = 'Delivered';
-            else if (statuses.includes('Returned')) order.status = 'Returned';
+            else if (statuses.includes('Returned')) {
+                order.status = 'Returned';
+                if (order.paymentStatus === 'Partially Refunded') order.paymentStatus = 'Refunded';
+            }
             else order.status = 'Cancelled';
         } else {
             if (statuses.includes('Out for Delivery')) order.status = 'Out for Delivery';
