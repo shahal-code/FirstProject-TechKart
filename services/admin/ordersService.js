@@ -101,8 +101,12 @@ export const updateOrderStatus = async (orderId, status) => {
         item.status = status;
     }
 
+    if (status === 'Delivered' && order.paymentMethod === 'COD') {
+        order.paymentStatus = 'Paid';
+    }
+
     // Refund logic for full return
-    if (order.paymentMethod !== 'COD' && status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
         let refundAmount = 0;
         
         // If all items are being returned now and none were cancelled
@@ -174,7 +178,7 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     item.status = status;
 
     // Refund for single item return
-    if (order.paymentMethod !== 'COD' && status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+    if (status === 'Returned' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
         const refundAmount = item.price * item.quantity;
         await walletService.creditWallet(
             order.userId,
@@ -211,6 +215,10 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
             else if (statuses.includes('Processing')) order.status = 'Processing';
             else order.status = 'Pending';
         }
+    }
+
+    if (order.status === 'Delivered' && order.paymentMethod === 'COD') {
+        order.paymentStatus = 'Paid';
     }
 
     order.markModified("orderedItems");
