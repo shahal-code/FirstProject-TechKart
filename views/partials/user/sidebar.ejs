@@ -25,6 +25,11 @@
             <span class="material-symbols-outlined">package_2</span>
             <span>Orders</span>
         </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <%= path === '/user/wallet' ? 'bg-primary text-white font-medium' : 'text-white/60 hover:text-white hover:bg-white/5' %>"
+            href="/user/wallet">
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span>Wallet</span>
+        </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <%= path === '/user/address' ? 'bg-primary text-white font-medium' : 'text-white/60 hover:text-white hover:bg-white/5' %>"
             href="/user/address">
             <span class="material-symbols-outlined">location_on</span>
@@ -97,7 +102,7 @@
 
 
         <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
-            href="#">
+            href="/user/wallet">
             <span class="material-symbols-outlined">credit_card</span>
             <span>Payments</span>
         </a>

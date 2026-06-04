@@ -203,30 +203,31 @@
                             </div>
                         </div>
 
-                        <div
-                            class="glass-card rounded-3xl p-8 hover:bg-white/10 transition-all group cursor-pointer border border-white/5">
+                        <!-- Wallet Card -->
+                        <div onclick="window.location.href='/user/wallet'"
+                            class="glass-card rounded-3xl p-8 hover:bg-white/10 transition-all group cursor-pointer border border-white/5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-all"></div>
                             <div
-                                class="size-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-8 text-primary group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-4xl">payments</span>
+                                class="size-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-8 text-primary group-hover:scale-110 transition-transform relative z-10">
+                                <span class="material-symbols-outlined text-4xl">account_balance_wallet</span>
                             </div>
-                            <h3 class="text-xl font-bold mb-3 tracking-tight">Payments</h3>
-                            <p class="text-white/40 text-sm leading-relaxed mb-8">Securely manage your saved cards and
-                                payment methods.</p>
+                            <h3 class="text-xl font-bold mb-3 tracking-tight relative z-10">My Wallet</h3>
+                            <p class="text-white/40 text-sm leading-relaxed mb-8 relative z-10">Refunds, credits & wallet payments all in one place.</p>
                             <div
-                                class="flex items-center gap-3 text-xs font-black text-primary tracking-widest uppercase">
-                                <span>Update</span>
-                                <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+                                class="flex items-center gap-3 text-xs font-black text-primary tracking-widest uppercase relative z-10">
+                                <span>View Wallet</span>
+                                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
                             </div>
                         </div>
 
-                        <div
+                        <div onclick="window.location.href='/user/orders'"
                             class="glass-card rounded-3xl p-8 hover:bg-white/10 transition-all group cursor-pointer border border-white/5">
                             <div
                                 class="size-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-8 text-primary group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-4xl">history</span>
+                                <span class="material-symbols-outlined text-4xl">package_2</span>
                             </div>
-                            <h3 class="text-xl font-bold mb-3 tracking-tight">Recent Activity</h3>
-                            <p class="text-white/40 text-sm leading-relaxed mb-8">Track your purchases and account
+                            <h3 class="text-xl font-bold mb-3 tracking-tight">My Orders</h3>
+                            <p class="text-white/40 text-sm leading-relaxed mb-8">Track your purchases and order
                                 history in one place.</p>
                             <div
                                 class="flex items-center gap-3 text-xs font-black text-primary tracking-widest uppercase">
