@@ -62,6 +62,19 @@
             box-shadow: 0 0 15px rgba(6, 87, 249, 0.2) !important;
         }
 
+        .form-input-custom.input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        .field-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            display: none;
+            padding-left: 1rem;
+        }
+
         .form-input-custom::placeholder {
             color: rgba(255, 255, 255, 0.2);
         }
@@ -126,30 +139,23 @@
                         </p>
                     </div>
                     <div class="glass-card rounded-3xl p-10 max-w-3xl border border-white/5">
-                        <% if (locals.errors && errors.length > 0) { %>
-                            <div class="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl text-sm mb-8">
-                                <ul class="list-disc list-inside space-y-1">
-                                    <% errors.forEach(err => { %>
-                                        <li><%= err %></li>
-                                    <% }) %>
-                                </ul>
-                            </div>
-                        <% } %>
-                        <form class="flex flex-col gap-8" action="/user/address/edit/<%= address._id %>?from=<%= req.query.from %>" method="POST">
+                        <form id="addressForm" class="flex flex-col gap-8" action="/user/address/edit/<%= address._id %>?from=<%= req.query.from %>" method="POST">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div class="flex flex-col gap-4">
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Full Name</label>
                                     <div class="relative group">
                                         <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">person</span>
-                                        <input name="fullname" value="<%= locals.formData ? formData.fullname : address.fullname %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter your full name" type="text" />
+                                        <input id="fullname" name="fullname" value="<%= locals.formData ? formData.fullname : address.fullname %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter your full name" type="text" oninput="clearError('fullname')" />
                                     </div>
+                                    <p id="fullnameError" class="field-error"></p>
                                 </div>
                                 <div class="flex flex-col gap-4">
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Phone Number</label>
                                     <div class="relative group">
                                         <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">call</span>
-                                        <input name="phone" value="<%= locals.formData ? formData.phone : address.phone %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="+91 00000 00000" type="tel" />
+                                        <input id="phone" name="phone" value="<%= locals.formData ? formData.phone : address.phone %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="+91 00000 00000" type="tel" oninput="clearError('phone')" />
                                     </div>
+                                    <p id="phoneError" class="field-error"></p>
                                 </div>
                             </div>
 
@@ -157,24 +163,27 @@
                                 <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Email Address</label>
                                 <div class="relative group">
                                     <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">mail</span>
-                                    <input name="email" value="<%= locals.formData ? formData.email : address.email %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter email address" type="email" />
+                                    <input id="email" name="email" value="<%= locals.formData ? formData.email : address.email %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter email address" type="email" oninput="clearError('email')" />
                                 </div>
+                                <p id="emailError" class="field-error"></p>
                             </div>
 
                             <div class="flex flex-col gap-4">
                                 <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Address Line 1</label>
                                 <div class="relative group">
                                     <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">home</span>
-                                    <input name="line1" value="<%= locals.formData ? formData.line1 : address.line1 %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Street address, P.O. box" type="text" />
+                                    <input id="line1" name="line1" value="<%= locals.formData ? formData.line1 : address.line1 %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Street address, P.O. box" type="text" oninput="clearError('line1')" />
                                 </div>
+                                <p id="line1Error" class="field-error"></p>
                             </div>
 
                             <div class="flex flex-col gap-4">
                                 <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Address Line 2 (Optional)</label>
                                 <div class="relative group">
                                     <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">apartment</span>
-                                    <input name="line2" value="<%= locals.formData ? formData.line2 : address.line2 %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Apartment, suite, unit, etc." type="text" />
+                                    <input id="line2" name="line2" value="<%= locals.formData ? formData.line2 : address.line2 %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Apartment, suite, unit, etc." type="text" oninput="clearError('line2')" />
                                 </div>
+                                <p id="line2Error" class="field-error"></p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -182,22 +191,25 @@
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">City</label>
                                     <div class="relative group">
                                         <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">location_city</span>
-                                        <input name="city" value="<%= locals.formData ? formData.city : address.city %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="City" type="text" />
+                                        <input id="city" name="city" value="<%= locals.formData ? formData.city : address.city %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="City" type="text" oninput="clearError('city')" />
                                     </div>
+                                    <p id="cityError" class="field-error"></p>
                                 </div>
                                 <div class="flex flex-col gap-4">
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">State / Province</label>
                                     <div class="relative group">
                                         <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">map</span>
-                                        <input name="state" value="<%= locals.formData ? formData.state : address.state %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="State" type="text" />
+                                        <input id="state" name="state" value="<%= locals.formData ? formData.state : address.state %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="State" type="text" oninput="clearError('state')" />
                                     </div>
+                                    <p id="stateError" class="field-error"></p>
                                 </div>
                                 <div class="flex flex-col gap-4">
                                     <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Zip / Postal Code</label>
                                     <div class="relative group">
                                         <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">pin_drop</span>
-                                        <input name="postal_code" value="<%= locals.formData ? formData.postal_code : address.postal_code %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Postal Code" type="text" />
+                                        <input id="postal_code" name="postal_code" value="<%= locals.formData ? formData.postal_code : address.postal_code %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Postal Code" type="text" oninput="clearError('postal_code')" />
                                     </div>
+                                    <p id="postal_codeError" class="field-error"></p>
                                 </div>
                             </div>
 
@@ -205,12 +217,13 @@
                                 <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Address Type</label>
                                 <div class="relative group">
                                     <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">category</span>
-                                    <select name="address_type" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-12 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all appearance-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.2)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 1.5rem center; background-size: 1.25rem;">
+                                    <select id="address_type" name="address_type" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-12 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all appearance-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.2)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 1.5rem center; background-size: 1.25rem;" onchange="clearError('address_type')">
                                         <option value="Home" <%= (locals.formData ? formData.address_type === 'Home' : address.address_type === 'Home') ? 'selected' : '' %>>Home Address</option>
                                         <option value="Work" <%= (locals.formData ? formData.address_type === 'Work' : address.address_type === 'Work') ? 'selected' : '' %>>Work Address</option>
                                         <option value="Other" <%= (locals.formData ? formData.address_type === 'Other' : address.address_type === 'Other') ? 'selected' : '' %>>Other</option>
                                     </select>
                                 </div>
+                                <p id="address_typeError" class="field-error"></p>
                             </div>
 
                             <div class="flex items-center gap-4 group cursor-pointer mt-4">
@@ -234,6 +247,46 @@
     </div>
 
     <script src="/js/utils/common.js"></script>
+    <script src="/js/validation.js"></script>
+    <script>
+        document.getElementById('addressForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            clearAllErrors(['fullname', 'phone', 'email', 'line1', 'city', 'state', 'postal_code', 'address_type']);
+
+            const fullname = document.getElementById('fullname').value.trim();
+            if (!fullname) { showError('fullname', 'Full name is required'); isValid = false; }
+            else if (fullname.length < 3) { showError('fullname', 'Name must be at least 3 characters long'); isValid = false; }
+            else if (!/^[a-zA-Z\s]+$/.test(fullname)) { showError('fullname', 'Name can only contain letters and spaces'); isValid = false; }
+
+            const phone = document.getElementById('phone').value.trim();
+            if (!phone) { showError('phone', 'Phone number is required'); isValid = false; }
+            else if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) { showError('phone', 'Phone number must be 10 digits'); isValid = false; }
+
+            const email = document.getElementById('email').value.trim();
+            if (!email) { showError('email', 'Email is required'); isValid = false; }
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('email', 'Invalid email format'); isValid = false; }
+
+            const line1 = document.getElementById('line1').value.trim();
+            if (!line1) { showError('line1', 'Address Line 1 is required'); isValid = false; }
+            else if (line1.length < 5) { showError('line1', 'Address Line 1 must be at least 5 characters long'); isValid = false; }
+
+            if (!document.getElementById('city').value.trim()) { showError('city', 'City is required'); isValid = false; }
+            if (!document.getElementById('state').value.trim()) { showError('state', 'State is required'); isValid = false; }
+
+            const postal_code = document.getElementById('postal_code').value.trim();
+            if (!postal_code) { showError('postal_code', 'Postal code is required'); isValid = false; }
+            else if (!/^\d{5,6}$/.test(postal_code)) { showError('postal_code', 'Invalid postal code (5-6 digits)'); isValid = false; }
+
+            const address_type = document.getElementById('address_type').value;
+            if (!address_type) { showError('address_type', 'Address type is required'); isValid = false; }
+
+            if (!isValid) {
+                e.preventDefault();
+                const firstError = document.querySelector('.field-error[style*="block"]');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
 </body>
 
 </html>
