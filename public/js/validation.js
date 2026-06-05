@@ -26,43 +26,65 @@ const validateOtp = (otp) => {
     return null;
 };
 
+// ─── Shared Error Helpers (offer-style) ──────────────────────────────────────
+function showError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const error = document.getElementById(fieldId + 'Error');
+    if (input) input.classList.add('input-error');
+    if (error) { error.textContent = message; error.style.display = 'block'; }
+}
+
+function clearError(fieldId) {
+    const input = document.getElementById(fieldId);
+    const error = document.getElementById(fieldId + 'Error');
+    if (input) input.classList.remove('input-error');
+    if (error) error.style.display = 'none';
+}
+
+function clearAllErrors(fieldIds) {
+    fieldIds.forEach(id => clearError(id));
+}
+
 // ─── Admin Product Validation ─────────────────────────────────────────────────
 const productForm = document.getElementById('productForm');
 if (productForm) {
+    // Live clear on input
+    const productFieldMap = {
+        'productName':     'productName',
+        'productDesc':     'productDesc',
+        'productPrice':    'productPrice',
+        'productCategory': 'productCategory'
+    };
+    Object.keys(productFieldMap).forEach(elId => {
+        const el = document.getElementById(elId);
+        if (el) el.addEventListener('input', () => clearError(productFieldMap[elId]));
+    });
+
     productForm.addEventListener('submit', function (e) {
         let isValid = true;
-
-        document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+        clearAllErrors(['productName', 'productDesc', 'productPrice', 'productCategory']);
 
         const name = document.getElementById('productName').value.trim();
         if (!name || name.length < 3) {
-            document.getElementById('nameError').textContent = 'Product name must be at least 3 characters.';
-            document.getElementById('nameError').classList.remove('hidden');
-            document.getElementById('nameError').classList.add('error-text');
+            showError('productName', 'Product name must be at least 3 characters.');
             isValid = false;
         }
 
         const desc = document.getElementById('productDesc').value.trim();
         if (!desc || desc.length < 10) {
-            document.getElementById('descError').textContent = 'Description must be at least 10 characters.';
-            document.getElementById('descError').classList.remove('hidden');
-            document.getElementById('descError').classList.add('error-text');
+            showError('productDesc', 'Description must be at least 10 characters.');
             isValid = false;
         }
 
         const price = document.getElementById('productPrice').value.trim();
         if (!price || isNaN(price) || Number(price) <= 0) {
-            document.getElementById('priceError').textContent = 'Please enter a valid positive price.';
-            document.getElementById('priceError').classList.remove('hidden');
-            document.getElementById('priceError').classList.add('error-text');
+            showError('productPrice', 'Please enter a valid positive price.');
             isValid = false;
         }
 
         const cat = document.getElementById('productCategory').value;
         if (!cat) {
-            document.getElementById('categoryError').textContent = 'Please select a category.';
-            document.getElementById('categoryError').classList.remove('hidden');
-            document.getElementById('categoryError').classList.add('error-text');
+            showError('productCategory', 'Please select a category.');
             isValid = false;
         }
 
@@ -74,25 +96,23 @@ if (productForm) {
 // ─── Add Category Form ────────────────────────────────────────────────────────
 const addCategoryForm = document.getElementById('addCategoryForm');
 if (addCategoryForm) {
+    document.getElementById('categoryName')?.addEventListener('input', () => clearError('categoryName'));
+    document.getElementById('categoryDescription')?.addEventListener('input', () => clearError('categoryDescription'));
+
     addCategoryForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         let isValid = true;
-
-        document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+        clearAllErrors(['categoryName', 'categoryDescription']);
 
         const name = document.getElementById('categoryName').value.trim();
         if (!name || name.length < 2) {
-            document.getElementById('categoryNameError').textContent = 'Category name must be at least 2 characters.';
-            document.getElementById('categoryNameError').classList.remove('hidden');
-            document.getElementById('categoryNameError').classList.add('error-text');
+            showError('categoryName', 'Category name must be at least 2 characters.');
             isValid = false;
         }
 
         const desc = document.getElementById('categoryDescription').value.trim();
         if (!desc || desc.length < 10) {
-            document.getElementById('categoryDescError').textContent = 'Description must be at least 10 characters.';
-            document.getElementById('categoryDescError').classList.remove('hidden');
-            document.getElementById('categoryDescError').classList.add('error-text');
+            showError('categoryDescription', 'Description must be at least 10 characters.');
             isValid = false;
         }
 
@@ -106,13 +126,13 @@ if (addCategoryForm) {
             });
             const data = await response.json();
             if (response.ok) {
-                Swal.fire({ icon: 'success', title: 'Success!', text: data.message, background: '#111827', color: '#fff', showConfirmButton: false, timer: 1500 })
+                Swal.fire({ icon: 'success', title: 'Success!', text: data.message, background: '#0f1420', color: '#fff', showConfirmButton: false, timer: 1500 })
                     .then(() => { window.location.href = '/admin/category'; });
             } else {
-                Swal.fire({ icon: 'error', title: 'Oops...', text: data.error || 'Something went wrong.', background: '#111827', color: '#fff' });
+                Swal.fire({ icon: 'error', title: 'Oops...', text: data.error || 'Something went wrong.', background: '#0f1420', color: '#fff' });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to communicate with the server.', background: '#111827', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to communicate with the server.', background: '#0f1420', color: '#fff' });
         }
     });
 }
@@ -120,25 +140,23 @@ if (addCategoryForm) {
 // ─── Edit Category Form ───────────────────────────────────────────────────────
 const editCategoryForm = document.getElementById('editCategoryForm');
 if (editCategoryForm) {
+    document.getElementById('categoryName')?.addEventListener('input', () => clearError('categoryName'));
+    document.getElementById('categoryDescription')?.addEventListener('input', () => clearError('categoryDescription'));
+
     editCategoryForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         let isValid = true;
-
-        document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+        clearAllErrors(['categoryName', 'categoryDescription']);
 
         const name = document.getElementById('categoryName').value.trim();
         if (!name || name.length < 2) {
-            document.getElementById('categoryNameError').textContent = 'Category name must be at least 2 characters.';
-            document.getElementById('categoryNameError').classList.remove('hidden');
-            document.getElementById('categoryNameError').classList.add('error-text');
+            showError('categoryName', 'Category name must be at least 2 characters.');
             isValid = false;
         }
 
         const desc = document.getElementById('categoryDescription').value.trim();
         if (!desc || desc.length < 10) {
-            document.getElementById('categoryDescError').textContent = 'Description must be at least 10 characters.';
-            document.getElementById('categoryDescError').classList.remove('hidden');
-            document.getElementById('categoryDescError').classList.add('error-text');
+            showError('categoryDescription', 'Description must be at least 10 characters.');
             isValid = false;
         }
 
@@ -153,13 +171,13 @@ if (editCategoryForm) {
             });
             const data = await response.json();
             if (response.ok) {
-                Swal.fire({ icon: 'success', title: 'Updated!', text: data.message, background: '#111827', color: '#fff', showConfirmButton: false, timer: 1500 })
+                Swal.fire({ icon: 'success', title: 'Updated!', text: data.message, background: '#0f1420', color: '#fff', showConfirmButton: false, timer: 1500 })
                     .then(() => { window.location.href = '/admin/category'; });
             } else {
-                Swal.fire({ icon: 'error', title: 'Oops...', text: data.error || 'Something went wrong.', background: '#111827', color: '#fff' });
+                Swal.fire({ icon: 'error', title: 'Oops...', text: data.error || 'Something went wrong.', background: '#0f1420', color: '#fff' });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to communicate with the server.', background: '#111827', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to communicate with the server.', background: '#0f1420', color: '#fff' });
         }
     });
 }
