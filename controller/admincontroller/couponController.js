@@ -6,7 +6,11 @@ import Coupon from "../../models/couponModel.js";
 export const loadCoupons = async (req, res) => {
     try {
         const coupons = await Coupon.find().sort({ createdAt: -1 });
-        res.render("admin/coupons/coupons", { coupons, activePage: "coupons" });
+        const now = new Date();
+        const activeCoupons = await Coupon.countDocuments({ isActive: true, expirationDate: { $gte: now } });
+        const expiredCoupons = await Coupon.countDocuments({ $or: [{ isActive: false }, { expirationDate: { $lte: now } }] });
+
+        res.render("admin/coupons/coupons", { coupons, activeCoupons, expiredCoupons, activePage: "coupons" });
     } catch (error) {
         console.error("Load Coupons Error:", error);
         res.status(500).send("Server Error");
