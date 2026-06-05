@@ -166,58 +166,59 @@
                     </div>
 
                     <!-- Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="stat-card">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Total Categories -->
+                        <div class="stat-card border-l-4 border-l-primary">
                             <div class="flex justify-between items-start mb-4">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total
-                                    Categories</p>
-                                <span class="material-symbols-outlined text-primary text-xl">category</span>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Categories</p>
+                                <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg text-xl">category</span>
                             </div>
                             <h3 class="text-3xl font-bold tracking-tight mb-1">
-                                <%= typeof stats !=='undefined' ? stats.total : 0 %>
+                                <%= typeof stats !== 'undefined' ? stats.total : 0 %>
                             </h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-emerald-400 text-xs font-bold">+<%= typeof stats !=='undefined' ?
-                                        stats.addedQuarter : 0 %></span>
-                                <span class="text-slate-500 text-[10px] uppercase tracking-tighter">added this
-                                    quarter</span>
-                            </div>
                         </div>
-                        <div class="stat-card">
+                        <!-- Active Categories -->
+                        <div class="stat-card border-l-4 border-l-emerald-500">
                             <div class="flex justify-between items-start mb-4">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Most Popular
-                                </p>
-                                <span class="material-symbols-outlined text-primary text-xl">trending_up</span>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Categories</p>
+                                <span class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-lg text-xl">check_circle</span>
                             </div>
-                            <h3 class="text-3xl font-bold tracking-tight mb-1">Gaming Laptops</h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-primary text-xs font-bold">45%</span>
-                                <span class="text-slate-500 text-[10px] uppercase tracking-tighter">of total
-                                    sales</span>
-                            </div>
+                            <h3 class="text-3xl font-bold tracking-tight text-emerald-400">
+                                <%= typeof activeCategories !== 'undefined' ? activeCategories : 0 %>
+                            </h3>
                         </div>
-                        <div class="stat-card">
+                        <!-- Blocked Categories -->
+                        <div class="stat-card border-l-4 border-l-rose-500">
                             <div class="flex justify-between items-start mb-4">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Newest
-                                    Category</p>
-                                <span class="material-symbols-outlined text-primary text-xl">new_releases</span>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Blocked Categories</p>
+                                <span class="material-symbols-outlined text-rose-500 bg-rose-500/10 p-2 rounded-lg text-xl">block</span>
                             </div>
-                            <h3 class="text-3xl font-bold tracking-tight mb-1 truncate">
-                                <%= typeof stats !=='undefined' ? stats.newestName : 'N/A' %>
+                            <h3 class="text-3xl font-bold tracking-tight text-rose-400">
+                                <%= typeof blockedCategories !== 'undefined' ? blockedCategories : 0 %>
+                            </h3>
+                        </div>
+                        <!-- Newest Category -->
+                        <div class="stat-card border-l-4 border-l-amber-500">
+                            <div class="flex justify-between items-start mb-4">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Newest Category</p>
+                                <span class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-lg text-xl">new_releases</span>
+                            </div>
+                            <h3 class="text-xl font-bold tracking-tight mb-1 truncate">
+                                <%= typeof stats !== 'undefined' ? stats.newestName : 'N/A' %>
                             </h3>
                             <div class="flex items-center gap-2">
                                 <span class="text-slate-500 text-[10px] uppercase tracking-tighter">
-                                    <% if(typeof stats !=='undefined' && stats.newestDate) { %>
-                                        <% const daysAgo=Math.floor((new Date() - new Date(stats.newestDate)) / (1000 *
-                                            60 * 60 * 24)); %>
-                                            Added <%= daysAgo===0 ? "today" : daysAgo + " days ago" %>
-                                                <% } else { %>
-                                                    No data
-                                                    <% } %>
+                                    <% if(typeof stats !== 'undefined' && stats.newestDate) { %>
+                                        <% const daysAgo = Math.floor((new Date() - new Date(stats.newestDate)) / (1000 * 60 * 60 * 24)); %>
+                                        Added <%= daysAgo === 0 ? "today" : daysAgo + " days ago" %>
+                                    <% } else { %>
+                                        No data
+                                    <% } %>
                                 </span>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Table Section -->
                     <section class="glass-morphism rounded-xl overflow-hidden border border-white/5">

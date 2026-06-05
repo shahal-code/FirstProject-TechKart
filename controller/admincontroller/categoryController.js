@@ -1,3 +1,4 @@
+import Category from "../../models/categoryModel.js";
 import * as CategoryService from "../../services/admin/categoryService.js";
 
 // Load Category Page
@@ -14,6 +15,8 @@ export const categoryInfo = async (req, res) => {
 
     const { categories, totalCategories, totalPages } = await CategoryService.getAllCategories(query, page, limit);
     const stats = await CategoryService.getCategoryStats();
+    const activeCategories = await Category.countDocuments({ is_blocked: false });
+    const blockedCategories = await Category.countDocuments({ is_blocked: true });
 
     res.render("admin/category/category", {
       categories,
@@ -23,7 +26,9 @@ export const categoryInfo = async (req, res) => {
       limit,
       search,
       activePage: "category",
-      stats
+      stats,
+      activeCategories,
+      blockedCategories
     });
 
   } catch (error) {
@@ -51,8 +56,8 @@ export const addCategory = async (req, res) => {
     res.status(201).json({ message: "Category added successfully" });
   } catch (error) {
     console.error("Error adding category:", error);
-    res.status(error.message === "Category already exists" ? 400 : 500).json({ 
-        error: error.message || "Internal Server Error" 
+    res.status(error.message === "Category already exists" ? 400 : 500).json({
+      error: error.message || "Internal Server Error"
     });
   }
 };
@@ -70,8 +75,8 @@ export const toggleCategoryStatus = async (req, res) => {
 
   } catch (error) {
     console.error("Error toggling category status:", error);
-    res.status(error.message === "Category not found" ? 404 : 500).json({ 
-        error: error.message || "Internal Server Error" 
+    res.status(error.message === "Category not found" ? 404 : 500).json({
+      error: error.message || "Internal Server Error"
     });
   }
 };
@@ -105,8 +110,8 @@ export const editCategory = async (req, res) => {
   } catch (error) {
     console.error("Error editing category:", error);
     const status = error.message === "Category not found" ? 404 : (error.message === "Category name already exists" ? 400 : 500);
-    res.status(status).json({ 
-        error: error.message || "Internal Server Error" 
+    res.status(status).json({
+      error: error.message || "Internal Server Error"
     });
   }
 };
@@ -119,8 +124,8 @@ export const deleteCategory = async (req, res) => {
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     console.error("Error deleting category:", error);
-    res.status(error.message === "Category not found" ? 404 : 500).json({ 
-        error: error.message || "Internal Server Error" 
+    res.status(error.message === "Category not found" ? 404 : 500).json({
+      error: error.message || "Internal Server Error"
     });
   }
 };
