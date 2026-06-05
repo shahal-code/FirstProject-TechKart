@@ -1,6 +1,7 @@
 import Offer from "../../models/offerModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
+import OfferService from "../../services/admin/offerService.js";
 
 /**
  * Load Offers Page
@@ -8,7 +9,11 @@ import Category from "../../models/categoryModel.js";
 export const loadOffers = async (req, res) => {
     try {
         const offers = await Offer.find().sort({ createdAt: -1 });
-        res.render("admin/offers/offers", { offers, activePage: "offers" });
+
+        // Count statistics from service
+        const { totalOffers, activeOffers, expiredOffers } = await OfferService.getOfferStats();
+
+        res.render("admin/offers/offers", { offers, totalOffers, activeOffers, expiredOffers, activePage: "offers" });
     } catch (error) {
         console.error("Load Offers Error:", error);
         res.status(500).send("Server Error");
@@ -36,10 +41,10 @@ export const getEditOfferPage = async (req, res) => {
     try {
         const offer = await Offer.findById(req.params.id);
         if (!offer) return res.redirect('/admin/offers');
-        
+
         const products = await Product.find({ is_unlisted: false, is_blocked: false }).select('name _id');
         const categories = await Category.find({ is_blocked: false }).select('name _id');
-        
+
         res.render("admin/offers/edit-offer", { offer, products, categories, activePage: "offers" });
     } catch (error) {
         console.error("Edit Offer Page Error:", error);

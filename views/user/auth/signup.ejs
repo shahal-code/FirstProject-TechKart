@@ -180,6 +180,17 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <!-- Referral Code field inside the form -->
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-sm font-medium text-gray-300 px-1">Referral Code <span class="text-gray-500 font-normal">(Optional)</span></label>
+                                        <div class="relative group">
+                                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors text-[20px]">redeem</span>
+                                            <input id="referralCodeInput" name="referralCode"
+                                                class="w-full bg-[#172136]/50 border border-[#2e426b] focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-14 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all"
+                                                placeholder="Enter referral code (e.g. TECHKARTD9C8EF)" type="text"
+                                                value="<%= locals.referralCode || '' %>" />
+                                        </div>
+                                    </div>
                                     <button
                                         class="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-lg transition-all shadow-lg shadow-primary/20 mt-4 flex items-center justify-center gap-2"
                                         type="submit">
@@ -216,15 +227,6 @@
                             Google
                         </a>
 
-                        <!-- Referral Code Section replaced Apple Icon -->
-                        <div class="relative group">
-                            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-primary">
-                                <span class="material-symbols-outlined text-[18px]">redeem</span>
-                            </div>
-                            <input name="referralCode"
-                                class="w-full bg-transparent border border-gray-800 hover:border-gray-600 focus:border-primary focus:ring-0 rounded-lg h-12 pl-10 pr-3 text-white placeholder:text-gray-500 text-xs font-medium transition-all"
-                                placeholder="Referral Code" type="text" />
-                        </div>
                     </div>
                     <div class="mt-12 text-center">
                         <p class="text-gray-400 text-sm">
@@ -244,6 +246,17 @@
         </div>
     </div>
     <script src="/js/utils/password-toggle.js"></script>
+    <script>
+        // Token URL approach: pre-fill referral code from ?ref= query param
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const refCode = params.get('ref');
+            if (refCode) {
+                const input = document.getElementById('referralCodeInput');
+                if (input && !input.value) input.value = refCode.toUpperCase();
+            }
+        })();
+    </script>
 </body>
 
 </html>

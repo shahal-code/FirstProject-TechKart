@@ -15,8 +15,6 @@ export const categoryInfo = async (req, res) => {
 
     const { categories, totalCategories, totalPages } = await CategoryService.getAllCategories(query, page, limit);
     const stats = await CategoryService.getCategoryStats();
-    const activeCategories = await Category.countDocuments({ is_blocked: false });
-    const blockedCategories = await Category.countDocuments({ is_blocked: true });
 
     res.render("admin/category/category", {
       categories,
@@ -27,8 +25,8 @@ export const categoryInfo = async (req, res) => {
       search,
       activePage: "category",
       stats,
-      activeCategories,
-      blockedCategories
+      activeCategories: stats.activeCategories,
+      blockedCategories: stats.blockedCategories
     });
 
   } catch (error) {

@@ -17,8 +17,6 @@ export const getUsers = async (req, res) => {
     const { users, totalUsers, totalPages } = await CustomerService.getAllUsers(query, page, limit);
 
     const stats = await CustomerService.getCustomerStats();
-    const blockedUsers = await User.countDocuments({ isBlocked: true });
-    const activeUsers = await User.countDocuments({ isBlocked: false });
     res.render("admin/customers/users", {
       users,
       page,
@@ -30,8 +28,8 @@ export const getUsers = async (req, res) => {
       activePage: "customers",
       pageTitle: "Customer CRM",
       pageSubtitle: "Manage your global customer base",
-      blockedUsers,
-      activeUsers
+      blockedUsers: stats.blockedUsers,
+      activeUsers: stats.activeUsers
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);

@@ -111,6 +111,24 @@ class OfferService {
             }
         );
     }
+
+    /**
+     * Get statistics for all offers
+     */
+    async getOfferStats() {
+        const totalOffers = await Offer.countDocuments();
+        const activeOffers = await Offer.countDocuments({ 
+            isActive: true, 
+            endDate: { $gte: new Date() } 
+        });
+        const expiredOffers = await Offer.countDocuments({
+            $or: [
+                { isActive: false },
+                { endDate: { $lt: new Date() } }
+            ]
+        });
+        return { totalOffers, activeOffers, expiredOffers };
+    }
 }
 
 export default new OfferService();

@@ -1,15 +1,13 @@
 import Coupon from "../../models/couponModel.js";
+import CouponService from "../../services/admin/couponService.js";
 
 /**
  * Load Coupons Page
  */
 export const loadCoupons = async (req, res) => {
     try {
-        const totalCoupons = await Coupon.countDocuments();
         const coupons = await Coupon.find().sort({ createdAt: -1 });
-        const now = new Date();
-        const activeCoupons = await Coupon.countDocuments({ isActive: true, expirationDate: { $gte: now } });
-        const expiredCoupons = await Coupon.countDocuments({ $or: [{ isActive: false }, { expirationDate: { $lte: now } }] });
+        const { totalCoupons, activeCoupons, expiredCoupons } = await CouponService.getCouponStats();
 
         res.render("admin/coupons/coupons", { coupons, totalCoupons, activeCoupons, expiredCoupons, activePage: "coupons" });
     } catch (error) {

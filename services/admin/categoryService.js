@@ -35,11 +35,16 @@ export const getAllCategories = async (query, page, limit) => {
 export const getCategoryStats = async () => {
     const totalCount = await Category.countDocuments();
     const newestCategory = await Category.findOne().sort({ created_at: -1 });
+    const activeCategories = await Category.countDocuments({ is_blocked: false });
+    const blockedCategories = await Category.countDocuments({ is_blocked: true });
+
     return {
         total: totalCount,
         addedQuarter: 0,
         newestName: newestCategory ? newestCategory.name : "N/A",
         newestDate: newestCategory ? newestCategory.created_at : null,
+        activeCategories,
+        blockedCategories
     };
 };
 

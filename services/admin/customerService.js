@@ -24,9 +24,13 @@ export const getAllUsers = async (query, page, limit) => {
 
 export const getCustomerStats = async ()=>{
   const totalCount=await User.countDocuments();
+  const blockedUsers = await User.countDocuments({ isBlocked: true });
+  const activeUsers = await User.countDocuments({ isBlocked: false });
   return{
     total:totalCount,
     newThisMonth:0,
+    blockedUsers,
+    activeUsers
   };
 };
 
