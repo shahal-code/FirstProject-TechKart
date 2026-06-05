@@ -1,3 +1,4 @@
+import User from "../../models/userModel.js";
 import * as CustomerService from "../../services/admin/customerService.js";
 
 export const getUsers = async (req, res) => {
@@ -14,9 +15,10 @@ export const getUsers = async (req, res) => {
     };
 
     const { users, totalUsers, totalPages } = await CustomerService.getAllUsers(query, page, limit);
-    
-    const stats=await CustomerService.getCustomerStats();
 
+    const stats = await CustomerService.getCustomerStats();
+    const blockedUsers = await User.countDocuments({ isBlocked: true });
+    const activeUsers = await User.countDocuments({ isBlocked: false });
     res.render("admin/customers/users", {
       users,
       page,
@@ -27,7 +29,9 @@ export const getUsers = async (req, res) => {
       search,
       activePage: "customers",
       pageTitle: "Customer CRM",
-      pageSubtitle: "Manage your global customer base"
+      pageSubtitle: "Manage your global customer base",
+      blockedUsers,
+      activeUsers
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
