@@ -250,7 +250,7 @@
                                         <%= new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %>
                                     </td>
                                     <td class="px-6 py-4 text-white font-medium">
-                                        <%= order.userId ? order.userId.name || 'Guest' : 'Guest' %>
+                                        <%= order.userId ? order.userId.fullname || 'Guest' : 'Guest' %>
                                     </td>
                                     <td class="px-6 py-4">
                                         <% const s = order.status || 'Pending'; %>

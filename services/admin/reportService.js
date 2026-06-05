@@ -92,7 +92,7 @@ export const getReportData = async (filter = "today", start = null, end = null) 
         createdAt: { $gte: startDate, $lte: endDate },
         status: { $nin: ["Cancelled", "Returned"] }
     })
-    .populate("userId", "name email")
+    .populate("userId", "fullname email")
     .sort({ createdAt: -1 });
 
     // Summary totals
