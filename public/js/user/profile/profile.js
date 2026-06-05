@@ -7,9 +7,25 @@ window.addEventListener('pageshow', function (event) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert("Referral code copied to clipboard!");
+        Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'Referral code copied to clipboard.',
+            background: '#1a1a1a',
+            color: '#ffffff',
+            showConfirmButton: false,
+            timer: 2000
+        });
     }).catch(err => {
         console.error('Failed to copy: ', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to copy referral code.',
+            background: '#1a1a1a',
+            color: '#ffffff',
+            confirmButtonColor: '#0055ff'
+        });
     });
 }
 
