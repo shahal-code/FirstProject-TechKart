@@ -9,6 +9,11 @@ export const loadOrders = async (req, res) => {
 
         const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(req.query, page, limit);
 
+        const totalOrdersCount = await Order.countDocuments();
+        const pendingOrdersCount = await Order.countDocuments({ status: "Pending" });
+        const canceledOrdersCount = await Order.countDocuments({ status: "Cancelled" });
+        const completedOrdersCount = await Order.countDocuments({ status: "Delivered" });
+
         res.render("admin/orders/orders", {
             orders,
             page,
@@ -16,7 +21,11 @@ export const loadOrders = async (req, res) => {
             totalOrders,
             limit,
             activePage: "orders",
-            filters: req.query
+            filters: req.query,
+            totalOrdersCount,
+            pendingOrdersCount,
+            canceledOrdersCount,
+            completedOrdersCount
         });
     } catch (error) {
         console.error("Error loading admin orders:", error);

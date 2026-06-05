@@ -93,36 +93,32 @@
                             <div class="flex justify-between items-start mb-4">
                                 <span
                                     class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">shopping_bag</span>
-                                <span class="text-xs font-bold text-emerald-500">+12%</span>
                             </div>
-                            <h4 class="text-2xl font-bold tracking-tight">1,284</h4>
+                            <h4 class="text-2xl font-bold tracking-tight"><%= totalOrdersCount %></h4>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Orders</p>
                         </div>
                         <div class="glass-morphism p-6 rounded-xl border-l-4 border-amber-500">
                             <div class="flex justify-between items-start mb-4">
                                 <span
                                     class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-lg">pending_actions</span>
-                                <span class="text-xs font-bold text-amber-500">High Priority</span>
                             </div>
-                            <h4 class="text-2xl font-bold tracking-tight">42</h4>
+                            <h4 class="text-2xl font-bold tracking-tight"><%= pendingOrdersCount %></h4>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Pending</p>
                         </div>
-                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-primary">
+                        <div class="glass-morphism p-6 rounded-xl border-l-4 border-rose-500">
                             <div class="flex justify-between items-start mb-4">
                                 <span
-                                    class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">local_shipping</span>
-                                <span class="text-xs font-bold text-slate-400">8 In Transit</span>
+                                    class="material-symbols-outlined text-rose-500 bg-rose-500/10 p-2 rounded-lg">cancel</span>
                             </div>
-                            <h4 class="text-2xl font-bold tracking-tight">156</h4>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">In Transit</p>
+                            <h4 class="text-2xl font-bold tracking-tight"><%= canceledOrdersCount %></h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Canceled</p>
                         </div>
                         <div class="glass-morphism p-6 rounded-xl border-l-4 border-emerald-500">
                             <div class="flex justify-between items-start mb-4">
                                 <span
                                     class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-lg">check_circle</span>
-                                <span class="text-xs font-bold text-emerald-500">Completed</span>
                             </div>
-                            <h4 class="text-2xl font-bold tracking-tight">1,086</h4>
+                            <h4 class="text-2xl font-bold tracking-tight"><%= completedOrdersCount %></h4>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Completed</p>
                         </div>
                     </div>
