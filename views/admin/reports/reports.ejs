@@ -294,10 +294,33 @@
                 </div>
 
                 <!-- Table Footer -->
-                <div class="p-6 border-t border-white/5 flex items-center justify-between">
+                <div class="p-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p class="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
-                        Total: <span class="text-white font-bold"><%= typeof orders !== 'undefined' ? orders.length : 0 %> orders</span>
+                        Total: <span class="text-white font-bold"><%= typeof totalOrders !== 'undefined' ? totalOrders : 0 %> orders</span>
                     </p>
+                    
+                    <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                    <div class="flex items-center gap-2">
+                        <% if (currentPage > 1) { %>
+                            <a href="?filter=<%= filter %>&start=<%= startDate || '' %>&end=<%= endDate || '' %>&page=<%= currentPage - 1 %>" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-white hover:bg-primary transition-colors text-xs">
+                                &laquo;
+                            </a>
+                        <% } %>
+                        
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <a href="?filter=<%= filter %>&start=<%= startDate || '' %>&end=<%= endDate || '' %>&page=<%= i %>" class="w-8 h-8 flex items-center justify-center rounded-lg text-xs transition-colors <%= currentPage === i ? 'bg-primary text-white font-bold' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white' %>">
+                                <%= i %>
+                            </a>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) { %>
+                            <a href="?filter=<%= filter %>&start=<%= startDate || '' %>&end=<%= endDate || '' %>&page=<%= currentPage + 1 %>" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-white hover:bg-primary transition-colors text-xs">
+                                &raquo;
+                            </a>
+                        <% } %>
+                    </div>
+                    <% } %>
+
                     <div class="flex items-center gap-3 text-[11px] font-bold">
                         <span class="text-slate-500">Net Revenue:</span>
                         <span class="text-emerald-400 text-base">

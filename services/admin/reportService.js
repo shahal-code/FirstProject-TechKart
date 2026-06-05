@@ -84,36 +84,22 @@ function buildChartConfig(filter, startDate, endDate) {
 /**
  * Main Report Service
  */
-export const getReportData = async (filter = "today", start = null, end = null) => {
+export const getReportData = async (filter = "today", start = null, end = null, page = 1) => {
     const { startDate, endDate } = buildDateRange(filter, start, end);
 
-    // Fetch all non-cancelled orders in range, populate user
-    const orders = await Order.find({
+    const query = {
         createdAt: { $gte: startDate, $lte: endDate },
         status: { $nin: ["Cancelled", "Returned"] }
-    })
-    .populate("userId", "fullname email")
-    .sort({ createdAt: -1 });
+    };
+
+    // Fetch all non-cancelled orders in range for totals and charts
+    const allOrders = await Order.find(query).lean();
 
     // Summary totals
-    const totalOrders   = orders.length;
-    const totalRevenue  = orders.reduce((s, o) => s + (o.totalPrice  || 0), 0);
-    const totalDiscount = orders.reduce((s, o) => s + (o.discount    || 0), 0);
-    const netRevenue    = orders.reduce((s, o) => s + (o.finalAmount || 0), 0);
-
-    // Normalize orders to match EJS template field names
-    const normalizedOrders = orders.map(o => ({
-        _id:         o._id,
-        orderId:     o.orderId,
-        createdAt:   o.createdAt,
-        userId:      o.userId,
-        status:      o.status,
-        totalAmount: o.totalPrice  || 0,
-        discount:    o.discount    || 0,
-        finalAmount: o.finalAmount || 0,
-        couponCode:  o.couponCode  || null,
-        paymentMethod: o.paymentMethod
-    }));
+    const totalOrders   = allOrders.length;
+    const totalRevenue  = allOrders.reduce((s, o) => s + (o.totalPrice  || 0), 0);
+    const totalDiscount = allOrders.reduce((s, o) => s + (o.discount    || 0), 0);
+    const netRevenue    = allOrders.reduce((s, o) => s + (o.finalAmount || 0), 0);
 
     // Chart data
     const { labels, groupBy } = buildChartConfig(filter, startDate, endDate);
@@ -121,7 +107,7 @@ export const getReportData = async (filter = "today", start = null, end = null) 
     const discountMap = {};
     labels.forEach(l => { revenueMap[l] = 0; discountMap[l] = 0; });
 
-    orders.forEach(order => {
+    allOrders.forEach(order => {
         const d = new Date(order.createdAt);
         let key;
 
@@ -138,8 +124,34 @@ export const getReportData = async (filter = "today", start = null, end = null) 
     const chartRevenue  = labels.map(l => revenueMap[l]  || 0);
     const chartDiscount = labels.map(l => discountMap[l] || 0);
 
+    const limit = 10;
+    const totalPages = Math.ceil(totalOrders / limit);
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated orders
+    const paginatedRawOrders = await Order.find(query)
+        .populate("userId", "fullname email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+    // Normalize paginated orders to match EJS template field names
+    const paginatedOrders = paginatedRawOrders.map(o => ({
+        _id:         o._id,
+        orderId:     o.orderId,
+        createdAt:   o.createdAt,
+        userId:      o.userId,
+        status:      o.status,
+        totalAmount: o.totalPrice  || 0,
+        discount:    o.discount    || 0,
+        finalAmount: o.finalAmount || 0,
+        couponCode:  o.couponCode  || null,
+        paymentMethod: o.paymentMethod
+    }));
+
     return {
-        orders: normalizedOrders,
+        orders: paginatedOrders,
         totalOrders,
         totalRevenue:  Math.round(totalRevenue),
         totalDiscount: Math.round(totalDiscount),
@@ -149,6 +161,8 @@ export const getReportData = async (filter = "today", start = null, end = null) 
         chartDiscount,
         filter,
         startDate: start,
-        endDate:   end
+        endDate:   end,
+        currentPage: page,
+        totalPages
     };
 };

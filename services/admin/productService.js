@@ -9,7 +9,8 @@ export const getAllProducts = async (query, page, limit) => {
         .populate("category_id")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit)
+        .lean();
 
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
