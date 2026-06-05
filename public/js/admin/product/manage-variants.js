@@ -376,3 +376,13 @@ document.getElementById('variantForm').onsubmit = function (e) {
     }
 };
 
+
+// Automatically open modal if the product is brand new or has incomplete variants
+window.addEventListener('load', () => {
+    if (!productVariants || productVariants.length === 0) {
+        openAddVariantModal();
+    } else if (productVariants.length === 1 && (!productVariants[0].images || productVariants[0].images.length === 0)) {
+        // It's a placeholder variant from product creation, open Edit modal for it
+        openEditVariantModal(productVariants[0]._id);
+    }
+});
