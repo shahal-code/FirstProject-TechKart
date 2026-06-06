@@ -45,6 +45,11 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        /* Fix native select dropdown dark background */
+        select.input-field { background-color: #121620; color: #fff; }
+        select.input-field option { background-color: #121620; color: #fff; }
+        select.input-field optgroup { background-color: #0d1117; color: #64748b; }
+        select.input-field option:hover, select.input-field option:checked { background-color: #0055ff; color: #fff; }
     </style>
 </head>
 
