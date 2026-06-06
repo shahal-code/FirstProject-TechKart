@@ -31,10 +31,12 @@ export const toggleWishlist = async (req, res) => {
         }
 
         const result = await wishlistService.toggleWishlist(userId, productId, variantId);
+        const wishlistCount = result.wishlist.products.length;
         res.status(200).json({
             success: true,
             action: result.action,
-            message: result.action === 'added' ? "Added to wishlist" : "Removed from wishlist"
+            message: result.action === 'added' ? "Added to wishlist" : "Removed from wishlist",
+            wishlistCount
         });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -46,8 +48,9 @@ export const removeFromWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
         const { productId, variantId } = req.body;
-        await wishlistService.removeFromWishlist(userId, productId, variantId);
-        res.status(200).json({ success: true, message: "Removed from wishlist" });
+        const wishlist = await wishlistService.removeFromWishlist(userId, productId, variantId);
+        const wishlistCount = wishlist ? wishlist.products.length : 0;
+        res.status(200).json({ success: true, message: "Removed from wishlist", wishlistCount });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
