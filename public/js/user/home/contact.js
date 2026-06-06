@@ -7,6 +7,23 @@ if (form) {
         e.preventDefault();
         const formData = new FormData(form);
         const object = Object.fromEntries(formData);
+        
+        let isValid = true;
+        clearAllErrors(['name', 'email', 'message']);
+
+        const nameError = validateFullname(object.name);
+        if (nameError) { showError('name', nameError); isValid = false; }
+
+        const emailError = validateEmail(object.email);
+        if (emailError) { showError('email', emailError); isValid = false; }
+
+        if (!object.message || object.message.trim().length < 10) {
+            showError('message', 'Message must be at least 10 characters.');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
         const json = JSON.stringify(object);
 
         result.innerHTML = "Sending...";
