@@ -59,14 +59,12 @@ const offerSchema = new mongoose.Schema({
         unique: true,
         sparse: true,
         uppercase: true,
-        trim: true,
-        default: null
+        trim: true
     },
     referralToken: {
         type: String,
         unique: true,
-        sparse: true,
-        default: null
+        sparse: true
     },
     maxUses: {
         type: Number,

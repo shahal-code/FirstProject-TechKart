@@ -94,8 +94,8 @@
 
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Offer Type</label>
-                        <!-- Disable type change on edit to prevent complex state inconsistencies -->
-                        <input type="text" id="offerTypeDisplay" value="<%= offer.offerType === 'product' ? 'Product Offer' : offer.offerType === 'category' ? 'Category Offer' : 'Referral Offer' %>" class="input-field" disabled />
+                        <!-- Offer type is locked on edit to prevent data inconsistencies -->
+                        <input type="text" id="offerTypeDisplay" value="<%= offer.offerType === 'product' ? 'Product Offer' : 'Category Offer' %>" class="input-field" disabled />
                         <input type="hidden" id="offerType" value="<%= offer.offerType %>" />
                     </div>
 
@@ -142,13 +142,6 @@
                         <input type="number" id="maxDiscountAmount" min="0" value="<%= offer.maxDiscountAmount || '' %>" class="input-field" />
                     </div>
 
-                    <div id="maxUsesContainer" class="hidden">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
-                            Max Uses <span class="normal-case text-slate-600 font-normal">optional</span>
-                        </label>
-                        <input type="number" id="maxUses" min="1" value="<%= offer.maxUses || '' %>" class="input-field" />
-                    </div>
-
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Start Date</label>
                         <input type="date" id="startDate" value="<%= new Date(offer.startDate).toISOString().split('T')[0] %>" class="input-field" onchange="clearError('startDate')" />
@@ -159,19 +152,6 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">End Date</label>
                         <input type="date" id="endDate" value="<%= new Date(offer.endDate).toISOString().split('T')[0] %>" class="input-field" onchange="clearError('endDate')" />
                         <p id="endDateError" class="field-error">End date is required.</p>
-                    </div>
-
-                    <!-- Referral Specific Fields -->
-                    <div id="referralFields" class="col-span-2 hidden grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Code</label>
-                            <input type="text" id="referralCode" value="<%= offer.referralCode || '' %>" class="input-field uppercase" oninput="clearError('referralCode')" />
-                            <p id="referralCodeError" class="field-error">Referral code is required for referral offers.</p>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Token</label>
-                            <input type="text" id="referralToken" value="<%= offer.referralToken || '' %>" class="input-field" />
-                        </div>
                     </div>
 
                     <div class="col-span-2 pt-2 flex gap-4">

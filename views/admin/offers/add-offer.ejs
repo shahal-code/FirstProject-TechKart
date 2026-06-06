@@ -96,7 +96,6 @@
                         <select id="offerType" onchange="toggleApplicableFields()" class="input-field appearance-none">
                             <option value="product">Product Offer</option>
                             <option value="category">Category Offer</option>
-                            <option value="referral">Referral Offer</option>
                         </select>
                     </div>
 
@@ -143,13 +142,6 @@
                         <input type="number" id="maxDiscountAmount" min="0" placeholder="Leave blank for no cap" class="input-field" />
                     </div>
 
-                    <div id="maxUsesContainer" class="hidden">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
-                            Max Uses <span class="normal-case text-slate-600 font-normal">optional</span>
-                        </label>
-                        <input type="number" id="maxUses" min="1" placeholder="Leave blank for unlimited" class="input-field" />
-                    </div>
-
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Start Date</label>
                         <input type="date" id="startDate" class="input-field" onchange="clearError('startDate')" />
@@ -160,19 +152,6 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">End Date</label>
                         <input type="date" id="endDate" class="input-field" onchange="clearError('endDate')" />
                         <p id="endDateError" class="field-error">End date is required.</p>
-                    </div>
-
-                    <!-- Referral Specific Fields -->
-                    <div id="referralFields" class="col-span-2 hidden grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Code</label>
-                            <input type="text" id="referralCode" placeholder="e.g. REF50" class="input-field uppercase" oninput="clearError('referralCode')" />
-                            <p id="referralCodeError" class="field-error">Referral code is required for referral offers.</p>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Referral Token</label>
-                            <input type="text" id="referralToken" placeholder="Generated automatically or enter custom" class="input-field" />
-                        </div>
                     </div>
 
                     <div class="col-span-2 pt-2 flex gap-4">

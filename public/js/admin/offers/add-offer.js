@@ -13,34 +13,22 @@ function updateValueLabel() {
 function toggleApplicableFields() {
     const type = document.getElementById('offerType').value;
     const container = document.getElementById('applicableToContainer');
-    const referralFields = document.getElementById('referralFields');
-    const maxUsesContainer = document.getElementById('maxUsesContainer');
     
     const optgroupProduct = document.getElementById('optgroup-product');
     const optgroupCategory = document.getElementById('optgroup-category');
 
     document.getElementById('applicableTo').value = '';
-    
-    if (type === 'referral') {
-        container.classList.add('hidden');
-        referralFields.classList.remove('hidden');
-        referralFields.classList.add('grid');
-        maxUsesContainer.classList.remove('hidden');
-    } else {
-        container.classList.remove('hidden');
-        referralFields.classList.add('hidden');
-        referralFields.classList.remove('grid');
-        maxUsesContainer.classList.add('hidden');
-        
-        if (type === 'product' && optgroupProduct) {
-            optgroupProduct.classList.remove('hidden');
-            if(optgroupCategory) optgroupCategory.classList.add('hidden');
-            document.getElementById('applicableToLabel').textContent = 'Applicable Product';
-        } else if (type === 'category' && optgroupCategory) {
-            optgroupCategory.classList.remove('hidden');
-            if(optgroupProduct) optgroupProduct.classList.add('hidden');
-            document.getElementById('applicableToLabel').textContent = 'Applicable Category';
-        }
+
+    container.classList.remove('hidden');
+
+    if (type === 'product' && optgroupProduct) {
+        optgroupProduct.classList.remove('hidden');
+        if(optgroupCategory) optgroupCategory.classList.add('hidden');
+        document.getElementById('applicableToLabel').textContent = 'Applicable Product';
+    } else if (type === 'category' && optgroupCategory) {
+        optgroupCategory.classList.remove('hidden');
+        if(optgroupProduct) optgroupProduct.classList.add('hidden');
+        document.getElementById('applicableToLabel').textContent = 'Applicable Category';
     }
 }
 
@@ -64,9 +52,8 @@ function validateForm() {
     const discountValue = document.getElementById('discountValue').value;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
-    const offerType = document.getElementById('offerType').value;
 
-    ['name', 'discountValue', 'startDate', 'endDate', 'applicableTo', 'referralCode'].forEach(clearError);
+    ['name', 'discountValue', 'startDate', 'endDate', 'applicableTo'].forEach(clearError);
 
     if (!name) { showError('name', 'Offer name is required.'); valid = false; }
     if (!discountValue || parseFloat(discountValue) <= 0) { showError('discountValue', 'Please enter a valid discount value.'); valid = false; }
@@ -78,13 +65,8 @@ function validateForm() {
         valid = false;
     }
 
-    if (offerType !== 'referral') {
-        const applicableTo = document.getElementById('applicableTo').value;
-        if (!applicableTo) { showError('applicableTo', 'Please select an item.'); valid = false; }
-    } else {
-        const refCode = document.getElementById('referralCode').value.trim();
-        if (!refCode) { showError('referralCode', 'Referral code is required.'); valid = false; }
-    }
+    const applicableTo = document.getElementById('applicableTo').value;
+    if (!applicableTo) { showError('applicableTo', 'Please select an item.'); valid = false; }
 
     return valid;
 }
@@ -103,13 +85,7 @@ async function submitOffer() {
     
     const payload = { name, description, offerType, discountType, discountValue, maxDiscountAmount, startDate, endDate };
 
-    if (offerType !== 'referral') {
-        payload.applicableTo = document.getElementById('applicableTo').value;
-    } else {
-        payload.referralCode = document.getElementById('referralCode').value.trim().toUpperCase();
-        payload.referralToken = document.getElementById('referralToken').value.trim();
-        payload.maxUses = parseFloat(document.getElementById('maxUses').value) || null;
-    }
+    payload.applicableTo = document.getElementById('applicableTo').value;
 
     try {
         const res = await fetch('/admin/offers/create', {

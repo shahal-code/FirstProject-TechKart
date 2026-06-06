@@ -1,5 +1,7 @@
 import Offer from "../../models/offerModel.js";
 
+const adminOfferFilter = { offerType: { $in: ["product", "category"] } };
+
 class OfferService {
     /**
      * Calculate the discount amount for a given total and offer
@@ -113,15 +115,17 @@ class OfferService {
     }
 
     /**
-     * Get statistics for all offers
+     * Get statistics for admin-managed product and category offers
      */
     async getOfferStats() {
-        const totalOffers = await Offer.countDocuments();
+        const totalOffers = await Offer.countDocuments(adminOfferFilter);
         const activeOffers = await Offer.countDocuments({ 
+            ...adminOfferFilter,
             isActive: true, 
             endDate: { $gte: new Date() } 
         });
         const expiredOffers = await Offer.countDocuments({
+            ...adminOfferFilter,
             $or: [
                 { isActive: false },
                 { endDate: { $lt: new Date() } }
