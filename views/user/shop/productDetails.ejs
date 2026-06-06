@@ -489,13 +489,13 @@
                                 </div>
                                 <div class="flex items-center gap-8">
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-6xl font-black text-white">4.9</span>
+                                        <span class="text-6xl font-black text-white"><%= parseFloat(averageRating) > 0 ? parseFloat(averageRating).toFixed(1) : '0.0' %></span>
                                         <span class="text-2xl font-bold text-slate-500">/5</span>
                                     </div>
                                     <div class="space-y-1">
                                         <div class="flex text-amber-400">
                                             <% for(let i=1; i<=5; i++) { %>
-                                                <span class="material-symbols-outlined text-sm <%= Math.round(averageRating) >= i ? 'FILL' : '' %>">star</span>
+                                                <span class="material-symbols-outlined text-sm <%= Math.round(parseFloat(averageRating)) >= i ? 'FILL' : '' %>">star</span>
                                             <% } %>
                                         </div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Based

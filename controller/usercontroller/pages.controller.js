@@ -134,7 +134,7 @@ export const ProductDetails_load = async (req, res) => {
         let averageRating = 0;
         if (reviews.length > 0) {
             const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-            averageRating = (sum / reviews.length).toFixed(1);
+            averageRating = Math.round((sum / reviews.length) * 10) / 10; // keep as number, 1 decimal precision
         }
 
         // Fetch cart to show current quantities
