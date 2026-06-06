@@ -41,3 +41,29 @@ export const addReview = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred while submitting the review." });
     }
 };
+
+export const deleteReview = async (req, res) => {
+    try {
+        const { id: productId, reviewId } = req.params;
+        const userId = req.session.user;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Please log in to delete a review." });
+        }
+
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ success: false, message: "Review not found." });
+        }
+
+        if (String(review.user) !== String(userId)) {
+            return res.status(403).json({ success: false, message: "You are not authorized to delete this review." });
+        }
+
+        await Review.findByIdAndDelete(reviewId);
+        res.status(200).json({ success: true, message: "Review deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting review:", error);
+        res.status(500).json({ success: false, message: "An error occurred while deleting the review." });
+    }
+};

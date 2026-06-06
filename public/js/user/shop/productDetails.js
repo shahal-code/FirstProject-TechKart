@@ -349,3 +349,62 @@ async function openReviewModal() {
         }
     }
 }
+
+async function deleteReview(reviewId) {
+    const productId = window.location.pathname.split('/').pop();
+
+    const result = await Swal.fire({
+        title: 'Delete Review?',
+        text: "Are you sure you want to delete your review? This cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#3b82f6',
+        confirmButtonText: 'Yes, delete it!',
+        background: '#0D0D0D',
+        color: '#fff'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch(`/user/product/${productId}/review/${reviewId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: data.message,
+                    background: '#0D0D0D',
+                    color: '#fff',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: data.message || 'Could not delete the review.',
+                    background: '#0D0D0D',
+                    color: '#fff'
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'An error occurred while deleting your review.',
+                background: '#0D0D0D',
+                color: '#fff'
+            });
+        }
+    }
+}

@@ -543,11 +543,18 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span
-                                                class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[10px]">verified</span>
-                                                Verified
-                                            </span>
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-[10px]">verified</span>
+                                                    Verified
+                                                </span>
+                                                <% if (user && String(user) === String(review.user._id)) { %>
+                                                    <button onclick="deleteReview('<%= review._id %>')" class="text-rose-500 hover:bg-rose-500/10 p-1.5 rounded-full transition-all flex items-center justify-center" title="Delete Review">
+                                                        <span class="material-symbols-outlined text-[14px]">delete</span>
+                                                    </button>
+                                                <% } %>
+                                            </div>
                                         </div>
                                         <p class="text-sm text-slate-400 leading-relaxed font-medium italic">
                                             "<%= review.comment %>"

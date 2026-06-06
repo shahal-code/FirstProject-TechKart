@@ -66,6 +66,7 @@ router.get('/product/:id', userAuth.isBlocked, PageController.ProductDetails_loa
 router.get('/contact', userAuth.isBlocked, PageController.ContactPage_load);
 router.get('/about', userAuth.isBlocked, PageController.AboutPage_load);
 router.post('/product/:id/review', userAuth.isAuthenticated, userAuth.isBlocked, ReviewController.addReview);
+router.delete('/product/:id/review/:reviewId', userAuth.isAuthenticated, userAuth.isBlocked, ReviewController.deleteReview);
 
 import * as cartController from "../controller/usercontroller/cartController.js";
 import * as WishlistController from "../controller/usercontroller/wishlistController.js";
