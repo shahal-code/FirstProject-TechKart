@@ -223,8 +223,12 @@
                                                     <%= product.name %>
                                                 </h3>
                                             </a>
-                                            <span class="text-primary font-bold text-2xl">₹<%=
-                                                    product.variants[0]?.price || '0' %></span>
+                                            <div class="flex items-center gap-2">
+                                                <% if (product.variants[0]?.originalPrice && product.variants[0]?.originalPrice > product.variants[0]?.price) { %>
+                                                    <span class="text-gray-500 line-through text-sm">₹<%= product.variants[0]?.originalPrice %></span>
+                                                <% } %>
+                                                <span class="text-primary font-bold text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
+                                            </div>
                                         </div>
                                         <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
                                             <%= product.description %>
@@ -244,13 +248,7 @@
                 <%- include('../../partials/user/footer') %>
         </div>
     </div>
-    <script>
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted || (typeof window.performance != 'undefined' && window.performance.navigation.type === 2)) {
-                window.location.reload();
-            }
-        });
-    </script>
+    <script src="/js/user/home/dashboard.js"></script>
 </body>
 
 </html>

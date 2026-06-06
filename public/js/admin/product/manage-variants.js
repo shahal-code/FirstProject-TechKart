@@ -299,27 +299,32 @@ async function deleteVariant(variantId) {
     }
 }
 
+// ─── Variant Validation Helpers (offer-style) ────────────────────────────────
+function showVariantError(id, message) {
+    // id is like 'color', 'price' etc. Error element id is 'color-error'
+    const input = document.getElementById(id);
+    const error = document.getElementById(id + '-error');
+    if (input) input.classList.add('input-error');
+    if (error) { error.textContent = message; error.style.display = 'block'; }
+}
+
+function clearVariantError(id) {
+    const input = document.getElementById(id);
+    const error = document.getElementById(id + '-error');
+    if (input) input.classList.remove('input-error');
+    if (error) error.style.display = 'none';
+}
+
+function clearAllVariantErrors() {
+    ['color', 'price', 'stock', 'processorBrand', 'processorModel', 'ram', 'images'].forEach(clearVariantError);
+}
+
 // Form Validation
 document.getElementById('variantForm').onsubmit = function (e) {
     let isValid = true;
     const form = this;
 
-    // Reset errors
-    document.querySelectorAll('.text-rose-500').forEach(p => {
-        if (p.id.endsWith('-error')) {
-            p.classList.add('hidden');
-            p.textContent = '';
-        }
-    });
-
-    function showError(id, message) {
-        const errorElement = document.getElementById(id + '-error');
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-            isValid = false;
-        }
-    }
+    clearAllVariantErrors();
 
     const color = form.color.value.trim();
     const price = form.price.value.trim();
@@ -328,23 +333,23 @@ document.getElementById('variantForm').onsubmit = function (e) {
     const processorModel = form.processorModel.value;
     const ram = form.ram.value;
 
-    if (!color) showError('color', 'Please enter a color name.');
-    
+    if (!color) { showVariantError('color', 'Please enter a color name.'); isValid = false; }
+
     if (!price) {
-        showError('price', 'Please enter a price.');
+        showVariantError('price', 'Please enter a price.'); isValid = false;
     } else if (isNaN(price) || parseFloat(price) <= 0) {
-        showError('price', 'Please enter a valid positive price.');
+        showVariantError('price', 'Please enter a valid positive price.'); isValid = false;
     }
 
     if (!stock) {
-        showError('stock', 'Please enter stock quantity.');
+        showVariantError('stock', 'Please enter stock quantity.'); isValid = false;
     } else if (isNaN(stock) || parseInt(stock) < 0) {
-        showError('stock', 'Stock cannot be negative.');
+        showVariantError('stock', 'Stock cannot be negative.'); isValid = false;
     }
 
-    if (!processorBrand) showError('processorBrand', 'Please select a processor brand.');
-    if (!processorModel || processorModel === 'Select Model') showError('processorModel', 'Please select a processor model.');
-    if (!ram) showError('ram', 'Please select RAM size.');
+    if (!processorBrand) { showVariantError('processorBrand', 'Please select a processor brand.'); isValid = false; }
+    if (!processorModel || processorModel === 'Select Model') { showVariantError('processorModel', 'Please select a processor model.'); isValid = false; }
+    if (!ram) { showVariantError('ram', 'Please select RAM size.'); isValid = false; }
 
     // Image Validation
     const isEdit = form.action.includes('edit');
@@ -360,15 +365,24 @@ document.getElementById('variantForm').onsubmit = function (e) {
     }
 
     if (totalImages < 3) {
-        showError('images', `At least 3 images are required. (Current: ${totalImages})`);
+        showVariantError('images', `At least 3 images are required. (Current: ${totalImages})`);
+        isValid = false;
     }
 
     if (!isValid) {
         e.preventDefault();
-        // Optional: Scroll to the first error
-        const firstError = document.querySelector('.text-rose-500:not(.hidden)');
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        const firstError = document.querySelector('.field-error[style*="block"]');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 };
+
+
+// Automatically open modal if the product is brand new or has incomplete variants
+window.addEventListener('load', () => {
+    if (!productVariants || productVariants.length === 0) {
+        openAddVariantModal();
+    } else if (productVariants.length === 1 && (!productVariants[0].images || productVariants[0].images.length === 0)) {
+        // It's a placeholder variant from product creation, open Edit modal for it
+        openEditVariantModal(productVariants[0]._id);
+    }
+});

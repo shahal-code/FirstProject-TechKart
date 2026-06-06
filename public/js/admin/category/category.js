@@ -120,6 +120,8 @@ document.getElementById('categoryForm')?.addEventListener('submit', async (e) =>
                 icon: 'success',
                 title: 'Success',
                 text: data.message,
+                background: '#111827',
+                color: '#fff',
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
@@ -129,7 +131,9 @@ document.getElementById('categoryForm')?.addEventListener('submit', async (e) =>
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: data.error || 'Something went wrong'
+                text: data.error || 'Something went wrong',
+                background: '#111827',
+                color: '#fff'
             });
         }
     } catch (error) {
@@ -137,7 +141,9 @@ document.getElementById('categoryForm')?.addEventListener('submit', async (e) =>
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An error occurred while saving the category'
+            text: 'An error occurred while saving the category',
+            background: '#111827',
+            color: '#fff'
         });
     }
 });
@@ -169,6 +175,8 @@ async function deleteCategory(id) {
                     icon: 'success',
                     title: 'Deleted!',
                     text: data.message,
+                    background: '#111827',
+                    color: '#fff',
                     showConfirmButton: false,
                     timer: 1500
                 }).then(() => {
@@ -178,7 +186,9 @@ async function deleteCategory(id) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: data.error || 'Failed to delete category'
+                    text: data.error || 'Failed to delete category',
+                    background: '#111827',
+                    color: '#fff'
                 });
             }
         }
@@ -187,7 +197,9 @@ async function deleteCategory(id) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An error occurred'
+            text: 'An error occurred',
+            background: '#111827',
+            color: '#fff'
         });
     }
 }

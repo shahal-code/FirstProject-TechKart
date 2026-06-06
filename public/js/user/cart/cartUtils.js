@@ -119,6 +119,17 @@ window.toggleWishlist = async function(event, productId, variantId) {
                 timer: 1500,
                 showConfirmButton: false
             });
+
+            // Update wishlist badge
+            const badge = document.getElementById('wishlist-badge');
+            if (badge && typeof data.wishlistCount !== 'undefined') {
+                badge.textContent = data.wishlistCount;
+                if (data.wishlistCount > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
         } else {
             Swal.fire({
                 icon: 'warning',

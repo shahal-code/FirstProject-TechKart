@@ -189,7 +189,7 @@
                         <div class="flex items-center justify-between mb-16">
                             <h2 class="text-white text-4xl font-black premium-heading uppercase">Current Favorites</h2>
                             <a class="text-primary font-bold text-xs uppercase tracking-[0.2em] border-b-2 border-primary pb-1"
-                                href="#">See All</a>
+                                href="/user/shop">See All</a>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             <% products.forEach(product=> { %>
@@ -222,8 +222,12 @@
                                                     <%= product.name %>
                                                 </h3>
                                             </a>
-                                            <span class="text-primary font-bold text-2xl">₹<%=
-                                                    product.variants[0]?.price || '0' %></span>
+                                            <div class="flex items-center gap-2">
+                                                <% if (product.variants[0]?.originalPrice && product.variants[0]?.originalPrice > product.variants[0]?.price) { %>
+                                                    <span class="text-gray-500 line-through text-sm">₹<%= product.variants[0]?.originalPrice %></span>
+                                                <% } %>
+                                                <span class="text-primary font-bold text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
+                                            </div>
                                         </div>
                                         <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
                                             <%= product.description %>

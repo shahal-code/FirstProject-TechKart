@@ -157,44 +157,29 @@
 
                 <div class="p-4 md:p-10 max-w-[1600px] mx-auto w-full space-y-6 md:space-y-8">
                     <!-- Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total
-                                Customers</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Total Customers -->
+                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5 border-l-4 border-l-primary">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Customers</p>
                             <div class="flex items-end justify-between">
-                                <h3 class="text-3xl font-bold"><%= stats.total%></h3>
-                                <span
-                                    class="text-emerald-500 text-[10px] font-bold bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">+12%</span>
+                                <h3 class="text-3xl font-bold"><%= stats.total %></h3>
+                                <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">group</span>
                             </div>
                         </div>
-                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">New This
-                                Month</p>
+                        <!-- Blocked Users -->
+                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5 border-l-4 border-l-rose-500">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Blocked Users</p>
                             <div class="flex items-end justify-between">
-                                <h3 class="text-3xl font-bold">1,240</h3>
-                                <span
-                                    class="text-emerald-500 text-[10px] font-bold bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">+5.4%</span>
+                                <h3 class="text-3xl font-bold text-rose-400"><%= blockedUsers %></h3>
+                                <span class="material-symbols-outlined text-rose-500 bg-rose-500/10 p-2 rounded-lg">block</span>
                             </div>
                         </div>
-                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Average LTV
-                            </p>
+                        <!-- Active Users -->
+                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5 border-l-4 border-l-emerald-500">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Active Users</p>
                             <div class="flex items-end justify-between">
-                                <h3 class="text-3xl font-bold">₹4,280</h3>
-                                <span
-                                    class="text-primary text-[10px] font-bold bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">Stable</span>
-                            </div>
-                        </div>
-                        <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Active
-                                Sessions</p>
-                            <div class="flex items-end justify-between">
-                                <h3 class="text-3xl font-bold">342</h3>
-                                <div class="flex gap-1.5 items-end h-8">
-                                    <span class="w-1.5 h-3 bg-primary/40 rounded-full"></span>
-                                    <span class="w-1.5 h-6 bg-primary rounded-full"></span>
-                                    <span class="w-1.5 h-4 bg-primary/60 rounded-full"></span>
-                                </div>
+                                <h3 class="text-3xl font-bold text-emerald-400"><%= activeUsers %></h3>
+                                <span class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-lg">check_circle</span>
                             </div>
                         </div>
                     </div>
@@ -203,16 +188,18 @@
                     <div class="bg-[#111827]/50 rounded-2xl p-6 border border-white/5">
                         <form action="/admin/users" method="GET" class="flex flex-wrap items-center gap-4">
                             <div class="relative flex-1 max-w-md">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">search</span>
-                                <input class="!bg-white/5 border border-white/10 rounded-xl py-2.5 pl-12 pr-10 text-sm w-full focus:outline-none focus:border-primary text-white placeholder:text-slate-500" 
-                                    name="search" value="<%= search %>"
-                                    placeholder="Search by name, email, or ID..." type="text" />
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">search</span>
+                                <input
+                                    class="!bg-white/5 border border-white/10 rounded-xl py-2.5 pl-12 pr-10 text-sm w-full focus:outline-none focus:border-primary text-white placeholder:text-slate-500"
+                                    name="search" value="<%= search %>" placeholder="Search by name, email, or ID..."
+                                    type="text" />
                                 <% if (search) { %>
                                     <button type="button" onclick="window.location.href='/admin/users'"
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-all">
                                         <span class="material-symbols-outlined text-lg">close</span>
                                     </button>
-                                <% } %>
+                                    <% } %>
                             </div>
                             <div class="flex items-center gap-3">
                                 <button type="submit"
@@ -224,7 +211,7 @@
                                         class="bg-white/5 hover:bg-white/10 text-slate-400 text-xs font-bold px-8 py-2.5 rounded-xl transition-all border border-white/10 uppercase tracking-wider">
                                         Reset
                                     </a>
-                                <% } %>
+                                    <% } %>
                             </div>
                         </form>
                     </div>
@@ -333,8 +320,8 @@
                     <!-- Pagination -->
                     <div class="flex items-center justify-between">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-widest">
-                            Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalUsers) %> of <%= totalUsers
-                                        %>
+                            Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalUsers) %> of <%=
+                                        totalUsers %>
                                         customers
                         </p>
                         <% if (totalPages> 1) { %>

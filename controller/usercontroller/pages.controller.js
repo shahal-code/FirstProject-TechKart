@@ -1,13 +1,14 @@
 import * as ProductService from "../../services/user/productServices.js";
 import * as WishlistService from "../../services/user/wishlistServices.js";
-import Category from "../../models/categoryModel.js";
+import * as CategoryService from "../../services/user/categoryService.js";
+import Review from "../../models/reviewModel.js";
 
 
 export const LandingOrHome_load = async (req, res) => {
     try {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
-        const categories = await Category.find({ is_blocked: false }).limit(4);
+        const categories = await CategoryService.getActiveCategories(4);
         res.render("user/home/home", {
             path: "/",
             products: featuredProducts,
@@ -25,7 +26,7 @@ export const Dashboard_load = async (req, res) => {
     try {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
-        const categories = await Category.find({ is_blocked: false }).limit(4);
+        const categories = await CategoryService.getActiveCategories(4);
         res.render("user/home/dashboard", {
             path: "/user/dashboard",
             products: featuredProducts,
@@ -102,12 +103,8 @@ export const ProductDetails_load = async (req, res) => {
 
         if (!data) {
             // Check if product exists but is blocked
-            const productModel = (await import("../../models/productModel.js")).default;
-            const productCheck = await productModel.findById(productId).populate('category_id');
+            const productCheck = await ProductService.checkProductAvailability(productId);
 
-            // if (productCheck && (productCheck.is_blocked || (productCheck.category_id && productCheck.category_id.is_blocked))) {
-            //     return res.status(403).render('error/404', { message: "This product is currently unavailable or has been removed from the catalog." });
-            // }
             if (productCheck && (productCheck.is_blocked || (productCheck.category_id && productCheck.category_id.is_blocked))) {
                 const wishlistProductIds = req.session.user ? await WishlistService.getWishlistProductIds(req.session.user) : [];
                 const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
@@ -132,6 +129,14 @@ export const ProductDetails_load = async (req, res) => {
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
 
+        // Fetch reviews
+        const reviews = await Review.find({ product: productId }).populate('user', 'fullname profileImage').sort({ createdAt: -1 });
+        let averageRating = 0;
+        if (reviews.length > 0) {
+            const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+            averageRating = Math.round((sum / reviews.length) * 10) / 10; // keep as number, 1 decimal precision
+        }
+
         // Fetch cart to show current quantities
         const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
 
@@ -140,7 +145,10 @@ export const ProductDetails_load = async (req, res) => {
             cart,
             user: req.session.user || null,
             path: '/user/product',
-            wishlistProductIds
+            wishlistProductIds,
+            reviews,
+            averageRating,
+            totalRatings: reviews.length
         });
     } catch (error) {
         console.error("Error loading product details:", error);

@@ -54,7 +54,7 @@
 
         <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-16">
             <div class="mb-12">
-                <h1 class="text-5xl font-black premium-heading tracking-tight mb-2">My Wishlist</h1>
+                <h1 class="text-5xl font-black premium-heading tracking-tight mb-2">My Wishlist  </h1>
                 <p class="text-gray-400">Save your favorite tech for later.</p>
             </div>
 
@@ -146,68 +146,7 @@
 
         <%- include('../../partials/user/footer') %>
 
-            <script>
-                async function removeFromWishlist(productId, variantId) {
-                    const result = await Swal.fire({
-                        title: 'Remove from wishlist?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#0055ff',
-                        cancelButtonColor: '#334155',
-                        confirmButtonText: 'Yes, remove',
-                        background: '#0D0D0D',
-                        color: '#fff'
-                    });
-
-                    if (!result.isConfirmed) return;
-
-                    try {
-                        const response = await fetch('/user/wishlist/remove', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productId, variantId })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
-                            if (itemRow) {
-                                itemRow.style.opacity = '0';
-                                itemRow.style.transform = 'scale(0.9)';
-                                setTimeout(() => {
-                                    itemRow.remove();
-                                    if (document.querySelectorAll('.glass-card.group.rounded-3xl').length === 0) {
-                                        window.location.reload();
-                                    }
-                                }, 500);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-                }
-
-                async function moveToCart(productId, variantId) {
-                    if (typeof addToCart === 'function') {
-                        const result = await addToCart(productId, variantId, 1);
-                        if (result && result.success) {
-                            // Remove item from DOM without reload
-                            const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
-                            if (itemRow) {
-                                itemRow.style.opacity = '0';
-                                itemRow.style.transform = 'translateX(50px)';
-                                setTimeout(() => {
-                                    itemRow.remove();
-                                    if (document.querySelectorAll('.glass-card.group.rounded-3xl').length === 0) {
-                                        window.location.reload();
-                                    }
-                                }, 500);
-                            }
-                        }
-                    } else {
-                        console.error("Global addToCart function not found!");
-                    }
-                }
-            </script>
+            <script src="/js/user/wishlist/wishlist.js"></script>
 </body>
 
 </html>

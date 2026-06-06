@@ -91,8 +91,14 @@
                                         <!-- Large Product Image -->
                                         <div class="size-28 rounded-3xl bg-card-dark border border-white/5 overflow-hidden flex-shrink-0 relative shadow-2xl">
                                             <% const mainItem = order.orderedItems[0]; %>
-                                            <% const variant = mainItem.product.variants.find(v => v._id.toString() === mainItem.variantId.toString()); %>
-                                            <img src="<%= variant?.images[0] %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                            <% const variant = mainItem.product?.variants?.find(v => v._id.toString() === mainItem.variantId.toString()); %>
+                                            <% if (mainItem.product && variant) { %>
+                                                <img src="<%= variant.images[0] %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                            <% } else { %>
+                                                <div class="w-full h-full bg-white/5 flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-white/20 text-4xl">inventory_2</span>
+                                                </div>
+                                            <% } %>
                                             
                                             <% if (order.orderedItems.length > 1) { %>
                                                 <div class="absolute bottom-2 right-2 bg-primary/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold border border-white/10">
@@ -115,7 +121,7 @@
                                                 </span>
                                             </div>
                                             <h3 class="text-xl font-bold mb-1 tracking-tight text-white group-hover:text-primary transition-colors">
-                                                <%= order.orderedItems[0].product.name %>
+                                                <%= order.orderedItems[0].product?.name || "Product Unavailable" %>
                                             </h3>
                                             <p class="text-white/40 text-sm font-medium mb-4">
                                                 Ordered on <%= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
@@ -155,10 +161,26 @@
                     <!-- Pagination -->
                     <% if (totalPages > 1) { %>
                         <div class="flex justify-center items-center gap-2 pt-10">
+                            <!-- Previous Arrow -->
+                            <% if (page > 1) { %>
+                                <a href="?page=<%= page - 1 %><%= locals.search ? '&search='+locals.search : '' %>" 
+                                   class="size-10 rounded-xl flex items-center justify-center bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                    <span class="material-symbols-outlined text-xl">chevron_left</span>
+                                </a>
+                            <% } %>
+
                             <% for(let i=1; i<=totalPages; i++) { %>
                                 <a href="?page=<%= i %><%= locals.search ? '&search='+locals.search : '' %>" 
                                    class="size-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all <%= page === i ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' %>">
                                     <%= i %>
+                                </a>
+                            <% } %>
+
+                            <!-- Next Arrow -->
+                            <% if (page < totalPages) { %>
+                                <a href="?page=<%= page + 1 %><%= locals.search ? '&search='+locals.search : '' %>" 
+                                   class="size-10 rounded-xl flex items-center justify-center bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                    <span class="material-symbols-outlined text-xl">chevron_right</span>
                                 </a>
                             <% } %>
                         </div>
@@ -183,95 +205,7 @@
         </main>
     </div>
 
-    <script>
-        async function cancelOrder(orderId) {
-            const { value: reason } = await Swal.fire({
-                title: 'Cancel Order?',
-                text: "Please provide a reason for cancellation (optional):",
-                input: 'textarea',
-                inputPlaceholder: 'Type your reason here...',
-                showCancelButton: true,
-                confirmButtonColor: '#0657f9',
-                cancelButtonColor: '#f43f5e',
-                confirmButtonText: 'Yes, Cancel it',
-                background: '#161b22',
-                color: '#fff',
-                inputAttributes: {
-                    'class': 'bg-white/5 border-white/10 text-white rounded-xl'
-                }
-            });
-
-            if (reason !== undefined) {
-                try {
-                    const response = await fetch(`/user/orders/${orderId}/cancel`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reason })
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Cancelled!',
-                            text: 'Your order has been cancelled.',
-                            background: '#161b22',
-                            color: '#fff',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => window.location.reload());
-                    } else {
-                        throw new Error(result.message);
-                    }
-                } catch (error) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#161b22', color: '#fff' });
-                }
-            }
-        }
-
-        async function returnOrder(orderId) {
-            const { value: reason } = await Swal.fire({
-                title: 'Return Order',
-                text: "Please provide a reason for return (mandatory):",
-                input: 'textarea',
-                inputPlaceholder: 'Reason for return...',
-                inputValidator: (value) => {
-                    if (!value) return 'You need to write something!'
-                },
-                showCancelButton: true,
-                confirmButtonColor: '#0657f9',
-                cancelButtonColor: '#f43f5e',
-                confirmButtonText: 'Submit Return Request',
-                background: '#161b22',
-                color: '#fff',
-            });
-
-            if (reason) {
-                try {
-                    const response = await fetch(`/user/orders/${orderId}/return`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reason })
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Request Sent!',
-                            text: 'Your return request has been submitted.',
-                            background: '#161b22',
-                            color: '#fff',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => window.location.reload());
-                    } else {
-                        throw new Error(result.message);
-                    }
-                } catch (error) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#161b22', color: '#fff' });
-                }
-            }
-        }
-    </script>
+    <script src="/js/user/orders/orders.js"></script>
 </body>
 
 </html>

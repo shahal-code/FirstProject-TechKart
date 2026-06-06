@@ -49,7 +49,8 @@ export const loadsignup = async (req, res) => {
         delete req.session.validationErrors;
         const fullname = req.query.fullname || null;
         const email = req.query.email || null;
-        res.render("user/auth/signup", { message, errors, fullname, email });
+        const referralCode = req.query.referralCode || req.query.ref || null;
+        res.render("user/auth/signup", { message, errors, fullname, email, referralCode });
     } catch (error) {
         console.error("Error loading signup page:", error.message);
         res.status(500).send("Internal Server Error");
@@ -57,15 +58,15 @@ export const loadsignup = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password, referralCode } = req.body;
     try {
         const errors = validateSignupData(req.body);
         if (errors) {
             req.session.validationErrors = errors;
-            return res.redirect(303, `/user/signup?fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}`);
+            return res.redirect(303, `/user/signup?fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}&referralCode=${encodeURIComponent(referralCode || '')}`);
         }
 
-        const { userData, otp, otpExpiry } = await AuthService.prepareSignup(fullname, email, password);
+        const { userData, otp, otpExpiry } = await AuthService.prepareSignup(fullname, email, password, referralCode);
 
         req.session.userData = userData;
         req.session.otp = otp;
@@ -77,7 +78,7 @@ export const signup = async (req, res) => {
         });
     } catch (error) {
         console.error("Signup Error:", error.message);
-        res.redirect(303, `/user/signup?message=${encodeURIComponent(error.message)}&fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}`);
+        res.redirect(303, `/user/signup?message=${encodeURIComponent(error.message)}&fullname=${encodeURIComponent(fullname)}&email=${encodeURIComponent(email)}&referralCode=${encodeURIComponent(referralCode || '')}`);
     }
 };
 

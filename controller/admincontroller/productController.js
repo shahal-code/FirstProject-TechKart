@@ -1,5 +1,6 @@
 import * as ProductService from "../../services/admin/productService.js";
 import * as CategoryService from "../../services/admin/categoryService.js";
+import Product from "../../models/productModel.js";
 
 // Load Product Inventory Page
 export const loadProducts = async (req, res) => {
@@ -15,6 +16,9 @@ export const loadProducts = async (req, res) => {
 
         const { products, totalProducts, totalPages } = await ProductService.getAllProducts(query, page, limit);
 
+        const activeProductsCount = await Product.countDocuments({ is_blocked: false });
+        const inactiveProductsCount = await Product.countDocuments({ is_blocked: true });
+
         res.render("admin/product/products", {
             products,
             page,
@@ -22,7 +26,9 @@ export const loadProducts = async (req, res) => {
             totalProducts,
             limit,
             search,
-            activePage: "products"
+            activePage: "products",
+            activeProductsCount,
+            inactiveProductsCount
         });
     } catch (error) {
         console.error("Error loading products:", error);

@@ -1,52 +1,19 @@
 import * as OrderService from "../../services/admin/ordersService.js";
-import User from "../../models/userModel.js";
-import Product from "../../models/productModel.js";
+import Order from "../../models/ordersModel.js";
+import { generateInvoice } from "../../utils/invoiceGenerator.js";
 
 export const loadOrders = async (req, res) => {
     try {
-        const { startDate, endDate, status, paymentMethod, search } = req.query;
         const page = parseInt(req.query.page) || 1;
         const limit = 5;
 
-        let query = {};
+        const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(req.query, page, limit);
 
-        // Filter by Status
-        if (status) query.status = status;
-        // Filter by Payment Method
-        if (paymentMethod) query.paymentMethod = paymentMethod;
-        // Filter by Date Range
-        if (startDate || endDate) {
-            query.createdAt = {};
-            if (startDate) query.createdAt.$gte = new Date(startDate);
-            if (endDate) {
-                const end = new Date(endDate);
-                end.setHours(23, 59, 59, 999); // Include the entire end day
-                query.createdAt.$lte = end;
-            }
-        }
-        //search logic
-        if (search) {
-            // Step 1: Find matching users
-            const matchingUsers = await User.find({
-                fullname: { $regex: search, $options: 'i' }
-            }).select('_id');
-            const userIds = matchingUsers.map(u => u._id);
+        const totalOrdersCount = await Order.countDocuments();
+        const pendingOrdersCount = await Order.countDocuments({ status: "Pending" });
+        const canceledOrdersCount = await Order.countDocuments({ status: "Cancelled" });
+        const completedOrdersCount = await Order.countDocuments({ status: "Delivered" });
 
-            // Step 2: Find matching products
-            const matchingProducts = await Product.find({
-                name: { $regex: search, $options: 'i' }
-            }).select('_id');
-            const productIds = matchingProducts.map(p => p._id);
-
-            // Step 3: Search by Order ID OR Customer ID OR Product ID
-            query.$or = [
-                { orderId: { $regex: search, $options: 'i' } },
-                { userId: { $in: userIds } },
-                { "orderedItems.product": { $in: productIds } }
-            ];
-        }
-
-        const { orders, totalPages, totalOrders } = await OrderService.getAllOrders(query, page, limit);
         res.render("admin/orders/orders", {
             orders,
             page,
@@ -54,7 +21,11 @@ export const loadOrders = async (req, res) => {
             totalOrders,
             limit,
             activePage: "orders",
-            filters: req.query // This keeps your filter inputs filled on the page
+            filters: req.query,
+            totalOrdersCount,
+            pendingOrdersCount,
+            canceledOrdersCount,
+            completedOrdersCount
         });
     } catch (error) {
         console.error("Error loading admin orders:", error);
@@ -89,5 +60,64 @@ export const updateStatus = async (req, res) => {
         console.error("Error updating order status:", error);
         res.status(400).json({ success: false, message: error.message || "Internal server error" });
     }
+};
 
+export const updateOrderItemStatus = async (req, res) => {
+    try {
+        const { orderId, itemId, status } = req.body;
+        const updatedOrder = await OrderService.updateOrderItemStatus(orderId, itemId, status);
+        if (updatedOrder) {
+            res.json({ success: true, message: "Item status updated successfully" });
+        } else {
+            res.status(400).json({ success: false, message: "Failed to update item status" });
+        }
+    } catch (error) {
+        console.error("Error updating order item status:", error);
+        res.status(400).json({ success: false, message: error.message || "Internal server error" });
+    }
+};
+
+export const loadReturns = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+
+        const { orders, totalPages, totalOrders } = await OrderService.getReturnRequests(req.query, page, limit);
+
+        res.render("admin/orders/returns", {
+            orders,
+            page,
+            totalPages,
+            totalOrders,
+            limit,
+            activePage: "returns",
+            search:req.query.search || ""
+        });
+    } catch (error) {
+        console.error("Error loading return requests:", error);
+        res.status(500).render("admin/error", { message: "Failed to load return requests" });
+    }
+};
+
+export const downloadInvoiceAdmin = async (req, res) => {
+
+    try {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId)
+            .populate("userId")
+            .populate("orderedItems.product");
+
+        if (!order) {
+            return res.status(404).send("Invoice not available.");
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename=invoice-${order.orderId}.pdf`
+        );
+        generateInvoice(res, order);
+    } catch (error) {
+        console.error("Admin Invoice Download Error:", error);
+        res.status(500).send("Failed to generate invoice.");
+    }
 };
