@@ -266,3 +266,86 @@ async function handleAddToCart(productId, event = null) {
         console.error("Global addToCart function not found!");
     }
 }
+
+async function openReviewModal() {
+    const productId = window.location.pathname.split('/').pop();
+    
+    const { value: formValues } = await Swal.fire({
+        title: 'Write a Review',
+        html: `
+            <div class="space-y-4 text-left mt-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">Rating (1-5)</label>
+                    <input id="swal-rating" type="number" min="1" max="5" value="5" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">Comment</label>
+                    <textarea id="swal-comment" rows="4" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-all" placeholder="Share your experience..."></textarea>
+                </div>
+            </div>
+        `,
+        focusConfirm: false,
+        background: '#0D0D0D',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonText: 'Submit Review',
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#ef4444',
+        preConfirm: () => {
+            const rating = document.getElementById('swal-rating').value;
+            const comment = document.getElementById('swal-comment').value;
+            
+            if (!rating || !comment) {
+                Swal.showValidationMessage('Please provide both a rating and a comment');
+            }
+            if (rating < 1 || rating > 5) {
+                Swal.showValidationMessage('Rating must be between 1 and 5');
+            }
+            return { rating, comment };
+        }
+    });
+
+    if (formValues) {
+        try {
+            const response = await fetch(`/user/product/${productId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formValues)
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Review Submitted!',
+                    text: data.message,
+                    background: '#0D0D0D',
+                    color: '#fff',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: data.message || 'Failed to submit review.',
+                    background: '#0D0D0D',
+                    color: '#fff'
+                });
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'An error occurred while submitting your review.',
+                background: '#0D0D0D',
+                color: '#fff'
+            });
+        }
+    }
+}
