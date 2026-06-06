@@ -130,7 +130,7 @@ export const ProductDetails_load = async (req, res) => {
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
 
         // Fetch reviews
-        const reviews = await Review.find({ product: productId }).populate('user', 'firstName lastName').sort({ createdAt: -1 });
+        const reviews = await Review.find({ product: productId }).populate('user', 'fullname profileImage').sort({ createdAt: -1 });
         let averageRating = 0;
         if (reviews.length > 0) {
             const sum = reviews.reduce((acc, review) => acc + review.rating, 0);

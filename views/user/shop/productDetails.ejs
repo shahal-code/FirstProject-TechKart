@@ -525,11 +525,17 @@
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-4">
                                                 <div
-                                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold uppercase">
-                                                    <%= review.user.firstName ? review.user.firstName.charAt(0) : 'U' %><%= review.user.lastName ? review.user.lastName.charAt(0) : '' %>
+                                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold uppercase overflow-hidden shrink-0">
+                                                    <% if (review.user && review.user.profileImage) { %>
+                                                        <img src="<%= review.user.profileImage %>" alt="<%= review.user.fullname %>" class="w-full h-full object-cover" />
+                                                    <% } else if (review.user && review.user.fullname) { %>
+                                                        <%= review.user.fullname.charAt(0) %>
+                                                    <% } else { %>
+                                                        U
+                                                    <% } %>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-bold text-white"><%= review.user.firstName %> <%= review.user.lastName %></h4>
+                                                    <h4 class="text-sm font-bold text-white"><%= review.user && review.user.fullname ? review.user.fullname : 'User' %></h4>
                                                     <div class="flex text-amber-400">
                                                         <% for(let i=1; i<=5; i++) { %>
                                                             <span class="material-symbols-outlined text-[10px] <%= review.rating >= i ? 'FILL' : '' %>">star</span>
