@@ -1,5 +1,6 @@
 let cartItems = JSON.parse(document.getElementById('cart-items-json').textContent);
 const variants = JSON.parse(document.getElementById('product-variants-json').textContent);
+const productOffer = JSON.parse(document.getElementById('product-offer-json').textContent);
 
 let selectedFilters = {
     ram: variants[0]?.ram,
@@ -83,14 +84,39 @@ function updateUI() {
 
     if (priceEl) priceEl.textContent = `₹${currentVariant.price}`;
 
-    if (currentVariant.oldPrice) {
+    // Show original price if this variant has been discounted by an offer
+    const originalPrice = currentVariant.originalPrice || currentVariant.oldPrice;
+    if (originalPrice && originalPrice > currentVariant.price) {
         if (oldPriceEl) {
-            oldPriceEl.textContent = `₹${currentVariant.oldPrice}`;
+            oldPriceEl.textContent = `₹${originalPrice}`;
             oldPriceEl.classList.remove('hidden');
         }
+        // Show offer name + discount text in badge
         if (discountBadge) {
-            const percent = Math.round(((currentVariant.oldPrice - currentVariant.price) / currentVariant.oldPrice) * 100);
-            discountBadge.textContent = `Save ${percent}%`;
+            if (productOffer) {
+                // Build the badge HTML: offer name on top, discount text below
+                let discountText = '';
+                if (productOffer.discountType === 'percentage') {
+                    discountText = `Save ${productOffer.discountValue}%`;
+                    if (productOffer.maxDiscountAmount) {
+                        discountText += ` (upto ₹${productOffer.maxDiscountAmount})`;
+                    }
+                } else {
+                    discountText = `Flat ₹${productOffer.discountValue} Off`;
+                }
+                discountBadge.innerHTML = `
+                    <span style="display:block;color:#6ee7b7;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;">${productOffer.name}</span>
+                    <span style="display:block;color:#34d399;font-size:9px;font-weight:700;">${discountText}</span>
+                `;
+                discountBadge.style.display = 'flex';
+                discountBadge.style.flexDirection = 'column';
+                discountBadge.style.alignItems = 'flex-start';
+                discountBadge.style.lineHeight = '1.3';
+            } else {
+                // Fallback: just show percentage saved
+                const percent = Math.round(((originalPrice - currentVariant.price) / originalPrice) * 100);
+                discountBadge.textContent = `Save ${percent}%`;
+            }
             discountBadge.classList.remove('hidden');
         }
     } else {

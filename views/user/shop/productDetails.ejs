@@ -173,10 +173,21 @@
                                             </span>
                                             <% } %>
                                     </div>
-                                    <div id="discount-badge"
-                                        class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-lg border border-emerald-500/20">
-                                        Save 15%
-                                    </div>
+                                    <% if (product.offer) { %>
+                                        <div id="discount-badge"
+                                            class="flex flex-col items-start px-3 py-1.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-lg border border-emerald-500/20 leading-tight">
+                                            <span class="text-emerald-400 font-black text-[11px]"><%= product.offer.name %></span>
+                                            <span class="text-emerald-600 text-[9px] font-bold">
+                                                <% if (product.offer.discountType === 'percentage') { %>
+                                                    Save <%= product.offer.discountValue %>%<% if (product.offer.maxDiscountAmount) { %> (upto ₹<%= product.offer.maxDiscountAmount %>)<% } %>
+                                                <% } else { %>
+                                                    Flat ₹<%= product.offer.discountValue %> Off
+                                                <% } %>
+                                            </span>
+                                        </div>
+                                    <% } else { %>
+                                        <div id="discount-badge" class="hidden"></div>
+                                    <% } %>
                                 </div>
 
                                 <!-- Stock Info -->
@@ -648,6 +659,9 @@
             </script>
             <script id="cart-items-json" type="application/json">
                 <%- JSON.stringify(cart && cart.items ? cart.items : []) %>
+            </script>
+            <script id="product-offer-json" type="application/json">
+                <%- JSON.stringify(product.offer || null) %>
             </script>
             <script src="/js/user/shop/productDetails.js"></script>
 </body>
