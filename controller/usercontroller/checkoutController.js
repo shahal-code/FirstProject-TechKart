@@ -60,8 +60,13 @@ export const getCheckoutView = async (req, res) => {
         // Update cart items to only show active ones in the view
         cart.items = activeItems;
 
+        if (unavailableItemIds.length > 0) {
+            // Redirect back to cart so the user is aware items were removed before checking out
+            return res.redirect('/user/cart?error=checkout_blocked');
+        }
+
         if (cart.items.length === 0) {
-            // If everything is gone, redirect back to cart where they will see the empty state
+            // Should be caught above, but just in case
             return res.redirect('/user/cart');
         }
 

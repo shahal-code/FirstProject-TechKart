@@ -155,3 +155,30 @@ function showUnavailableWarning() {
     });
     return false;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'checkout_blocked') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Items Removed',
+            text: 'Some items in your cart became unavailable and were automatically removed before checkout.',
+            background: '#0D0D0D',
+            color: '#fff',
+            confirmButtonColor: '#0055ff'
+        });
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        const checkoutBtn = document.querySelector('a[href="javascript:void(0)"]');
+        if (checkoutBtn && checkoutBtn.getAttribute('onclick') && checkoutBtn.getAttribute('onclick').includes('showUnavailableWarning')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Action Required',
+                text: 'Some products in your cart are currently unavailable. Please remove them to proceed.',
+                background: '#0D0D0D',
+                color: '#fff',
+                confirmButtonColor: '#0055ff'
+            });
+        }
+    }
+});
