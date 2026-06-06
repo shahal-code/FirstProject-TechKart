@@ -52,7 +52,7 @@ async function moveToCart(productId, variantId) {
     if (typeof addToCart === 'function') {
         const result = await addToCart(productId, variantId, 1);
         if (result && result.success) {
-            // Remove item from DOM without reload
+            // Remove item from DOM
             const itemRow = document.querySelector(`[data-product-id="${productId}"][data-variant-id="${variantId}"]`);
             if (itemRow) {
                 itemRow.style.opacity = '0';
@@ -63,6 +63,29 @@ async function moveToCart(productId, variantId) {
                         window.location.reload();
                     }
                 }, 500);
+            }
+
+            // Also remove from wishlist on the server and update badge
+            try {
+                const wishlistRes = await fetch('/user/wishlist/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, variantId })
+                });
+                const wishlistData = await wishlistRes.json();
+                if (wishlistData.success) {
+                    const badge = document.getElementById('wishlist-badge');
+                    if (badge && typeof wishlistData.wishlistCount !== 'undefined') {
+                        badge.textContent = wishlistData.wishlistCount;
+                        if (wishlistData.wishlistCount > 0) {
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to remove from wishlist after move to cart:', err);
             }
         }
     } else {
