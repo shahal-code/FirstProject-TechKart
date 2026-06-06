@@ -12,6 +12,7 @@ import * as Checkout from "../controller/usercontroller/checkoutController.js"
 import * as Order from "../controller/usercontroller/orderController.js";
 import * as Payment from "../controller/usercontroller/paymentController.js";
 import * as Wallet from "../controller/usercontroller/walletController.js";
+import * as ReviewController from "../controller/usercontroller/reviewController.js";
 
 
 // Authentication
@@ -64,6 +65,7 @@ router.get('/shop', userAuth.isBlocked, PageController.ShopPage_load);
 router.get('/product/:id', userAuth.isBlocked, PageController.ProductDetails_load);
 router.get('/contact', userAuth.isBlocked, PageController.ContactPage_load);
 router.get('/about', userAuth.isBlocked, PageController.AboutPage_load);
+router.post('/product/:id/review', userAuth.isAuthenticated, userAuth.isBlocked, ReviewController.addReview);
 
 import * as cartController from "../controller/usercontroller/cartController.js";
 import * as WishlistController from "../controller/usercontroller/wishlistController.js";

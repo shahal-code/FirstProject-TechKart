@@ -1,6 +1,7 @@
 import * as ProductService from "../../services/user/productServices.js";
 import * as WishlistService from "../../services/user/wishlistServices.js";
 import * as CategoryService from "../../services/user/categoryService.js";
+import Review from "../../models/reviewModel.js";
 
 
 export const LandingOrHome_load = async (req, res) => {
@@ -128,6 +129,14 @@ export const ProductDetails_load = async (req, res) => {
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
 
+        // Fetch reviews
+        const reviews = await Review.find({ product: productId }).populate('user', 'firstName lastName').sort({ createdAt: -1 });
+        let averageRating = 0;
+        if (reviews.length > 0) {
+            const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+            averageRating = (sum / reviews.length).toFixed(1);
+        }
+
         // Fetch cart to show current quantities
         const cart = req.session.user ? await (await import("../../services/user/cartService.js")).getCart(req.session.user) : { items: [] };
 
@@ -136,7 +145,10 @@ export const ProductDetails_load = async (req, res) => {
             cart,
             user: req.session.user || null,
             path: '/user/product',
-            wishlistProductIds
+            wishlistProductIds,
+            reviews,
+            averageRating,
+            totalRatings: reviews.length
         });
     } catch (error) {
         console.error("Error loading product details:", error);
