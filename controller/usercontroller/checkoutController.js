@@ -300,21 +300,24 @@ export const applyCoupon = async (req, res) => {
     try {
         const { code, cartTotal } = req.body;
         const userId = req.session.user;
+        const normalizedCode = code ? code.trim().toUpperCase() : "";
 
-        if (!code) {
+        if (!normalizedCode) {
             return res.status(400).json({ success: false, message: "Please enter a coupon code." });
         }
 
-        const coupon = await CouponService.validateCoupon(code, userId, cartTotal);
+        if (req.session.appliedCoupon?.code === normalizedCode) {
+            return res.status(400).json({ success: false, message: "This coupon is already applied." });
+        }
+
+        const coupon = await CouponService.validateCoupon(normalizedCode, userId, cartTotal);
 
         req.session.appliedCoupon = coupon;
-        req.session.save((err) => {
-            if (err) throw err;
-            res.json({ success: true, message: "Coupon applied successfully!" });
-        });
+        await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+        res.json({ success: true, message: "Coupon applied successfully!" });
     } catch (error) {
         console.error("Apply Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to apply coupon." });
+        res.status(400).json({ success: false, message: error.message || "Failed to apply coupon." });
     }
 };
 
@@ -324,10 +327,8 @@ export const applyCoupon = async (req, res) => {
 export const removeCoupon = async (req, res) => {
     try {
         delete req.session.appliedCoupon;
-        req.session.save((err) => {
-            if (err) throw err;
-            res.json({ success: true, message: "Coupon removed successfully!" });
-        });
+        await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+        res.json({ success: true, message: "Coupon removed successfully!" });
     } catch (error) {
         console.error("Remove Coupon Error:", error);
         res.status(500).json({ success: false, message: "Failed to remove coupon." });

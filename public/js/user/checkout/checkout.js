@@ -1,4 +1,6 @@
 // Alert for unavailable items
+window.checkoutData = window.checkoutData || {};
+
 if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
     Swal.fire({
         icon: 'warning',
@@ -43,12 +45,13 @@ async function applyCoupon() {
     }
 
     try {
+        const cartTotal = Number(window.checkoutData.subtotal) || 0;
         const response = await fetch('/user/checkout/apply-coupon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, cartTotal: window.checkoutData.subtotal })
+            body: JSON.stringify({ code, cartTotal })
         });
-        const result = await response.json();
+        const result = await readJsonResponse(response);
         
         if (result.success) {
             Swal.fire({ icon: 'success', title: 'Success!', text: result.message, background: '#161b22', color: '#fff', timer: 1500, showConfirmButton: false })
@@ -58,6 +61,13 @@ async function applyCoupon() {
         }
     } catch (error) {
         console.error("Apply Coupon Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Coupon Error',
+            text: error.message || 'Failed to apply coupon.',
+            background: '#161b22',
+            color: '#fff'
+        });
     }
 }
 

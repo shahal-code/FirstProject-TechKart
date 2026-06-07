@@ -31,19 +31,21 @@ class CouponService {
         const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true });
         
         if (!coupon) {
-            throw new Error("Invalid or expired coupon.");
+            throw new Error("Coupon is not available.");
         }
 
         if (new Date() > coupon.expirationDate) {
             throw new Error("This coupon has expired.");
         }
 
-        if (coupon.usedBy.includes(userId)) {
+        const alreadyUsed = coupon.usedBy.some(usedUserId => usedUserId.toString() === userId.toString());
+        if (alreadyUsed) {
             throw new Error("You have already used this coupon.");
         }
 
-        if (cartTotal < coupon.minPurchaseAmount) {
-            throw new Error(`Minimum purchase of ₹${coupon.minPurchaseAmount} required.`);
+        const validatedCartTotal = Number(cartTotal) || 0;
+        if (validatedCartTotal < coupon.minPurchaseAmount) {
+            throw new Error(`Minimum purchase of Rs.${coupon.minPurchaseAmount} required.`);
         }
 
         return coupon;
@@ -56,7 +58,7 @@ class CouponService {
         if (!couponId || !userId) return;
         await Coupon.updateOne(
             { _id: couponId },
-            { $push: { usedBy: userId } }
+            { $addToSet: { usedBy: userId } }
         );
     }
 }

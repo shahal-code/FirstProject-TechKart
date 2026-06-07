@@ -212,51 +212,52 @@
                             <!-- UPI -->
                             <% const upiDisabled = total > 500000; %>
                             <label class="relative <%= upiDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer' %> block" id="upi-label">
-                                <input type="radio" name="paymentMethod" value="UPI"
+                                    <input type="radio" name="paymentMethod" value="UPI"
                                     class="payment-radio absolute opacity-0" <%= upiDisabled ? 'disabled' : '' %> required>
-                                <div
-                                    class="payment-method-card glass p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 border border-white/10">
                                     <div
-                                        class="size-12 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                        <span class="material-symbols-outlined">qr_code_2</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="font-bold">UPI Payment</h4>
-                                        <% if (upiDisabled) { %>
-                                            <p class="text-amber-400 text-xs font-semibold">⚠ Not available — order exceeds ₹5,00,000 limit</p>
-                                        <% } else { %>
-                                            <p class="text-white/40 text-xs">GPay, PhonePe, Paytm, and more</p>
-                                        <% } %>
-                                    </div>
-                                    <div
-                                        class="radio-indicator size-5 rounded-full border-2 border-white/20 flex items-center justify-center">
-                                        <div class="size-2.5 rounded-full bg-primary scale-0 transition-transform">
+                                        class="payment-method-card glass p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 border border-white/10">
+                                        <div
+                                            class="size-12 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                            <span class="material-symbols-outlined">qr_code_2</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">UPI Payment</h4>
+                                            <% if (upiDisabled) { %>
+                                                <p class="text-amber-400 text-xs font-semibold">⚠ Not available — order
+                                                    exceeds ₹5,00,000 limit</p>
+                                                <% } else { %>
+                                                    <p class="text-white/40 text-xs">GPay, PhonePe, Paytm, and more</p>
+                                                    <% } %>
+                                        </div>
+                                        <div
+                                            class="radio-indicator size-5 rounded-full border-2 border-white/20 flex items-center justify-center">
+                                            <div class="size-2.5 rounded-full bg-primary scale-0 transition-transform">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </label>
+                                </label>
 
-                            <!-- Wallet -->
-                            <label class="relative cursor-pointer block">
-                                <input type="radio" name="paymentMethod" value="Wallet"
-                                    class="payment-radio absolute opacity-0" required>
-                                <div
-                                    class="payment-method-card glass p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 border border-white/10">
+                                <!-- Wallet -->
+                                <label class="relative cursor-pointer block">
+                                    <input type="radio" name="paymentMethod" value="Wallet"
+                                        class="payment-radio absolute opacity-0" required>
                                     <div
-                                        class="size-12 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
-                                        <span class="material-symbols-outlined">account_balance_wallet</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="font-bold">Wallet</h4>
-                                        <p class="text-white/40 text-xs">Pay using your TechKart wallet balance</p>
-                                    </div>
-                                    <div
-                                        class="radio-indicator size-5 rounded-full border-2 border-white/20 flex items-center justify-center">
-                                        <div class="size-2.5 rounded-full bg-primary scale-0 transition-transform">
+                                        class="payment-method-card glass p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 border border-white/10">
+                                        <div
+                                            class="size-12 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                                            <span class="material-symbols-outlined">account_balance_wallet</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">Wallet</h4>
+                                            <p class="text-white/40 text-xs">Pay using your TechKart wallet balance</p>
+                                        </div>
+                                        <div
+                                            class="radio-indicator size-5 rounded-full border-2 border-white/20 flex items-center justify-center">
+                                            <div class="size-2.5 rounded-full bg-primary scale-0 transition-transform">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </label>
+                                </label>
                         </div>
                     </section>
                 </div>
@@ -318,23 +319,31 @@
                         <!-- Coupon Section -->
                         <div class="mb-6">
                             <% if (appliedCoupon) { %>
-                                <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex justify-between items-center">
+                                <div
+                                    class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex justify-between items-center">
                                     <div>
-                                        <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Coupon Applied 🎉</div>
-                                        <div class="font-bold tracking-widest"><%= appliedCoupon.code %></div>
+                                        <div
+                                            class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">
+                                            Coupon Applied </div>
+                                        <div class="font-bold tracking-widest">
+                                            <%= appliedCoupon.code %>
+                                        </div>
                                     </div>
-                                    <button type="button" onclick="removeCoupon()" class="text-[10px] font-bold text-rose-400 hover:text-rose-300 transition-colors uppercase tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">
+                                    <button type="button" onclick="removeCoupon()"
+                                        class="text-[10px] font-bold text-rose-400 hover:text-rose-300 transition-colors uppercase tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">
                                         Remove
                                     </button>
                                 </div>
-                            <% } else { %>
-                                <div class="flex gap-2">
-                                    <input type="text" id="couponCode" placeholder="ENTER COUPON" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold uppercase focus:ring-primary focus:border-primary transition-all">
-                                    <button type="button" onclick="applyCoupon()" class="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 font-bold px-6 py-3 rounded-xl transition-colors text-[10px] uppercase tracking-widest">
-                                        Apply
-                                    </button>
-                                </div>
-                            <% } %>
+                                <% } else { %>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="couponCode" placeholder="ENTER COUPON"
+                                            class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold uppercase focus:ring-primary focus:border-primary transition-all">
+                                        <button type="button" onclick="applyCoupon()"
+                                            class="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 font-bold px-6 py-3 rounded-xl transition-colors text-[10px] uppercase tracking-widest">
+                                            Apply
+                                        </button>
+                                    </div>
+                                    <% } %>
                         </div>
 
                         <!-- Price Calculations -->
@@ -343,26 +352,26 @@
                                 <span class="text-white/50">Subtotal</span>
                                 <span class="font-medium">₹<%= subtotal.toFixed(2) %></span>
                             </div>
-                            <% if (discount > 0) { %>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-white/50">Discount (<%= appliedCoupon.code %>)</span>
-                                <span class="font-medium text-emerald-500">- ₹<%= discount.toFixed(2) %></span>
-                            </div>
-                            <% } %>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-white/50">Shipping</span>
-                                <span
-                                    class="font-bold text-emerald-500 uppercase text-[10px] tracking-widest">Free</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-white/50">Estimated Tax (18%)</span>
-                                <span class="font-medium">₹<%= tax.toFixed(2) %></span>
-                            </div>
+                            <% if (discount> 0) { %>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-white/50">Discount (<%= appliedCoupon.code %>)</span>
+                                    <span class="font-medium text-emerald-500">- ₹<%= discount.toFixed(2) %></span>
+                                </div>
+                                <% } %>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-white/50">Shipping</span>
+                                        <span
+                                            class="font-bold text-emerald-500 uppercase text-[10px] tracking-widest">Free</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-white/50">Estimated Tax (18%)</span>
+                                        <span class="font-medium">₹<%= tax.toFixed(2) %></span>
+                                    </div>
 
-                            <div class="pt-4 mt-4 border-t border-white/5 flex justify-between items-center">
-                                <span class="text-xl font-bold">Total Amount</span>
-                                <span class="text-3xl font-black text-primary">₹<%= total.toFixed(2) %></span>
-                            </div>
+                                    <div class="pt-4 mt-4 border-t border-white/5 flex justify-between items-center">
+                                        <span class="text-xl font-bold">Total Amount</span>
+                                        <span class="text-3xl font-black text-primary">₹<%= total.toFixed(2) %></span>
+                                    </div>
                         </div>
 
                         <button type="submit" id="place-order-btn"

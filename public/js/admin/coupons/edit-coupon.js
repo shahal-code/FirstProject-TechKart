@@ -30,14 +30,23 @@ async function submitEdit() {
     const expirationDate = document.getElementById('expirationDate').value;
 
     try {
-        const urlMatch = window.location.pathname.match(/\/admin\/editCoupon\/(.+)$/);
+        const urlMatch = window.location.pathname.match(/\/admin\/coupons\/edit\/([^/]+)$/);
         const couponId = urlMatch ? urlMatch[1] : '';
+
+        if (!couponId) {
+            throw new Error('Coupon id is missing.');
+        }
+
         const res = await fetch(`/admin/coupons/update/${couponId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, discountType, discountValue, minPurchaseAmount, maxDiscountAmount, expirationDate })
         });
-        const data = await res.json();
+
+        const data = await res.json().catch(() => {
+            throw new Error('Server returned an invalid response.');
+        });
+
         if (data.success) {
             Swal.fire({ icon: 'success', title: 'Updated!', text: data.message, background: '#0f1420', color: '#fff', timer: 1500, showConfirmButton: false })
                 .then(() => window.location.href = '/admin/coupons');
@@ -45,6 +54,6 @@ async function submitEdit() {
             Swal.fire({ icon: 'error', title: 'Error', text: data.message, background: '#0f1420', color: '#fff' });
         }
     } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.', background: '#0f1420', color: '#fff' });
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message || 'Something went wrong.', background: '#0f1420', color: '#fff' });
     }
 }
