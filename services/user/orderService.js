@@ -416,8 +416,8 @@ class OrderService {
         item.cancellationReason = reason;
 
         if (order.paymentMethod !== 'COD' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
-            // No coupon discount — safe to refund at face value
-            const refundAmount = item.price * item.quantity;
+            // No coupon discount — safe to refund at face value + tax
+            const refundAmount = item.price * item.quantity * 1.18;
             await walletService.creditWallet(
                 userId,
                 refundAmount,
@@ -426,6 +426,13 @@ class OrderService {
             );
             order.paymentStatus = 'Partially Refunded';
         }
+
+        // Adjust order totals so invoice and UI reflect the correct remaining balance
+        const itemSubtotal = item.price * item.quantity;
+        order.totalPrice -= itemSubtotal;
+        order.finalAmount -= (itemSubtotal * 1.18);
+        if (order.totalPrice < 0) order.totalPrice = 0;
+        if (order.finalAmount < 0) order.finalAmount = 0;
 
         // Revert Stock
         if (order.inventoryProcessed !== false) {

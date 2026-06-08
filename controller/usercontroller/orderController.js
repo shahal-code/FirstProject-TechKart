@@ -80,7 +80,7 @@ export const downloadInvoice = async (req, res) => {
         const orderId = req.params.orderId;
 
         const order = await orderService.getOrderById(orderId, userId);
-        if (!order || order.status !== 'Delivered') {
+        if (!order) {
             return res.status(404).send("Invoice not available.");
         }
 

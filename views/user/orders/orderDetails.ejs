@@ -99,13 +99,11 @@
                                     </button>
                                     <% } %>
 
-                                    <% if (["Shipped","Out for Delivery","Delivered"].includes(order.status)) { %>
                                     <button onclick="downloadInvoice('<%= order._id %>')"
                                         class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-primary/10">
                                         <span class="material-symbols-outlined text-lg">download</span>
                                         Invoice
                                     </button>
-                                    <% } %>
                     </div>
                 </header>
 
@@ -335,9 +333,21 @@
                             <!-- Price Breakdown -->
                             <div class="glass-card rounded-3xl p-6 space-y-4">
                                 <h3 class="font-bold mb-6">Order Summary</h3>
+                                <% 
+                                    let activeSubtotal = 0;
+                                    order.orderedItems.forEach(item => {
+                                        if (item.status !== 'Cancelled' && item.status !== 'Returned') {
+                                            activeSubtotal += item.price * item.quantity;
+                                        }
+                                    });
+                                    let activeTax = activeSubtotal * 0.18;
+                                    let activeDiscount = order.discount || 0;
+                                    let activeTotalAmount = activeSubtotal + activeTax - activeDiscount;
+                                    if (activeTotalAmount < 0) activeTotalAmount = 0;
+                                %>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Subtotal</span>
-                                    <span class="font-medium">₹<%= order.totalPrice.toLocaleString() %></span>
+                                    <span class="font-medium">₹<%= activeSubtotal.toLocaleString() %></span>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Shipping</span>
@@ -345,12 +355,12 @@
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Estimated Tax (18%)</span>
-                                    <span class="font-medium">₹<%= (order.totalPrice * 0.18).toLocaleString() %></span>
+                                    <span class="font-medium">₹<%= activeTax.toLocaleString() %></span>
                                 </div>
-                                <% if (order.discount> 0) { %>
+                                <% if (activeDiscount > 0) { %>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-white/40">Discount</span>
-                                        <span class="text-rose-500 font-bold">-₹<%= order.discount.toLocaleString() %>
+                                        <span class="text-rose-500 font-bold">-₹<%= activeDiscount.toLocaleString() %>
                                         </span>
                                     </div>
                                     <% } %>
@@ -358,7 +368,7 @@
                                         <div class="flex justify-between items-center">
                                             <span class="font-bold">Total Amount</span>
                                             <span class="text-2xl font-black text-primary">₹<%=
-                                                    order.finalAmount.toLocaleString() %></span>
+                                                    activeTotalAmount.toLocaleString() %></span>
                                         </div>
                             </div>
                         </div>
