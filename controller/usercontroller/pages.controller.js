@@ -2,19 +2,33 @@ import * as ProductService from "../../services/user/productServices.js";
 import * as WishlistService from "../../services/user/wishlistServices.js";
 import * as CategoryService from "../../services/user/categoryService.js";
 import Review from "../../models/reviewModel.js";
-
+import Offer from "../../models/offerModel.js";
 
 export const LandingOrHome_load = async (req, res) => {
     try {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
-        const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
+        const wishlistProductIds = req.session.user ? await WishlistService.getWishlistProductIds(req.session.user) : [];
         const categories = await CategoryService.getActiveCategories(4);
+        
+        const currentDate = new Date();
+        const startOfDay = new Date(currentDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(currentDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const activeOffers = await Offer.find({
+            isActive: true,
+            startDate: { $lte: endOfDay },
+            endDate: { $gte: startOfDay }
+        }).populate("applicableTo").sort({ createdAt: -1 }).limit(3);
+
         res.render("user/home/home", {
             path: "/",
             products: featuredProducts,
             user: req.session.user || null,
             wishlistProductIds,
-            categories
+            categories,
+            offers: activeOffers
         });
     } catch (error) {
         console.log("Error loading home page:", error.message);
@@ -27,12 +41,26 @@ export const Dashboard_load = async (req, res) => {
         const featuredProducts = await ProductService.getFeaturedProducts(3);
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
         const categories = await CategoryService.getActiveCategories(4);
+        
+        const currentDate = new Date();
+        const startOfDay = new Date(currentDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(currentDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const activeOffers = await Offer.find({
+            isActive: true,
+            startDate: { $lte: endOfDay },
+            endDate: { $gte: startOfDay }
+        }).populate("applicableTo").sort({ createdAt: -1 }).limit(3);
+
         res.render("user/home/dashboard", {
             path: "/user/dashboard",
             products: featuredProducts,
             user: req.session.user || null,
             wishlistProductIds,
-            categories
+            categories,
+            offers: activeOffers
         });
     } catch (error) {
         console.log("Error loading dashboard:", error.message);

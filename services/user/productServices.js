@@ -9,10 +9,15 @@ async function applyOffers(products) {
     if (productsList.length === 0) return products;
 
     const currentDate = new Date();
+    const startOfDay = new Date(currentDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(currentDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
     const activeOffers = await Offer.find({
         isActive: true,
-        startDate: { $lte: currentDate },
-        endDate: { $gte: currentDate },
+        startDate: { $lte: endOfDay },
+        endDate: { $gte: startOfDay },
         offerType: { $in: ["product", "category"] }
     }).lean();
 
