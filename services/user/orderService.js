@@ -299,7 +299,7 @@ class OrderService {
         const order = await Order.findOne({ _id: orderId, userId });
         if (!order) throw new Error("Order not found.");
 
-        const allowedStatus = ['Pending', 'Processing', 'Shipped'];
+        const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(order.status)) {
             throw new Error(`Order cannot be cancelled. Current status: ${order.status}`);
         }
@@ -392,7 +392,7 @@ class OrderService {
         const item = order.orderedItems.id(itemId);
         if (!item) throw new Error("Item not found in order.");
 
-        const allowedStatus = ['Pending', 'Processing', 'Shipped', 'Out for Delivery'];
+        const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(item.status)) {
             throw new Error(`Item cannot be cancelled. Current status: ${item.status}`);
         }

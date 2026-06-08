@@ -83,7 +83,7 @@
                         <h1 class="text-xl font-bold tracking-tight">Order Details</h1>
                     </div>
                     <div class="flex items-center gap-4">
-                        <% if (['Pending', 'Shipped' , 'Out for Delivery' ].includes(order.status)) { %>
+                        <% if (order.status === 'Pending') { %>
                             <button onclick="handleCancelOrder('<%= order._id %>')"
                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-rose-500/10">
                                 <span class="material-symbols-outlined text-lg">cancel</span>
@@ -258,7 +258,7 @@
                                                     </div>
                                                     
                                                     <div class="flex gap-3">
-                                                        <% if (['Pending', 'Shipped', 'Out for Delivery'].includes(item.status) && !['Cancelled', 'Return Request', 'Returned'].includes(order.status)) { %>
+                                                        <% if (item.status === 'Pending' && !['Cancelled', 'Return Request', 'Returned'].includes(order.status)) { %>
                                                             <button onclick="handleCancelItem('<%= order._id %>', '<%= item._id %>')"
                                                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-4 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-rose-500/10">
                                                                 <span class="material-symbols-outlined text-sm">cancel</span>
