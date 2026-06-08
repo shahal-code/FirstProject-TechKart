@@ -4,8 +4,8 @@ window.checkoutData = window.checkoutData || {};
 if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
     Swal.fire({
         icon: 'warning',
-        title: 'Items Removed',
-        text: `The following products are no longer available and have been removed from your order: ${window.checkoutData.unavailableItems.join(', ')}`,
+        title: 'Unavailable Items',
+        text: `The following products are unavailable and remain in your cart until you remove them: ${window.checkoutData.unavailableItems.join(', ')}`,
         background: '#161b22',
         color: '#fff',
         confirmButtonColor: '#0055ff'
@@ -283,6 +283,18 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
+
+    if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Unavailable Items',
+            text: 'Remove unavailable items from the cart before placing the order.',
+            background: '#161b22',
+            color: '#fff',
+            confirmButtonColor: '#0055ff'
+        });
+        return;
+    }
 
     // Validate address selection
     if (!data.addressId) {

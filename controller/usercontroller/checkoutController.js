@@ -20,53 +20,35 @@ export const getCheckoutView = async (req, res) => {
             return res.redirect('/user/cart');
         }
 
-        // Calculate totals and filter items for the view
+        // Calculate totals while preserving unavailable items in the checkout view
         let subtotal = 0;
         let unavailableNames = [];
-        let unavailableItemIds = [];
+        let hasAvailableItems = false;
 
-        const activeItems = cart.items.filter(item => {
+        cart.items.forEach(item => {
             const product = item.productId;
             const category = product?.category_id;
             
-            // Check if product or category is blocked
             const isBlocked = !product || product.is_blocked || (category && category.is_blocked);
             
             if (isBlocked) {
+                item.isUnavailable = true;
                 if (product?.name) unavailableNames.push(product.name);
-                unavailableItemIds.push(item._id);
-                return false;
+                return;
             }
             
             const variant = product?.variants?.find(v => v._id.toString() === item.variantId.toString());
             if (variant) {
                 subtotal += variant.price * item.quantity;
-                return true;
+                hasAvailableItems = true;
+                return;
             }
             
+            item.isUnavailable = true;
             if (product?.name) unavailableNames.push(product.name);
-            unavailableItemIds.push(item._id);
-            return false;
         });
 
-        // Perform Database Cleanup: Remove blocked items from the actual cart in DB
-        if (unavailableItemIds.length > 0) {
-            for (const itemId of unavailableItemIds) {
-                await CartService.removeItem(userId, itemId.toString());
-            }
-            console.log(`Auto-cleaned ${unavailableItemIds.length} unavailable items from cart for user ${userId}`);
-        }
-
-        // Update cart items to only show active ones in the view
-        cart.items = activeItems;
-
-        if (unavailableItemIds.length > 0) {
-            // Redirect back to cart so the user is aware items were removed before checking out
-            return res.redirect('/user/cart?error=checkout_blocked');
-        }
-
-        if (cart.items.length === 0) {
-            // Should be caught above, but just in case
+        if (!hasAvailableItems) {
             return res.redirect('/user/cart');
         }
 

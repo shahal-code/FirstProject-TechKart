@@ -266,6 +266,19 @@
                 <div class="w-full lg:w-[450px]">
                     <div class="glass rounded-2xl p-8 sticky top-32 border border-white/10">
                         <h3 class="text-2xl font-bold mb-8">Order Summary</h3>
+                        <% const hasUnavailableItems = unavailableNames && unavailableNames.length > 0; %>
+
+                        <% if (hasUnavailableItems) { %>
+                            <div class="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
+                                <div class="flex items-start gap-3">
+                                    <span class="material-symbols-outlined text-rose-400">block</span>
+                                    <div>
+                                        <p class="text-sm font-bold text-rose-300">Some items in this cart are unavailable.</p>
+                                        <p class="mt-1 text-xs text-rose-200/80">They remain in your cart until you remove them manually.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
 
                         <!-- Products List -->
                         <div class="max-h-[300px] overflow-y-auto space-y-6 pr-2 mb-8 custom-scrollbar">
@@ -277,7 +290,7 @@
                                     item.variantId.toString());
                                     if(variant) {
                                     %>
-                                    <div class="flex gap-4 relative group/item">
+                                    <div class="flex gap-4 relative group/item <%= item.isUnavailable ? 'opacity-60' : '' %>">
                                         <div
                                             class="size-20 rounded-xl bg-surface-dark border border-white/5 flex-shrink-0 overflow-hidden">
                                             <img src="<%= variant.images[0] %>" alt="<%= product.name %>"
@@ -302,7 +315,12 @@
                                                                 <% if(variant.storage) { %>| <%= variant.storage %>
                                                                         <% } %>
                                             </p>
-                                            <div class="flex justify-between items-center mt-2">
+                                              <% if (item.isUnavailable) { %>
+                                                  <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-rose-400">
+                                                      Currently unavailable
+                                                  </p>
+                                              <% } %>
+                                              <div class="flex justify-between items-center mt-2">
                                                 <span class="text-xs font-medium text-white/60">₹<%= variant.price %> ×
                                                         <%= item.quantity %></span>
                                                 <span class="font-bold text-sm text-primary">₹<%= (variant.price *
@@ -374,14 +392,14 @@
                                     </div>
                         </div>
 
-                        <button type="submit" id="place-order-btn"
-                            class="w-full bg-primary hover:bg-primary/90 text-white font-black py-5 rounded-xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group relative overflow-hidden">
+                        <button type="submit" id="place-order-btn" <%= hasUnavailableItems ? 'disabled' : '' %>
+                            class="w-full font-black py-5 rounded-xl transition-all flex items-center justify-center gap-3 group relative overflow-hidden <%= hasUnavailableItems ? 'bg-white/10 text-white/40 border border-white/10 cursor-not-allowed' : 'bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20' %>">
                             <span class="relative z-10 uppercase tracking-widest">Place Order</span>
                             <span
                                 class="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             <!-- Gloss effect -->
                             <div
-                                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+                                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 <%= hasUnavailableItems ? 'hidden' : '' %>">
                             </div>
                         </button>
 
