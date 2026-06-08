@@ -122,7 +122,7 @@ export const updateOrderStatus = async (orderId, status) => {
         validateStatusTransition(oldItemStatus, status, "Item");
 
         // If item was active and is now being cancelled/returned, restore stock
-        if (TERMINAL_STATUSES.includes(status) && activeStatuses.includes(oldItemStatus)) {
+        if (order.inventoryProcessed !== false && TERMINAL_STATUSES.includes(status) && activeStatuses.includes(oldItemStatus)) {
             await Product.updateOne(
                 { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
                 { $inc: { "variants.$.stock": item.quantity } }
@@ -184,7 +184,7 @@ export const updateOrderItemStatus = async (orderId, itemId, status) => {
     console.log(`Updating Item ${itemId} in Order ${orderId} from ${oldStatus} to ${status}`);
 
     // Stock Management
-    if (status === 'Cancelled' || status === 'Returned') {
+    if (order.inventoryProcessed !== false && (status === 'Cancelled' || status === 'Returned')) {
         if (oldStatus !== 'Cancelled' && oldStatus !== 'Returned') {
             await Product.updateOne(
                 { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },

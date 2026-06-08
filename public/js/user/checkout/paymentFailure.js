@@ -9,7 +9,10 @@ document.getElementById('retry-btn').addEventListener('click', async function() 
         const response = await fetch('/user/payment/create-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ amount: window.paymentFailureData.orderAmount })
+            body: JSON.stringify({
+                amount: window.paymentFailureData.orderAmount,
+                orderId: window.paymentFailureData.orderId
+            })
         });
 
         const result = await response.json();

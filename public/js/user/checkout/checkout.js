@@ -240,31 +240,16 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
         },
         modal: {
             ondismiss: async function () {
-                try {
-                    const failResponse = await fetch('/user/checkout/place-order-failed', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    const result = await readJsonResponse(failResponse);
-                    if (result.success) {
-                        window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
-                    } else {
-                        restoreSubmitButton(submitBtn, originalBtnContent);
-                    }
-                } catch (e) {
-                    console.error(e);
-                    restoreSubmitButton(submitBtn, originalBtnContent);
-                }
+                await handleFailedPaymentAttempt();
             }
         }
     };
 
-    const razorpay = new Razorpay(options);
-    razorpay.on('payment.failed', async function (response) {
+    let failureHandled = false;
+    async function handleFailedPaymentAttempt() {
+        if (failureHandled) return;
+        failureHandled = true;
+
         try {
             const failResponse = await fetch('/user/checkout/place-order-failed', {
                 method: 'POST',
@@ -277,10 +262,18 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
             const result = await readJsonResponse(failResponse);
             if (result.success) {
                 window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
+                return;
             }
         } catch (e) {
             console.error(e);
         }
+
+        restoreSubmitButton(submitBtn, originalBtnContent);
+    }
+
+    const razorpay = new Razorpay(options);
+    razorpay.on('payment.failed', async function () {
+        await handleFailedPaymentAttempt();
     });
     razorpay.open();
 }

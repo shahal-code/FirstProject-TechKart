@@ -217,7 +217,7 @@ export const placeOrderFailed = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Order placed with failed payment.",
+            message: "Payment attempt recorded. You can retry the payment from the failure page.",
             redirectUrl: `/user/checkout/payment-failure?id=${order.orderId}`
         });
 
@@ -277,7 +277,7 @@ export const retryOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: "Payment verification failed." });
         }
 
-        await OrderService.updatePaymentStatus(orderId, userId, 'Paid');
+        await OrderService.finalizeFailedOrderPayment(orderId, userId);
 
         res.json({
             success: true,

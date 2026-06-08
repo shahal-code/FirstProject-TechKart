@@ -84,6 +84,10 @@ const orderSchema = new mongoose.Schema({
         enum: ['Pending', 'Paid', 'Failed', 'Partially Refunded', 'Refunded'],
         default: 'Pending'
     },
+    inventoryProcessed: {
+        type: Boolean,
+        default: true
+    },
     cancellationReason: {
         type: String,
         default: null
