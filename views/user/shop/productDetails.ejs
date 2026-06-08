@@ -148,8 +148,7 @@
                                 <div>
                                     <h3 class="text-rose-500 font-bold tracking-widest uppercase text-sm">Currently
                                         Unavailable</h3>
-                                    <p class="text-rose-400/80 text-xs mt-1">This product is no longer available in our
-                                        catalog.</p>
+                                    <p class="text-rose-400/80 text-xs mt-1"><%= unavailableMessage || 'This product is currently unavailable.' %></p>
                                 </div>
                             </div>
                             <% } %>
@@ -235,6 +234,7 @@
                     </p>
 
                     <!-- Selectors Grid -->
+                    <% if (!(typeof isUnavailable !== 'undefined' && isUnavailable)) { %>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 pt-4">
 
                         <% 
@@ -336,9 +336,13 @@
                                                                 </div>
                                                             </div>
                     </div>
+                    <% } %>
 
                     <div class="space-y-4 pt-4 border-t border-white/5">
                         <% if (typeof isUnavailable !== 'undefined' && isUnavailable) { %>
+                            <p class="text-sm text-slate-400 leading-relaxed">
+                                This product has been blocked and cannot be purchased at the moment.
+                            </p>
                             <a href="/user/shop"
                                 class="w-full flex items-center justify-center gap-3 py-5 bg-white/10 text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/20 transition-all border border-white/5">
                                 <span class="material-symbols-outlined">arrow_back</span>

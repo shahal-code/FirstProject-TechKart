@@ -117,8 +117,10 @@ export const ProductDetails_load = async (req, res) => {
                     path: '/user/product',
                     wishlistProductIds,
                     isUnavailable: true,
-
-
+                    unavailableMessage: "This product is currently unavailable.",
+                    reviews: [],
+                    averageRating: 0,
+                    totalRatings: 0
                 })
             }
 
