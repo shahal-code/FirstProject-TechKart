@@ -83,6 +83,19 @@ async function removeCoupon() {
     }
 }
 
+function toggleCouponList() {
+    const couponList = document.getElementById('available-coupons');
+    if (!couponList) return;
+    couponList.classList.toggle('hidden');
+}
+
+function fillCouponCode(code) {
+    const input = document.getElementById('couponCode');
+    if (!input) return;
+    input.value = code;
+    input.focus();
+}
+
 function showOrderError(error) {
     Swal.fire({
         icon: 'error',

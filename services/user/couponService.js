@@ -52,6 +52,25 @@ class CouponService {
     }
 
     /**
+     * Get all active coupons applicable to the current user and cart total
+     */
+    async getApplicableCoupons(userId, cartTotal) {
+        const validatedCartTotal = Number(cartTotal) || 0;
+        const now = new Date();
+
+        const coupons = await Coupon.find({
+            isActive: true,
+            expirationDate: { $gt: now }
+        }).sort({ createdAt: -1 }).lean();
+
+        return coupons.filter(coupon => {
+            const alreadyUsed = (coupon.usedBy || []).some(usedUserId => usedUserId.toString() === userId.toString());
+            if (alreadyUsed) return false;
+            return validatedCartTotal >= (coupon.minPurchaseAmount || 0);
+        });
+    }
+
+    /**
      * Mark a coupon as used by a specific user
      */
     async markCouponAsUsed(couponId, userId) {

@@ -70,6 +70,8 @@ export const getCheckoutView = async (req, res) => {
             }
         }
 
+        const availableCoupons = await CouponService.getApplicableCoupons(userId, subtotal + tax);
+
         res.render('user/checkout/checkout', {
             user: res.locals.user || req.user,
             addresses,
@@ -79,6 +81,7 @@ export const getCheckoutView = async (req, res) => {
             discount, 
             total,
             appliedCoupon,
+            availableCoupons,
             unavailableNames,
             path: '/user/checkout',
             razorpayKey: process.env.RAZORPAY_KEY_ID
