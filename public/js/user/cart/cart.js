@@ -27,7 +27,6 @@ async function updateCartItem(itemId, newQuantity) {
             // Update individual item quantity and buttons
             const qtyInput = document.getElementById(`qty-input-${itemId}`);
             const minusBtn = document.getElementById(`minus-${itemId}`);
-            const plusBtn = document.getElementById(`plus-${itemId}`);
 
             qtyInput.value = newQuantity;
             minusBtn.disabled = newQuantity <= 1;
@@ -43,6 +42,18 @@ async function updateCartItem(itemId, newQuantity) {
                     badge.textContent = totalQty;
                     badge.classList.toggle('hidden', totalQty === 0);
                 }
+            }
+
+            // SECURITY: Warn user if coupon was auto-removed due to cart total drop
+            if (result.couponRemoved) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Coupon Removed',
+                    text: result.couponWarning || 'Your coupon was removed because the cart total dropped below the minimum required.',
+                    background: '#0D0D0D',
+                    color: '#fff',
+                    confirmButtonColor: '#0055ff'
+                });
             }
         } else {
             Swal.fire({
@@ -98,6 +109,21 @@ async function removeCartItem(itemId) {
                         updateCartSummary(result.cart);
                     }
                 }, 300);
+            }
+
+            // SECURITY: Warn user if coupon was auto-removed due to cart total drop
+            if (result.couponRemoved) {
+                // Small delay so the removal animation plays first
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Coupon Removed',
+                        text: result.couponWarning || 'Your coupon was removed because the cart total dropped below the minimum required.',
+                        background: '#0D0D0D',
+                        color: '#fff',
+                        confirmButtonColor: '#0055ff'
+                    });
+                }, 350);
             }
         } else {
             Swal.fire({

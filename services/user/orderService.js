@@ -42,8 +42,18 @@ class OrderService {
         let finalAmount = subtotal + tax;
         let discount = 0;
 
-        if (appliedCoupon && finalAmount >= appliedCoupon.minPurchaseAmount) {
-            discount = CouponService.calculateDiscount(appliedCoupon, finalAmount);
+        if (appliedCoupon) {
+            // SECURITY: Re-validate coupon server-side at order-placement time.
+            // This blocks the "apply coupon → remove item → place order" scam.
+            // reValidateCoupon throws a descriptive error if the minimum is no
+            // longer met, or if the coupon has since expired / been revoked.
+            const validCoupon = await CouponService.reValidateCoupon(
+                appliedCoupon,
+                userId,
+                finalAmount
+            );
+
+            discount = CouponService.calculateDiscount(validCoupon, finalAmount);
             finalAmount = finalAmount - discount;
             if (finalAmount < 0) finalAmount = 0;
         }
@@ -300,15 +310,24 @@ class OrderService {
             const allActive = order.orderedItems.every(i => i.status !== 'Cancelled' && i.status !== 'Returned');
             
             if (allActive) {
-                // If cancelling the whole untouched order, refund the exact final amount (accounts for discounts)
+                // Cancelling the entire untouched order — refund the exact amount paid
                 refundAmount = order.finalAmount;
             } else {
-                // If partially cancelled before, refund only the remaining active items
-                order.orderedItems.forEach(item => {
-                    if (item.status !== 'Cancelled' && item.status !== 'Returned') {
-                        refundAmount += (item.price * item.quantity);
-                    }
-                });
+                // SECURITY: Proportional refund for remaining active items.
+                // Using raw item prices here would let a scammer profit from the discount
+                // by cancelling only the "padding" items they added to meet the coupon minimum.
+                //
+                // Formula: each item's refund = (item_subtotal / order_subtotal) * finalAmount
+                // This distributes the discount + tax proportionally, so the scam yields nothing.
+                const activeItemsSubtotal = order.orderedItems
+                    .filter(i => i.status !== 'Cancelled' && i.status !== 'Returned')
+                    .reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+                if (order.totalPrice > 0) {
+                    refundAmount = (activeItemsSubtotal / order.totalPrice) * order.finalAmount;
+                } else {
+                    refundAmount = activeItemsSubtotal;
+                }
             }
 
             if (refundAmount > 0) {
@@ -378,11 +397,26 @@ class OrderService {
             throw new Error(`Item cannot be cancelled. Current status: ${item.status}`);
         }
 
+        // SECURITY: Block individual item cancellation when a coupon discount was applied.
+        //
+        // Why: If a user placed an order with 2 items to meet the coupon minimum, then
+        // cancels 1 item after receiving the discount, they exploit the coupon for free.
+        //
+        // Policy: Orders with a coupon discount must be cancelled in full.
+        // The user receives back exactly what they paid (order.finalAmount) to their wallet.
+        if (order.discount > 0) {
+            throw new Error(
+                "This order was placed with a coupon discount. " +
+                "Individual item cancellation is not allowed. " +
+                "Please cancel the entire order to receive a full refund of your paid amount."
+            );
+        }
+
         item.status = 'Cancelled';
         item.cancellationReason = reason;
 
-        // Refund for the item
         if (order.paymentMethod !== 'COD' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
+            // No coupon discount — safe to refund at face value
             const refundAmount = item.price * item.quantity;
             await walletService.creditWallet(
                 userId,

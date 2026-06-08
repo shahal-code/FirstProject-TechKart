@@ -1,4 +1,5 @@
 import * as cartService from "../../services/user/cartService.js";
+import CouponService from "../../services/user/couponService.js";
 
 // Render Cart Page
 export const getCartView = async (req, res) => {
@@ -21,7 +22,7 @@ export const getCartView = async (req, res) => {
             });
         }
 
-        const tax = subtotal * 0.08; // 8% placeholder tax
+        const tax = subtotal * 0.18; // 18% GST
         const total = subtotal + tax;
 
         res.render("user/cart/cart", {
@@ -66,7 +67,21 @@ export const updateQuantity = async (req, res) => {
         const { itemId, quantity } = req.body;
 
         const cart = await cartService.updateQuantity(userId, itemId, Number(quantity));
-        res.status(200).json({ success: true, cart, message: "Quantity updated" });
+
+        // SECURITY: After quantity change, check if applied coupon is still valid
+        let couponRemoved = false;
+        let couponWarning = null;
+        if (req.session.appliedCoupon) {
+            const newTotal = await CouponService.getServerCartTotal(userId);
+            if (newTotal < req.session.appliedCoupon.minPurchaseAmount) {
+                couponWarning = `Coupon "${req.session.appliedCoupon.code}" removed: cart total dropped below the \u20b9${req.session.appliedCoupon.minPurchaseAmount} minimum.`;
+                delete req.session.appliedCoupon;
+                await new Promise((resolve) => req.session.save(resolve));
+                couponRemoved = true;
+            }
+        }
+
+        res.status(200).json({ success: true, cart, message: "Quantity updated", couponRemoved, couponWarning });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
@@ -79,7 +94,22 @@ export const removeItem = async (req, res) => {
         const { itemId } = req.body;
 
         const cart = await cartService.removeItem(userId, itemId);
-        res.status(200).json({ success: true, cart, message: "Item removed from cart" });
+
+        // SECURITY: After removal, immediately check if applied coupon is still valid.
+        // This is the primary fix for the "apply coupon → remove item" scam.
+        let couponRemoved = false;
+        let couponWarning = null;
+        if (req.session.appliedCoupon) {
+            const newTotal = await CouponService.getServerCartTotal(userId);
+            if (newTotal < req.session.appliedCoupon.minPurchaseAmount) {
+                couponWarning = `Coupon "${req.session.appliedCoupon.code}" removed: cart total dropped below the \u20b9${req.session.appliedCoupon.minPurchaseAmount} minimum.`;
+                delete req.session.appliedCoupon;
+                await new Promise((resolve) => req.session.save(resolve));
+                couponRemoved = true;
+            }
+        }
+
+        res.status(200).json({ success: true, cart, message: "Item removed from cart", couponRemoved, couponWarning });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }

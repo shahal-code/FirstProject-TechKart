@@ -45,14 +45,14 @@ async function applyCoupon() {
     }
 
     try {
-        const cartTotal = Number(window.checkoutData.subtotal) || 0;
+        // cartTotal is intentionally NOT sent — server computes it to prevent manipulation
         const response = await fetch('/user/checkout/apply-coupon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, cartTotal })
+            body: JSON.stringify({ code })
         });
         const result = await readJsonResponse(response);
-        
+
         if (result.success) {
             Swal.fire({ icon: 'success', title: 'Success!', text: result.message, background: '#161b22', color: '#fff', timer: 1500, showConfirmButton: false })
             .then(() => window.location.reload());

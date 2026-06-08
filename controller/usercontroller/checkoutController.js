@@ -56,15 +56,17 @@ export const getCheckoutView = async (req, res) => {
         let total = subtotal + tax;
         let discount = 0;
         let appliedCoupon = req.session.appliedCoupon;
+        let couponWarning = null;
 
-        // Calculate discount if a coupon is in session
+        // Re-validate coupon on every page load to catch cart-manipulation scams
         if (appliedCoupon) {
             if (total >= appliedCoupon.minPurchaseAmount) {
                 discount = CouponService.calculateDiscount(appliedCoupon, total);
                 total = total - discount;
                 if (total < 0) total = 0;
             } else {
-                // Cart total is too low, remove coupon silently
+                // Cart total dropped below the minimum — auto-remove and warn the user
+                couponWarning = `Coupon "${appliedCoupon.code}" removed: cart total is below the ₹${appliedCoupon.minPurchaseAmount} minimum required.`;
                 delete req.session.appliedCoupon;
                 appliedCoupon = null;
             }
@@ -78,14 +80,14 @@ export const getCheckoutView = async (req, res) => {
             cart,
             subtotal,
             tax,
-            discount, 
+            discount,
             total,
             appliedCoupon,
             availableCoupons,
+            couponWarning,
             unavailableNames,
             path: '/user/checkout',
             razorpayKey: process.env.RAZORPAY_KEY_ID
-
         });
     } catch (error) {
         console.error("Checkout Page Error:", error);
@@ -280,10 +282,12 @@ export const retryOrder = async (req, res) => {
 
 /**
  * Apply Coupon
+ * NOTE: We deliberately ignore any cartTotal from the client and compute it
+ * server-side to prevent users from sending a fake inflated value.
  */
 export const applyCoupon = async (req, res) => {
     try {
-        const { code, cartTotal } = req.body;
+        const { code } = req.body;          // cartTotal from client is intentionally ignored
         const userId = req.session.user;
         const normalizedCode = code ? code.trim().toUpperCase() : "";
 
@@ -295,7 +299,10 @@ export const applyCoupon = async (req, res) => {
             return res.status(400).json({ success: false, message: "This coupon is already applied." });
         }
 
-        const coupon = await CouponService.validateCoupon(normalizedCode, userId, cartTotal);
+        // Always compute cart total on the server — never trust the client
+        const serverCartTotal = await CouponService.getServerCartTotal(userId);
+
+        const coupon = await CouponService.validateCoupon(normalizedCode, userId, serverCartTotal);
 
         req.session.appliedCoupon = coupon;
         await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
