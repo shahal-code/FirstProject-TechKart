@@ -112,15 +112,42 @@ function filterTable() {
     });
 }
 
+function getFilteredReportOrders() {
+    const q = (document.getElementById('tableSearch')?.value || '').toLowerCase().trim();
+    if (typeof allReportOrders === 'undefined') return [];
+    if (!q) {
+        return allReportOrders;
+    }
+    return allReportOrders.filter(o => {
+        const orderIdStr = (o.orderId || '').toLowerCase();
+        const customerStr = (o.customerName || '').toLowerCase();
+        const statusStr = (o.status || '').toLowerCase();
+        const couponStr = (o.couponCode || '').toLowerCase();
+        return orderIdStr.includes(q) ||
+               customerStr.includes(q) ||
+               statusStr.includes(q) ||
+               couponStr.includes(q);
+    });
+}
+
 // ─── Excel Download ────────────────────────────────────────────
 function downloadExcel() {
+    const ordersToExport = getFilteredReportOrders();
     const rows = [['#','Order ID','Date','Customer','Status','Order Amount','Coupon','Discount','Net Amount']];
-    document.querySelectorAll('#reportTableBody tr').forEach((row, i) => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 1) {
-            rows.push(Array.from(cells).map(c => c.textContent.trim()));
-        }
+    ordersToExport.forEach((order, idx) => {
+        rows.push([
+            idx + 1,
+            `#${order.orderId.toUpperCase()}`,
+            new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+            order.customerName,
+            order.status,
+            order.totalAmount.toLocaleString('en-IN'),
+            order.couponCode || '—',
+            order.discount > 0 ? `-${order.discount.toLocaleString('en-IN')}` : '—',
+            order.finalAmount.toLocaleString('en-IN')
+        ]);
     });
+
     const ws = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
@@ -141,10 +168,27 @@ function downloadPDF() {
     doc.text(`Generated: ${new Date().toLocaleString('en-IN')}`, 14, 26);
 
     const head = [['#','Order ID','Date','Customer','Status','Order Amount','Coupon','Discount','Net Amount']];
+    const ordersToExport = getFilteredReportOrders();
     const body = [];
-    document.querySelectorAll('#reportTableBody tr').forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 1) body.push(Array.from(cells).map(c => c.textContent.trim()));
+    let exportTotalOrders = ordersToExport.length;
+    let exportTotalDiscount = 0;
+    let exportNetRevenue = 0;
+
+    ordersToExport.forEach((order, idx) => {
+        exportTotalDiscount += (order.discount || 0);
+        exportNetRevenue += (order.finalAmount || 0);
+
+        body.push([
+            idx + 1,
+            `#${order.orderId.toUpperCase()}`,
+            new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+            order.customerName,
+            order.status,
+            order.totalAmount.toLocaleString('en-IN'),
+            order.couponCode || '—',
+            order.discount > 0 ? `-${order.discount.toLocaleString('en-IN')}` : '—',
+            order.finalAmount.toLocaleString('en-IN')
+        ]);
     });
 
     doc.autoTable({
@@ -161,9 +205,9 @@ function downloadPDF() {
     const finalY = doc.lastAutoTable.finalY + 8;
     doc.setFontSize(9);
     doc.setTextColor(0, 85, 255);
-    doc.text(`Total Orders: ${document.getElementById('statOrders').textContent.trim()}`, 14, finalY);
-    doc.text(`Net Revenue: ${document.getElementById('statNet').textContent.trim()}`, 80, finalY);
-    doc.text(`Total Discount: ${document.getElementById('statDiscount').textContent.trim()}`, 160, finalY);
+    doc.text(`Total Orders: ${exportTotalOrders}`, 14, finalY);
+    doc.text(`Net Revenue: ₹${exportNetRevenue.toLocaleString('en-IN')}`, 80, finalY);
+    doc.text(`Total Discount: ₹${exportTotalDiscount.toLocaleString('en-IN')}`, 160, finalY);
 
     doc.save(`TechKart_Sales_Report_${new Date().toISOString().split('T')[0]}.pdf`);
 }

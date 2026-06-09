@@ -82,24 +82,94 @@ function buildChartConfig(filter, startDate, endDate) {
 }
 
 /**
+ * Calculate active totals for an order to accurately reflect refunds and returns
+ */
+function calculateOrderAmounts(o) {
+    if (o.status === "Cancelled" || o.status === "Returned") {
+        return {
+            totalAmount: 0,
+            discount: 0,
+            finalAmount: 0
+        };
+    }
+
+    const items = o.orderedItems || [];
+    let sumOfAllItems = 0;
+    let sumOfActiveItems = 0;
+    let sumOfInactiveItems = 0;
+
+    items.forEach(item => {
+        const itemVal = (item.price || 0) * (item.quantity || 0);
+        sumOfAllItems += itemVal;
+        if (item.status === "Cancelled" || item.status === "Returned") {
+            sumOfInactiveItems += itemVal;
+        } else {
+            sumOfActiveItems += itemVal;
+        }
+    });
+
+    if (sumOfActiveItems === 0) {
+        return {
+            totalAmount: 0,
+            discount: 0,
+            finalAmount: 0
+        };
+    }
+
+    if (sumOfInactiveItems === 0) {
+        return {
+            totalAmount: o.totalPrice || 0,
+            discount: o.discount || 0,
+            finalAmount: o.finalAmount || 0
+        };
+    }
+
+    // Check if o.totalPrice in DB is already adjusted (e.g. by cancelOrderItem)
+    if (Math.abs((o.totalPrice || 0) - sumOfActiveItems) < 1) {
+        return {
+            totalAmount: o.totalPrice || 0,
+            discount: o.discount || 0,
+            finalAmount: o.finalAmount || 0
+        };
+    }
+
+    // Otherwise adjust proportionally
+    const ratio = sumOfActiveItems / sumOfAllItems;
+    return {
+        totalAmount: Math.round(sumOfActiveItems),
+        discount: Math.round((o.discount || 0) * ratio),
+        finalAmount: Math.round((o.finalAmount || 0) * ratio)
+    };
+}
+
+/**
  * Main Report Service
  */
 export const getReportData = async (filter = "today", start = null, end = null, page = 1) => {
     const { startDate, endDate } = buildDateRange(filter, start, end);
 
     const query = {
-        createdAt: { $gte: startDate, $lte: endDate },
-        status: { $nin: ["Cancelled", "Returned"] }
+        createdAt: { $gte: startDate, $lte: endDate }
     };
 
-    // Fetch all non-cancelled orders in range for totals and charts
-    const allOrders = await Order.find(query).lean();
+    // Fetch all orders in range for totals, charts, and exports
+    const allRawOrders = await Order.find(query)
+        .populate("userId", "fullname email")
+        .lean();
+
+    const allOrders = allRawOrders.map(o => {
+        const amounts = calculateOrderAmounts(o);
+        return {
+            ...o,
+            ...amounts
+        };
+    });
 
     // Summary totals
     const totalOrders   = allOrders.length;
-    const totalRevenue  = allOrders.reduce((s, o) => s + (o.totalPrice  || 0), 0);
-    const totalDiscount = allOrders.reduce((s, o) => s + (o.discount    || 0), 0);
-    const netRevenue    = allOrders.reduce((s, o) => s + (o.finalAmount || 0), 0);
+    const totalRevenue  = allOrders.reduce((s, o) => s + (o.totalAmount  || 0), 0);
+    const totalDiscount = allOrders.reduce((s, o) => s + (o.discount     || 0), 0);
+    const netRevenue    = allOrders.reduce((s, o) => s + (o.finalAmount  || 0), 0);
 
     // Chart data
     const { labels, groupBy } = buildChartConfig(filter, startDate, endDate);
@@ -137,17 +207,32 @@ export const getReportData = async (filter = "today", start = null, end = null, 
         .lean();
 
     // Normalize paginated orders to match EJS template field names
-    const paginatedOrders = paginatedRawOrders.map(o => ({
-        _id:         o._id,
+    const paginatedOrders = paginatedRawOrders.map(o => {
+        const amounts = calculateOrderAmounts(o);
+        return {
+            _id:         o._id,
+            orderId:     o.orderId,
+            createdAt:   o.createdAt,
+            userId:      o.userId,
+            status:      o.status,
+            totalAmount: amounts.totalAmount,
+            discount:    amounts.discount,
+            finalAmount: amounts.finalAmount,
+            couponCode:  o.couponCode  || null,
+            paymentMethod: o.paymentMethod
+        };
+    });
+
+    // Format all report orders for frontend export
+    const allReportOrders = allOrders.map(o => ({
         orderId:     o.orderId,
         createdAt:   o.createdAt,
-        userId:      o.userId,
+        customerName: o.userId ? o.userId.fullname || 'Guest' : 'Guest',
         status:      o.status,
-        totalAmount: o.totalPrice  || 0,
-        discount:    o.discount    || 0,
-        finalAmount: o.finalAmount || 0,
-        couponCode:  o.couponCode  || null,
-        paymentMethod: o.paymentMethod
+        totalAmount: o.totalAmount,
+        discount:    o.discount,
+        finalAmount: o.finalAmount,
+        couponCode:  o.couponCode || null
     }));
 
     return {
@@ -159,6 +244,7 @@ export const getReportData = async (filter = "today", start = null, end = null, 
         chartLabels:   labels,
         chartRevenue,
         chartDiscount,
+        allReportOrders,
         filter,
         startDate: start,
         endDate:   end,

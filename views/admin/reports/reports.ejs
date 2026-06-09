@@ -274,7 +274,7 @@
                                         <% } %>
                                     </td>
                                     <td class="px-6 py-4 text-emerald-400 font-bold">
-                                        &#8377;<%= ((order.totalAmount || 0) - (order.discount || 0)).toLocaleString('en-IN') %>
+                                        &#8377;<%= (order.finalAmount || 0).toLocaleString('en-IN') %>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -337,6 +337,7 @@
         const chartLabels  = <%- typeof chartLabels  !== 'undefined' ? JSON.stringify(chartLabels)  : '["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]' %>;
         const chartRevenue = <%- typeof chartRevenue !== 'undefined' ? JSON.stringify(chartRevenue) : '[0,0,0,0,0,0,0]' %>;
         const chartDiscount= <%- typeof chartDiscount!== 'undefined' ? JSON.stringify(chartDiscount): '[0,0,0,0,0,0,0]' %>;
+        const allReportOrders = <%- typeof allReportOrders !== 'undefined' ? JSON.stringify(allReportOrders) : '[]' %>;
     </script>
     <script src="/js/admin/reports/reports.js"></script>
 </body>
