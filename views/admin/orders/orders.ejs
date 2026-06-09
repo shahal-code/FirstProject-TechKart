@@ -127,6 +127,9 @@
                         <div class="glass-morphism p-8 rounded-xl border border-white/5 mb-6">
                             <form action="/admin/orders" method="GET"
                                 class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                                <!-- Keep search query when filtering -->
+                                <input type="hidden" name="search" value="<%= filters?.search || '' %>">
+                                
                                 <!-- Date Range -->
                                 <div class="space-y-2">
                                     <label class="label-text">Date Range</label>
@@ -163,10 +166,9 @@
                                     <div class="relative">
                                         <select name="paymentMethod" class="input-field appearance-none pr-10">
                                             <option value="">All Methods</option>
-                                            <option value="COD" <%=filters?.paymentMethod==='COD' ? 'selected' : '' %>
-                                                >Cash on Delivery</option>
-                                            <option value="Online" <%=filters?.paymentMethod==='Online' ? 'selected'
-                                                : '' %>>Online Payment</option>
+                                            <option value="COD" <%=filters?.paymentMethod==='COD' ? 'selected' : '' %>>Cash on Delivery</option>
+                                            <option value="UPI" <%=filters?.paymentMethod==='UPI' ? 'selected' : '' %>>UPI Payment</option>
+                                            <option value="Wallet" <%=filters?.paymentMethod==='Wallet' ? 'selected' : '' %>>Wallet Payment</option>
                                         </select>
                                         <span
                                             class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">expand_more</span>
@@ -191,6 +193,12 @@
                         <div
                             class="glass-morphism p-6 rounded-xl border border-white/5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <form action="/admin/orders" method="GET" class="flex gap-4 flex-1">
+                                <!-- Keep filters when searching -->
+                                <input type="hidden" name="startDate" value="<%= filters?.startDate || '' %>">
+                                <input type="hidden" name="endDate" value="<%= filters?.endDate || '' %>">
+                                <input type="hidden" name="status" value="<%= filters?.status || '' %>">
+                                <input type="hidden" name="paymentMethod" value="<%= filters?.paymentMethod || '' %>">
+
                                 <div class="relative flex-1">
                                     <span
                                         class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
@@ -225,6 +233,9 @@
                                             <th
                                                 class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                                 Status</th>
+                                            <th
+                                                class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Payment Method</th>
                                             <th
                                                 class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                                 Total Amount</th>
@@ -270,6 +281,11 @@
                                                 if (order.status === 'Returned') statusClass = 'status-returned';
                                             %>
                                             <span class="status-badge <%= statusClass %>"><%= order.status %></span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-xs text-slate-300 font-bold uppercase tracking-wider">
+                                                <%= order.paymentMethod %>
+                                            </span>
                                         </td>
                                         <td class="px-6 py-4 text-sm font-bold">₹<%= order.finalAmount.toLocaleString() %></td>
                                         <td class="px-8 py-4 text-right">
