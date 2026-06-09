@@ -319,13 +319,15 @@
                                                   <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-rose-400">
                                                       Currently unavailable
                                                   </p>
-                                              <% } %>
+                                                  <p class="text-[10px] text-rose-300/60 mt-1">Remove this item to place your order</p>
+                                              <% } else { %>
                                               <div class="flex justify-between items-center mt-2">
                                                 <span class="text-xs font-medium text-white/60">₹<%= variant.price %> ×
                                                         <%= item.quantity %></span>
                                                 <span class="font-bold text-sm text-primary">₹<%= (variant.price *
                                                         item.quantity).toFixed(2) %></span>
                                             </div>
+                                              <% } %>
                                         </div>
                                     </div>
                                     <% } } }) %>

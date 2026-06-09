@@ -1,4 +1,5 @@
 import Wishlist from "../../models/wishlistModel.js";
+import Product from "../../models/productModel.js";
 
 // Fetch user's wishlist
 export const getWishlist = async (userId) => {
@@ -30,6 +31,15 @@ export const getWishlist = async (userId) => {
 
 // Toggle product in wishlist
 export const toggleWishlist = async (userId, productId, variantId) => {
+    // Check if product is available before adding to wishlist
+    const product = await Product.findById(productId).populate('category_id');
+    if (!product) {
+        throw new Error("Product not found");
+    }
+    if (product.is_blocked || (product.category_id && product.category_id.is_blocked)) {
+        throw new Error("This product is currently unavailable and cannot be added to wishlist");
+    }
+
     let wishlist = await Wishlist.findOne({ userId });
 
     if (!wishlist) {

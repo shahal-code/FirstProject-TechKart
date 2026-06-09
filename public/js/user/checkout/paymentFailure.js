@@ -1,4 +1,7 @@
-document.getElementById('retry-btn').addEventListener('click', async function() {
+const retryBtn = document.getElementById('retry-btn');
+
+if (retryBtn && window.paymentFailureData?.orderId && window.paymentFailureData?.orderAmount) {
+retryBtn.addEventListener('click', async function() {
     const btn = this;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<span class="relative z-10 flex items-center gap-3"><span class="material-symbols-outlined animate-spin">sync</span> PROCESSING...</span>';
@@ -93,3 +96,4 @@ document.getElementById('retry-btn').addEventListener('click', async function() 
         btn.disabled = false;
     }
 });
+}

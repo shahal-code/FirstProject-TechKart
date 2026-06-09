@@ -177,35 +177,13 @@ export const getOrderSuccessView = async (req, res) => {
 };
 
 /**
- * Handle Failed Payment Order Creation
+ * Reject failed payment order creation
  */
 export const placeOrderFailed = async (req, res) => {
     try {
-        const userId = req.session.user;
-        const { addressId, paymentMethod } = req.body;
-
-        if (!addressId || !paymentMethod) {
-            return res.status(400).json({ success: false, message: "Missing required fields." });
-        }
-
-        const address = await AddressService.getAddressById(addressId);
-        if (!address) {
-            return res.status(400).json({ success: false, message: "Selected address is invalid." });
-        }
-
-        // Create order with 'Failed' status by passing true as the 4th parameter
-        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon);
-
-        // If success, clear session
-        if (req.session.appliedCoupon) {
-            delete req.session.appliedCoupon;
-            await new Promise((resolve) => req.session.save(resolve));
-        }
-
-        res.json({
-            success: true,
-            message: "Payment attempt recorded. You can retry the payment from the failure page.",
-            redirectUrl: `/user/checkout/payment-failure?id=${order.orderId}`
+        return res.status(400).json({
+            success: false,
+            message: "Payment was not completed. No order was placed."
         });
 
     } catch (error) {
@@ -224,7 +202,16 @@ export const getPaymentFailureView = async (req, res) => {
     try {
         const orderId = req.query.id;
         const userId = req.session.user;
-        if (!orderId) return res.redirect('/user/shop');
+
+        if (!orderId) {
+            return res.render('user/checkout/paymentFailure', {
+                orderId: null,
+                order: null,
+                user: res.locals.user || req.user,
+                razorpayKey: process.env.RAZORPAY_KEY_ID,
+                path: '/user/checkout/payment-failure'
+            });
+        }
         
         const order = await OrderService.getOrderByDisplayId(orderId, userId);
         if (!order) return res.redirect('/user/shop');

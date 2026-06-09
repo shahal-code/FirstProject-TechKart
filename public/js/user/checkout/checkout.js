@@ -97,14 +97,39 @@ function fillCouponCode(code) {
 }
 
 function showOrderError(error) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Order Failed',
-        text: error.message,
-        background: '#161b22',
-        color: '#fff',
-        confirmButtonColor: '#0055ff'
-    });
+    const isUnavailable = error.message && (
+        error.message.toLowerCase().includes('unavailable') ||
+        error.message.toLowerCase().includes('no longer available') ||
+        error.message.toLowerCase().includes('blocked')
+    );
+
+    if (isUnavailable) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Product Unavailable',
+            text: error.message,
+            background: '#161b22',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#0055ff',
+            cancelButtonColor: '#30363d',
+            confirmButtonText: 'Go to Cart',
+            cancelButtonText: 'Stay Here'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/user/cart';
+            }
+        });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Order Failed',
+            text: error.message,
+            background: '#161b22',
+            color: '#fff',
+            confirmButtonColor: '#0055ff'
+        });
+    }
 }
 
 function restoreSubmitButton(submitBtn, originalBtnContent) {
@@ -207,24 +232,18 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
                     upi_qr: {
                         name: "Scan and Pay via UPI",
                         instruments: [
-                            {
-                                method: "upi",
-                                flows: ["qr"]
-                            },
-                            {
-                                method: "upi"
-                            }
+                            { method: "upi", flows: ["qr"] },
+                            { method: "upi" }
                         ]
                     }
                 },
                 sequence: ["block.upi_qr", "upi"],
-                preferences: {
-                    show_default_blocks: true
-                }
+                preferences: { show_default_blocks: true }
             }
         },
         handler: async function (paymentResponse) {
             try {
+                paymentCompleted = true;
                 const verifyResponse = await fetch('/user/payment/verify', {
                     method: 'POST',
                     headers: {
@@ -253,40 +272,24 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
         },
         modal: {
             ondismiss: async function () {
-                await handleFailedPaymentAttempt();
+                handleUnsuccessfulPayment('Payment was cancelled. Your order was not placed.');
             }
         }
     };
 
-    let failureHandled = false;
-    async function handleFailedPaymentAttempt() {
-        if (failureHandled) return;
-        failureHandled = true;
-
-        try {
-            const failResponse = await fetch('/user/checkout/place-order-failed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            const result = await readJsonResponse(failResponse);
-            if (result.success) {
-                window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
-                return;
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
+    let paymentCompleted = false;
+    let unsuccessfulPaymentHandled = false;
+    function handleUnsuccessfulPayment(message) {
+        if (paymentCompleted || unsuccessfulPaymentHandled) return;
+        unsuccessfulPaymentHandled = true;
         restoreSubmitButton(submitBtn, originalBtnContent);
+        const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Your order was not placed.');
+        window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
     }
 
     const razorpay = new Razorpay(options);
-    razorpay.on('payment.failed', async function () {
-        await handleFailedPaymentAttempt();
+    razorpay.on('payment.failed', function (response) {
+        handleUnsuccessfulPayment(response?.error?.description || 'Payment was unsuccessful. Your order was not placed.');
     });
     razorpay.open();
 }
