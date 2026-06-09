@@ -223,7 +223,12 @@ function downloadPDF() {
     });
 
     // Summary footer
-    const finalY = doc.lastAutoTable.finalY + 8;
+    const pageHeight = doc.internal.pageSize.height;
+    let finalY = doc.lastAutoTable.finalY + 8;
+    if (finalY + 15 > pageHeight) {
+        doc.addPage();
+        finalY = 20; // Start at the top of the new page
+    }
     doc.setFontSize(9);
     doc.setTextColor(30, 41, 59); // Dark grey text
     doc.text(`Total Orders: ${exportTotalOrders}`, 14, finalY);
