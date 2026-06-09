@@ -235,10 +235,7 @@
                                         class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                         Total
                                         Spent</th>
-                                    <th
-                                        class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        Loyalty
-                                        Tier</th>
+
                                     <th
                                         class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                         Status
@@ -281,9 +278,7 @@
                                             <td class="px-6 py-5">
                                                 <p class="text-sm font-bold text-primary">₹0.00</p>
                                             </td>
-                                            <td class="px-6 py-5">
-                                                <span class="status-badge tier-platinum">Platinum</span>
-                                            </td>
+
                                             <td class="px-6 py-5">
                                                 <span
                                                     class="status-badge <%= user.isBlocked ? 'status-blocked' : 'status-active' %>">
@@ -297,8 +292,15 @@
                                                         class="text-[10px] font-bold uppercase tracking-widest <%= user.isBlocked ? 'text-emerald-500 hover:text-emerald-400' : 'text-rose-500 hover:text-rose-400' %> transition-all">
                                                         <%= user.isBlocked ? 'Unblock' : 'Block' %>
                                                     </button>
-                                                    <span class="text-slate-700">|</span>
                                                     <button
+                                                        onclick="viewUser({
+                                                            fullname: '<%= user.fullname %>',
+                                                            email: '<%= user.email %>',
+                                                            phone: '<%= user.phone || 'N/A' %>',
+                                                            referralCode: '<%= user.referralCode || 'N/A' %>',
+                                                            isBlocked: <%= user.isBlocked %>,
+                                                            createdAt: '<%= new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short' , day: '2-digit' , year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>'
+                                                        })"
                                                         class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-all">
                                                         View User
                                                     </button>
