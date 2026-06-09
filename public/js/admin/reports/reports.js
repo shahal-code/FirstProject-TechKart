@@ -160,7 +160,7 @@ function downloadPDF() {
     const doc = new jsPDF({ orientation: 'landscape' });
 
     doc.setFontSize(18);
-    doc.setTextColor(0, 85, 255);
+    doc.setTextColor(30, 41, 59); // Dark grey title
     doc.text('TechKart - Sales Report', 14, 18);
 
     doc.setFontSize(9);
@@ -195,16 +195,37 @@ function downloadPDF() {
         head,
         body,
         startY: 32,
-        styles: { fontSize: 8, cellPadding: 3 },
-        headStyles: { fillColor: [0, 85, 255], textColor: 255, fontStyle: 'bold' },
-        alternateRowStyles: { fillColor: [15, 20, 32] },
-        margin: { left: 14, right: 14 }
+        styles: { fontSize: 8, cellPadding: 3, textColor: [30, 41, 59], lineColor: [220, 220, 220], lineWidth: 0.1 },
+        headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: 14, right: 14 },
+        didParseCell: function(data) {
+            if (data.row.section === 'body' && data.column.index === 4) {
+                const status = data.cell.text[0];
+                if (status === 'Delivered') {
+                    data.cell.styles.textColor = [16, 185, 129]; // Green
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status === 'Cancelled') {
+                    data.cell.styles.textColor = [239, 68, 68]; // Red
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status === 'Returned') {
+                    data.cell.styles.textColor = [245, 158, 11]; // Orange
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status === 'Shipped') {
+                    data.cell.styles.textColor = [59, 130, 246]; // Blue
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status === 'Return Request' || status === 'Pending') {
+                    data.cell.styles.textColor = [168, 85, 247]; // Purple
+                    data.cell.styles.fontStyle = 'bold';
+                }
+            }
+        }
     });
 
     // Summary footer
     const finalY = doc.lastAutoTable.finalY + 8;
     doc.setFontSize(9);
-    doc.setTextColor(0, 85, 255);
+    doc.setTextColor(30, 41, 59); // Dark grey text
     doc.text(`Total Orders: ${exportTotalOrders}`, 14, finalY);
     doc.text(`Net Revenue: ₹${exportNetRevenue.toLocaleString('en-IN')}`, 80, finalY);
     doc.text(`Total Discount: ₹${exportTotalDiscount.toLocaleString('en-IN')}`, 160, finalY);
