@@ -90,14 +90,18 @@
                 </span>
             </nav>
 
+            <%
+                // Compute defaultVariant: first in-stock variant, falls back to variants[0] if all out of stock
+                const defaultVariant = (product.variants && product.variants.find(v => v.stock > 0)) || (product.variants && product.variants[0]);
+            %>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
                 <!-- Left: Gallery -->
                 <div class="space-y-8">
                     <div class="img-zoom-container glass-card aspect-[16/10] rounded-[32px] overflow-hidden relative shadow-2xl"
                         id="mainImageContainer">
-                        <% if(product.variants && product.variants.length> 0 && product.variants[0].images &&
-                            product.variants[0].images.length > 0) { %>
-                            <img id="mainImage" src="<%= product.variants[0].images[0] %>"
+                        <% if(product.variants && product.variants.length> 0 && defaultVariant.images &&
+                            defaultVariant.images.length > 0) { %>
+                            <img id="mainImage" src="<%= defaultVariant.images[0] %>"
                                 class="w-full h-full object-cover" />
                             <% } else if(product.images && product.images.length> 0) { %>
                                 <img id="mainImage" src="<%= product.images[0] %>" class="w-full h-full object-cover" />
@@ -105,8 +109,8 @@
                     </div>
                     <div class="grid grid-cols-4 gap-4">
                         <% let displayImages=[]; if (product.variants && product.variants.length> 0 &&
-                            product.variants[0].images) {
-                            displayImages = product.variants[0].images;
+                            defaultVariant.images) {
+                            displayImages = defaultVariant.images;
                             } else {
                             displayImages = product.images || [];
                             }
@@ -160,15 +164,15 @@
                                     <div class="flex items-baseline gap-4">
                                         <span id="displayPrice" class="text-5xl font-bold text-white tracking-tight">
                                             ₹<%= (product.variants && product.variants.length> 0) ?
-                                                product.variants[0].price :
+                                                defaultVariant.price :
                                                 '0' %>
                                         </span>
                                         <% if(product.variants && product.variants.length> 0 &&
-                                            (product.variants[0].oldPrice || product.variants[0].originalPrice)) {
+                                            (defaultVariant.oldPrice || defaultVariant.originalPrice)) {
                                             %>
                                             <span id="displayOldPrice"
                                                 class="text-2xl text-slate-600 line-through font-medium tracking-tight">
-                                                ₹<%= product.variants[0].originalPrice || product.variants[0].oldPrice %>
+                                                ₹<%= defaultVariant.originalPrice || defaultVariant.oldPrice %>
                                             </span>
                                             <% } %>
                                     </div>
@@ -192,13 +196,13 @@
                                 <!-- Stock Info -->
                                 <div class="flex items-center gap-2 py-2">
                                     <div id="stock-dot"
-                                        class="w-2 h-2 rounded-full <%= (product.variants[0]?.stock > 10) ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : (product.variants[0]?.stock > 0 ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]') %> animate-pulse">
+                                        class="w-2 h-2 rounded-full <%= (defaultVariant?.stock > 10) ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : (defaultVariant?.stock > 0 ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]') %> animate-pulse">
                                     </div>
                                     <span id="stock-status"
-                                        class="text-[10px] font-bold uppercase tracking-[0.2em] <%= (product.variants[0]?.stock > 10) ? 'text-emerald-500' : (product.variants[0]?.stock > 0 ? 'text-amber-500' : 'text-rose-500') %>">
-                                        <%= (product.variants[0]?.stock> 10) ? 'In Stock' : (product.variants[0]?.stock
+                                        class="text-[10px] font-bold uppercase tracking-[0.2em] <%= (defaultVariant?.stock > 10) ? 'text-emerald-500' : (defaultVariant?.stock > 0 ? 'text-amber-500' : 'text-rose-500') %>">
+                                        <%= (defaultVariant?.stock> 10) ? 'In Stock' : (defaultVariant?.stock
                                             > 0 ?
-                                            `Only ${product.variants[0].stock} Left` : 'Out of Stock') %>
+                                            `Only ${defaultVariant.stock} Left` : 'Out of Stock') %>
                                     </span>
                                 </div>
                                 <div class="flex flex-wrap gap-2 pt-2">
@@ -207,14 +211,14 @@
                                         <span
                                             class="material-symbols-outlined text-[12px] text-[#3b82f6]">developer_board</span>
                                         <span id="badge-gpu-meta">
-                                            <%= product.variants[0]?.gpu || 'RTX 4090' %>
+                                            <%= defaultVariant?.gpu || 'RTX 4090' %>
                                         </span>
                                     </span>
                                     <span
                                         class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                         <span class="material-symbols-outlined text-[12px] text-[#3b82f6]">memory</span>
                                         <span id="badge-ram-meta">
-                                            <%= product.variants[0]?.ram || '64GB DDR5' %>
+                                            <%= defaultVariant?.ram || '64GB DDR5' %>
                                         </span>
                                     </span>
                                     <span
@@ -222,7 +226,7 @@
                                         <span
                                             class="material-symbols-outlined text-[12px] text-[#3b82f6]">storage</span>
                                         <span id="badge-storage-meta">
-                                            <%= product.variants[0]?.storage || '2TB NVMe' %>
+                                            <%= defaultVariant?.storage || '2TB NVMe' %>
                                         </span>
                                     </span>
                                 </div>
@@ -253,7 +257,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         <% rams.forEach(ram=> { %>
                                             <button onclick="updateSelection('ram', '<%= ram %>')"
-                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.ram === ram ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= defaultVariant?.ram === ram ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                 data-type="ram" data-value="<%= ram %>">
                                                 <%= ram %>
                                             </button>
@@ -271,7 +275,7 @@
                                             <div class="flex flex-wrap gap-2">
                                                 <% storages.forEach(storage=> { %>
                                                     <button onclick="updateSelection('storage', '<%= storage %>')"
-                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.storage === storage ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= defaultVariant?.storage === storage ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                         data-type="storage" data-value="<%= storage %>">
                                                         <%= storage %>
                                                     </button>
@@ -288,7 +292,7 @@
                                                     <div class="flex flex-wrap gap-2">
                                                         <% sizes.forEach(size=> { %>
                                                             <button onclick="updateSelection('size', '<%= size %>')"
-                                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.size === size ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                                class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= defaultVariant?.size === size ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                                 data-type="size" data-value="<%= size %>">
                                                                 <%= size %>
                                                             </button>
@@ -306,7 +310,7 @@
                                                                 <% colors.forEach(color=> { %>
                                                                     <button
                                                                         onclick="updateSelection('color', '<%= color %>')"
-                                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= product.variants[0]?.color === color ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
+                                                                        class="option-btn px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 <%= defaultVariant?.color === color ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/10 text-slate-500 hover:border-white/20' %>"
                                                                         data-type="color" data-value="<%= color %>">
                                                                         <%= color %>
                                                                     </button>
@@ -350,7 +354,7 @@
                             </a>
                         <% } else { %>
                             <% 
-                                const firstVariant = (product.variants && product.variants.length > 0) ? product.variants[0] : null;
+                                const firstVariant = defaultVariant;
                                 const hasStock = firstVariant && firstVariant.stock > 0;
                                 const isWishlisted = wishlistProductIds && wishlistProductIds.includes(product._id.toString());
                             %>
@@ -413,9 +417,9 @@
                         <div class="space-y-2">
                             <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Processor</h4>
                             <p id="spec-processor" class="font-bold text-lg text-white leading-tight">
-                                <%= product.variants[0]?.processorBrand ? product.variants[0].processorBrand + ' ' : ''
+                                <%= defaultVariant?.processorBrand ? defaultVariant.processorBrand + ' ' : ''
                                     %>
-                                    <%= product.variants[0]?.processor || 'High-Performance' %>
+                                    <%= defaultVariant?.processor || 'High-Performance' %>
                             </p>
                             <p class="text-xs text-slate-500 font-medium leading-relaxed">Next-gen
                                 architecture<br>Optimal Thermals</p>
@@ -431,7 +435,7 @@
                         <div class="space-y-2">
                             <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Graphics</h4>
                             <p id="spec-gpu" class="font-bold text-lg text-white leading-tight">
-                                <%= product.variants[0]?.gpu || 'Integrated' %>
+                                <%= defaultVariant?.gpu || 'Integrated' %>
                             </p>
                             <p class="text-xs text-slate-500 font-medium leading-relaxed">Advanced Rendering<br>175W Max
                                 TGP</p>
@@ -633,9 +637,9 @@
                                             <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
                                                 <%= rel.description %>
                                             </p>
-                                            <% if (rel.variants[0]?.stock> 0) { %>
+                                            <% if (!isRelSoldOut) { %>
                                                 <button
-                                                    onclick="addToCart('<%= rel._id %>', '<%= rel.variants[0]?._id %>', 1, event)"
+                                                    onclick="addToCart('<%= rel._id %>', '<%= rel.variants.find(v => v.stock > 0)?._id || rel.variants[0]?._id %>', 1, event)"
                                                     class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
                                                     <span
                                                         class="material-symbols-outlined text-lg">add_shopping_cart</span>

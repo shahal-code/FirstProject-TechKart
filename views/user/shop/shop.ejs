@@ -507,9 +507,10 @@
                                                         const isProductSoldOut = product.variants.every(v => {
                                                             return v.stock <= 0;
                                                         });
+                                                        const cardVariant = product.variants.find(v => v.stock > 0) || product.variants[0];
                                                     %>
                                                     <a href="/user/product/<%= product._id %>" class="w-full h-full block">
-                                                        <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
+                                                        <img src="<%= (product.variants && product.variants.length > 0 && cardVariant.images) ? cardVariant.images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
                                                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 <%= isProductSoldOut ? 'grayscale opacity-50' : '' %>" />
                                                     </a>
                                                     <% if (isProductSoldOut) { %>
@@ -540,8 +541,9 @@
                                                     <p class="text-gray-400 text-sm mb-8 leading-relaxed">
                                                         <%= product.description %>
                                                     </p>
-                                                    <% if (product.variants[0]?.stock > 0) { %>
-                                                        <button onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>', 1, event)"
+                                                    <% const firstInStockVariant = product.variants.find(v => v.stock > 0) || product.variants[0]; %>
+                                                    <% if (!isProductSoldOut) { %>
+                                                        <button onclick="addToCart('<%= product._id %>', '<%= firstInStockVariant?._id %>', 1, event)"
                                                             class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
                                                             <span
                                                                 class="material-symbols-outlined text-lg">add_shopping_cart</span>

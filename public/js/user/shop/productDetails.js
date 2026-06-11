@@ -2,13 +2,16 @@ let cartItems = JSON.parse(document.getElementById('cart-items-json').textConten
 const variants = JSON.parse(document.getElementById('product-variants-json').textContent);
 const productOffer = JSON.parse(document.getElementById('product-offer-json').textContent);
 
+// Find the first in-stock variant, fall back to variants[0] if all are out of stock
+const defaultVariant = variants.find(v => v.stock > 0) || variants[0];
+
 let selectedFilters = {
-    ram: variants[0]?.ram,
-    storage: variants[0]?.storage,
-    size: variants[0]?.size,
-    color: variants[0]?.color
+    ram: defaultVariant?.ram,
+    storage: defaultVariant?.storage,
+    size: defaultVariant?.size,
+    color: defaultVariant?.color
 };
-let currentVariant = variants[0];
+let currentVariant = defaultVariant;
 let currentQty = 1;
 
 function updateSelection(type, value) {
