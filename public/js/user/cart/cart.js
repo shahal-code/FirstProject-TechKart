@@ -227,8 +227,8 @@ async function validateAndProceedToCheckout(expectedTotal) {
             window.location.href = '/user/checkout';
         } else {
             Swal.fire({
-                icon: 'warning',
-                title: 'Price Updated',
+                icon: result.icon || 'warning',
+                title: result.title || 'Price Updated',
                 text: result.message || 'An offer has expired or prices have changed. The cart will be updated.',
                 background: '#0D0D0D',
                 color: '#fff',

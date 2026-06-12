@@ -124,8 +124,21 @@ export const validateCheckout = async (req, res) => {
 
         const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
 
-        if (Math.round(Number(expectedTotal)) !== Math.round(Number(finalAmount))) {
-            return res.status(400).json({ success: false, message: "An offer has expired or prices have changed. The cart will be updated to reflect the new prices." });
+        const expected = Math.round(Number(expectedTotal));
+        const final = Math.round(Number(finalAmount));
+
+        if (expected !== final) {
+            let message = "An offer has expired or prices have changed. The cart will be updated to reflect the new prices.";
+            let title = "Price Updated";
+            let icon = "warning";
+
+            if (final < expected) {
+                message = "Great news! A new offer just became available for your items. Your cart total has decreased!";
+                title = "Offer Applied!";
+                icon = "success";
+            }
+
+            return res.status(400).json({ success: false, message, title, icon });
         }
 
         res.status(200).json({ success: true });

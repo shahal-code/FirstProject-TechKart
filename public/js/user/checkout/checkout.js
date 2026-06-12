@@ -121,9 +121,11 @@ function showOrderError(error) {
             }
         });
     } else {
+        const isPositive = error.message && error.message.toLowerCase().includes('great news');
+        
         Swal.fire({
-            icon: 'error',
-            title: 'Order Failed',
+            icon: isPositive ? 'success' : 'error',
+            title: isPositive ? 'Offer Applied!' : 'Order Failed',
             text: error.message,
             background: '#161b22',
             color: '#fff',

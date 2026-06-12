@@ -33,8 +33,14 @@ export const createOrder = async (req, res) => {
         try {
             const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
 
-            if (Math.round(Number(amount)) !== Math.round(Number(finalAmount))) {
-                return res.status(400).json({ success: false, message: "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total." });
+            const expected = Math.round(Number(amount));
+            const final = Math.round(Number(finalAmount));
+            if (expected !== final) {
+                let message = "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.";
+                if (final < expected) {
+                    message = "Great news! A new offer was just applied to your cart, reducing your total. Please refresh the checkout page to place your order at the new lower price!";
+                }
+                return res.status(400).json({ success: false, message });
             }
         } catch (validationError) {
             return res.status(400).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
