@@ -208,3 +208,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+async function validateAndProceedToCheckout(expectedTotal) {
+    try {
+        const response = await fetch('/user/cart/validate-checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ expectedTotal })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = '/user/checkout';
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Price Updated',
+                text: result.message || 'An offer has expired or prices have changed. The cart will be updated.',
+                background: '#0D0D0D',
+                color: '#fff',
+                confirmButtonColor: '#0055ff'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    } catch (error) {
+        console.error('Checkout validation error:', error);
+        window.location.href = '/user/checkout';
+    }
+    return false;
+}

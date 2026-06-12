@@ -125,8 +125,12 @@ class OrderService {
         await cart.save();
     }
 
-    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
+    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null, expectedTotal = null) {
         const { orderedItems, subtotal, discount, finalAmount } = await this.validateCartAndBuildOrder(userId, appliedCoupon);
+
+        if (expectedTotal !== null && Math.round(Number(expectedTotal)) !== Math.round(Number(finalAmount))) {
+            throw new Error("The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.");
+        }
 
         let paymentStatus = paymentMethod === 'COD' ? 'Pending' : 'Paid';
         if (paymentFailed) {

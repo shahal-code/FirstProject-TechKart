@@ -29,29 +29,15 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: "Order amount mismatch. Please reload and try again." });
         }
     } else {
-        // Pre-flight check: validate the cart is still valid before creating a Razorpay order
-        const cart = await Cart.findOne({ userId }).populate({ path: 'items.productId', populate: { path: 'category_id' } });
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ success: false, message: "Your cart is empty." });
-        }
+        // Pre-flight check: validate the cart and recalculate price
+        try {
+            const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
 
-        for (const item of cart.items) {
-            const product = item.productId;
-            const category = product?.category_id;
-
-            const isBlocked = !product || product.is_blocked || product.is_unlisted || (category && category.is_blocked);
-            if (isBlocked) {
-                return res.status(400).json({ success: false, message: `Product ${product ? product.name : 'Unknown'} is no longer available. Please reload the page.` });
+            if (Math.round(Number(amount)) !== Math.round(Number(finalAmount))) {
+                return res.status(400).json({ success: false, message: "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total." });
             }
-
-            const variant = product.variants?.find(v => v._id.toString() === item.variantId.toString());
-            if (!variant || variant.is_blocked) {
-                return res.status(400).json({ success: false, message: `A specific variant for ${product ? product.name : 'Unknown'} is no longer available. Please reload the page.` });
-            }
-
-            if (variant.stock < item.quantity) {
-                return res.status(400).json({ success: false, message: `Not enough stock for ${product ? product.name : 'Unknown'}. Please reload the page.` });
-            }
+        } catch (validationError) {
+            return res.status(400).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
         }
     }
 

@@ -128,6 +128,10 @@ function showOrderError(error) {
             background: '#161b22',
             color: '#fff',
             confirmButtonColor: '#0055ff'
+        }).then(() => {
+            if (error.message && (error.message.includes('refresh the checkout page') || error.message.includes('expired offers'))) {
+                window.location.reload();
+            }
         });
     }
 }
@@ -299,6 +303,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
+    data.expectedTotal = window.checkoutData.total;
 
     if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
         Swal.fire({

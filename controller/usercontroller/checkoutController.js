@@ -106,7 +106,8 @@ export const placeOrder = async (req, res) => {
             paymentMethod,
             razorpay_order_id,
             razorpay_payment_id,
-            razorpay_signature
+            razorpay_signature,
+            expectedTotal
         } = req.body;
 
         if (!addressId || !paymentMethod) {
@@ -135,7 +136,7 @@ export const placeOrder = async (req, res) => {
         }
 
         // Use the service to handle logic
-        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon, expectedTotal);
 
         // If success, clear session
         if (req.session.appliedCoupon) {

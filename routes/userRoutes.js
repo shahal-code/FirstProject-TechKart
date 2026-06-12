@@ -75,6 +75,7 @@ router.get('/cart', userAuth.isAuthenticated, userAuth.isBlocked, cartController
 router.post('/cart/add', userAuth.isAuthenticated, userAuth.isBlocked, cartController.addItem);
 router.post('/cart/update', userAuth.isAuthenticated, userAuth.isBlocked, cartController.updateQuantity);
 router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartController.removeItem);
+router.post('/cart/validate-checkout', userAuth.isAuthenticated, userAuth.isBlocked, cartController.validateCheckout);
 
 // Checkout
 router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);

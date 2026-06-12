@@ -1,5 +1,6 @@
 import * as cartService from "../../services/user/cartService.js";
 import CouponService from "../../services/user/couponService.js";
+import OrderService from "../../services/user/orderService.js";
 
 // Render Cart Page
 export const getCartView = async (req, res) => {
@@ -112,6 +113,24 @@ export const removeItem = async (req, res) => {
         res.status(200).json({ success: true, cart, message: "Item removed from cart", couponRemoved, couponWarning });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// API: Validate Checkout
+export const validateCheckout = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { expectedTotal } = req.body;
+
+        const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
+
+        if (Math.round(Number(expectedTotal)) !== Math.round(Number(finalAmount))) {
+            return res.status(400).json({ success: false, message: "An offer has expired or prices have changed. The cart will be updated to reflect the new prices." });
+        }
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message || "Cart validation failed." });
     }
 };
 
