@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
 import Wishlist from "../models/wishlistModel.js";
+import Product from "../models/productModel.js";
 
 export const isAuthenticated = async (req, res, next) => {
   if (req.session.user) {
@@ -105,10 +106,26 @@ export const userContext = async (req, res, next) => {
         cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
       }
 
-      const wishlist = await Wishlist.findOne({ userId });
+      const wishlist = await Wishlist.findOne({ userId }).populate({
+        path: "products.productId",
+        populate: { path: "category_id" }
+      });
       if (wishlist && wishlist.products) {
-        wishlistCount = wishlist.products.length;
-        wishlistProductIds = wishlist.products.map(p => p.productId.toString());
+        // Count ALL products in the wishlist for the badge (including blocked ones)
+        // — same as how cart counts all items even unavailable ones.
+        // The product is still saved in the wishlist, it's just currently blocked.
+        const validProducts = wishlist.products.filter(item => item && item.productId);
+        wishlistCount = validProducts.length;
+
+        // wishlistProductIds only includes available products — used to fill
+        // the heart icon on shop/home pages (don't mark blocked products as wishlisted)
+        wishlistProductIds = validProducts
+          .filter(item =>
+            item.productId.is_blocked !== true &&
+            item.productId.category_id &&
+            item.productId.category_id.is_blocked !== true
+          )
+          .map(p => p.productId._id.toString());
       }
     }
 

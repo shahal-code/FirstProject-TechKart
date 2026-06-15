@@ -17,14 +17,19 @@ export const getWishlist = async (userId) => {
         return wishlist;
     }
 
-    // Filter out blocked products, malformed entries, or products with blocked categories
-    wishlist.products = wishlist.products.filter(
-        item => item && 
-                item.productId && 
-                item.productId.is_blocked !== true && 
-                item.productId.category_id && 
-                item.productId.category_id.is_blocked !== true
-    );
+    // Flag blocked/unavailable products instead of silently removing them
+    // (same pattern as cartService) so the wishlist page can show "Product Unavailable"
+    wishlist.products = wishlist.products.filter(item => item && item.productId); // drop nulls only
+
+    wishlist.products.forEach(item => {
+        if (
+            item.productId.is_blocked === true ||
+            !item.productId.category_id ||
+            item.productId.category_id.is_blocked === true
+        ) {
+            item.isUnavailable = true;
+        }
+    });
 
     return wishlist;
 };
