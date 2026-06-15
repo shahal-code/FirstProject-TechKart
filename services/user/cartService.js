@@ -1,7 +1,6 @@
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
-import Wishlist from "../../models/wishlistModel.js";
 import { applyOffers } from "./productServices.js";
 
 // Fetch user's cart
@@ -97,12 +96,6 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
     }
 
     await cart.save();
-
-    // Remove from wishlist if it exists there
-    await Wishlist.updateOne(
-        { userId }, 
-        { $pull: { products: { productId, variantId } } }
-    );
 
     return cart;
 };
