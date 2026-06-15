@@ -8,8 +8,7 @@ const generateOtp = () => {
 };
 
 /**
- * Generates a unique referral code for a user based on their name.
- * Format: TECHKART + 6 random alphanumeric chars (e.g. TECHKARTD9C8EF)
+ * Refferal
  */
 const generateReferralCode = async () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -24,7 +23,7 @@ const generateReferralCode = async () => {
 };
 
 /**
- * Credits ₹1000 to a user's wallet. Creates wallet if it doesn't exist.
+ * Credits ₹1000 to a users wallet. Creates wallet if it doesnt exist.
  */
 const creditWalletBonus = async (userId, description) => {
     await Wallet.findOneAndUpdate(
@@ -40,7 +39,7 @@ const creditWalletBonus = async (userId, description) => {
                 }
             }
         },
-        { upsert: true, returnDocument: 'after' }
+        { upsert: true, new: true }
     );
 };
 
@@ -70,23 +69,7 @@ export const prepareSignup = async (fullname, email, password, referralCode) => 
 
     // Validate referral code if provided
     if (referralCode && referralCode.trim() !== "") {
-        const code = referralCode.trim().toUpperCase();
-        let referrer = await User.findOne({ referralCode: code });
-        
-        // Fallback for legacy users whose referralCode hasn't been saved to DB yet
-        if (!referrer && code.startsWith('TECHKART') && code.length === 14) {
-            const hexSuffix = code.substring(8).toLowerCase();
-            referrer = await User.findOne({ 
-                $expr: { $eq: [{ $substr: [{ $toString: "$_id" }, 18, 6] }, hexSuffix] } 
-            });
-            
-            // If found, save it so it's permanently linked
-            if (referrer && !referrer.referralCode) {
-                referrer.referralCode = code;
-                await referrer.save();
-            }
-        }
-
+        const referrer = await User.findOne({ referralCode: referralCode.trim().toUpperCase() });
         if (!referrer) {
             throw new Error("Invalid referral code. Please check and try again.");
         }
