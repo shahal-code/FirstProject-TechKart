@@ -118,6 +118,8 @@ function showOrderError(error) {
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = '/user/cart';
+            } else {
+                window.location.reload();
             }
         });
     } else {
