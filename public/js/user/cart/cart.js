@@ -142,7 +142,14 @@ async function removeCartItem(itemId) {
 function updateCartSummary(cart) {
     // Recalculate subtotal using prices from the DOM since the server only sends IDs
     let subtotal = 0;
+    let hasUnavailable = false;
+    
     cart.items.forEach(item => {
+        const itemRow = document.getElementById(`cart-item-${item._id}`);
+        if (itemRow && itemRow.querySelector('.text-red-500.bg-red-500\\/10')) {
+            hasUnavailable = true;
+        }
+
         const priceSpan = document.getElementById(`price-${item._id}`);
         if (priceSpan) {
             const price = parseFloat(priceSpan.textContent);
@@ -156,6 +163,30 @@ function updateCartSummary(cart) {
     document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
     document.getElementById('summary-tax').textContent = `₹${tax.toFixed(2)}`;
     document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
+
+    // Update checkout button state
+    const checkoutBtn = document.querySelector('a[href="javascript:void(0)"]');
+    // Find the warning paragraph which is placed next to the checkout button in EJS
+    const warningText = checkoutBtn ? checkoutBtn.nextElementSibling : null;
+
+    if (checkoutBtn) {
+        if (cart.items.length === 0) {
+            checkoutBtn.setAttribute('onclick', 'return showEmptyCartWarning()');
+            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else if (hasUnavailable) {
+            checkoutBtn.setAttribute('onclick', 'return showUnavailableWarning()');
+            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (warningText && warningText.tagName === 'P') {
+                warningText.style.display = 'block';
+            }
+        } else {
+            checkoutBtn.setAttribute('onclick', `return validateAndProceedToCheckout(${total.toFixed(2)})`);
+            checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            if (warningText && warningText.tagName === 'P' && warningText.textContent.includes('unavailable')) {
+                warningText.style.display = 'none';
+            }
+        }
+    }
 }
 
 function showEmptyCartWarning() {
