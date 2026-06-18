@@ -67,6 +67,11 @@
             transition: background-color 5000s ease-in-out 0s;
             box-shadow: inset 0 0 20px 20px #172136 !important;
         }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2) !important;
+        }
     </style>
     <script src="/js/user/auth/signup.js"></script>
 </head>
@@ -112,7 +117,7 @@
                         <h2 class="text-3xl font-bold tracking-tight text-white mb-2">Create Your Account</h2>
                         <p class="text-gray-400">Experience the future of premium technology today.</p>
                     </div>
-                    <form action="/user/signup" method="POST" class="space-y-4">
+                    <form id="signupForm" action="/user/signup" method="POST" class="space-y-4">
                         <% if (locals.errors && errors.length> 0) { %>
                             <div
                                 class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
@@ -135,29 +140,31 @@
                                         <div class="relative group">
                                             <span
                                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors text-[20px]">person</span>
-                                            <input name="fullname"
+                                            <input id="fullname" name="fullname"
                                                 class="w-full bg-[#172136]/50 border border-[#2e426b] focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-14 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all"
                                                 placeholder="Enter your full name" type="text"
                                                 value="<%= locals.fullname || '' %>" />
                                         </div>
+                                        <p id="fullname-error" class="text-red-500 text-xs hidden"></p>
                                     </div>
                                     <div class="flex flex-col gap-2">
                                         <label class="text-sm font-medium text-gray-300 px-1">Email Address</label>
                                         <div class="relative group">
                                             <span
                                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors text-[20px]">mail</span>
-                                            <input name="email"
+                                            <input id="email" name="email"
                                                 class="w-full bg-[#172136]/50 border border-[#2e426b] focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-14 pl-12 pr-4 text-white placeholder:text-gray-500 transition-all"
                                                 placeholder="name@company.com" type="text"
                                                 value="<%= locals.email || '' %>" />
                                         </div>
+                                        <p id="email-error" class="text-red-500 text-xs hidden"></p>
                                     </div>
                                     <div class="flex flex-col gap-2">
                                         <label class="text-sm font-medium text-gray-300 px-1">Password</label>
                                         <div class="relative group">
                                             <span
                                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors text-[20px]">lock</span>
-                                            <input name="password"
+                                            <input id="password" name="password"
                                                 class="w-full bg-[#172136]/50 border border-[#2e426b] focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-14 pl-12 pr-12 text-white placeholder:text-gray-500 transition-all"
                                                 placeholder="••••••••" type="password" />
                                             <button type="button"
@@ -165,13 +172,14 @@
                                                 <span class="material-symbols-outlined text-[20px]">visibility</span>
                                             </button>
                                         </div>
+                                        <p id="password-error" class="text-red-500 text-xs hidden"></p>
                                     </div>
                                     <div class="flex flex-col gap-2">
                                         <label class="text-sm font-medium text-gray-300 px-1">Confirm Password</label>
                                         <div class="relative group">
                                             <span
                                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors text-[20px]">lock_reset</span>
-                                            <input name="confirmPassword"
+                                            <input id="confirmPassword" name="confirmPassword"
                                                 class="w-full bg-[#172136]/50 border border-[#2e426b] focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-14 pl-12 pr-12 text-white placeholder:text-gray-500 transition-all"
                                                 placeholder="••••••••" type="password" />
                                             <button type="button"
@@ -179,6 +187,7 @@
                                                 <span class="material-symbols-outlined text-[20px]">visibility</span>
                                             </button>
                                         </div>
+                                        <p id="confirmPassword-error" class="text-red-500 text-xs hidden"></p>
                                     </div>
                                     <!-- Referral Code field inside the form -->
                                     <div class="flex flex-col gap-2">
