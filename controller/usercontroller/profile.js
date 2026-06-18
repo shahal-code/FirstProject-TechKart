@@ -1,6 +1,6 @@
 import * as ProfileService from "../../services/user/profileService.js";
 import { validateChangePasswordData, validateEmail } from '../../utils/validation.js';
-import { sendVerificationLink } from '../../config/nodemailer.js';
+import { sendVerificationLink, sendOtpEmail } from '../../config/nodemailer.js';
 import crypto from 'crypto';
 
 export const load_profile = async (req, res) => {
@@ -92,10 +92,64 @@ export const changePassword = async (req, res) => {
     }
 };
 
+export const requestChangeEmailOtp = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const user = await ProfileService.getProfile(userId);
+        
+        if (!user || !user.email) {
+            return res.status(400).json({ success: false, message: "Could not find current email address." });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        req.session.changeEmailOTP = {
+            otp,
+            expiresAt: Date.now() + 2 * 60 * 1000 // 2 minutes
+        };
+
+        const isSent = await sendOtpEmail(user.email, otp);
+        if (!isSent) {
+            return res.status(500).json({ success: false, message: "Failed to send OTP. Please try again." });
+        }
+
+        res.json({ success: true, message: "OTP sent to your current email address." });
+    } catch (error) {
+        console.error("Request OTP Error:", error);
+        res.status(500).json({ success: false, message: "Failed to request OTP." });
+    }
+};
+
+export const verifyChangeEmailOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const sessionOtpData = req.session.changeEmailOTP;
+
+        if (!sessionOtpData || sessionOtpData.otp !== otp) {
+            return res.status(400).json({ success: false, message: "Invalid OTP." });
+        }
+        if (Date.now() > sessionOtpData.expiresAt) {
+            delete req.session.changeEmailOTP;
+            return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
+        }
+
+        // OTP valid, allow moving to new email step
+        req.session.currentEmailVerifiedForChange = true;
+        delete req.session.changeEmailOTP;
+
+        res.json({ success: true, message: "Current email verified successfully." });
+    } catch (error) {
+        console.error("Verify OTP Error:", error);
+        res.status(500).json({ success: false, message: "Failed to verify OTP." });
+    }
+};
 export const sendChangeEmailLink = async (req, res) => {
     try {
         const { newEmail } = req.body;
         const userId = req.session.user;
+
+        if (!req.session.currentEmailVerifiedForChange) {
+            return res.status(403).json({ success: false, message: "Please verify your current email first." });
+        }
 
         const emailError = validateEmail(newEmail);
         if (emailError) return res.status(400).json({ success: false, message: emailError });
@@ -142,6 +196,7 @@ export const verifyChangeEmailLink = async (req, res) => {
 
         await ProfileService.updateEmail(userId, sessionTokenData.newEmail);
         delete req.session.changeEmailToken;
+        delete req.session.currentEmailVerifiedForChange;
 
         res.redirect('/user/profile?message=Email address updated successfully!');
 

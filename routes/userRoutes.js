@@ -128,6 +128,8 @@ router.get('/profile/change-password', userAuth.isAuthenticated, userAuth.isBloc
 router.post('/profile/change-password', userAuth.isAuthenticated, userAuth.isBlocked, Profile.changePassword);
 
 router.get('/profile/change-email', userAuth.isAuthenticated, userAuth.isBlocked, Profile.load_changeEmail);
+router.post('/profile/change-email/request-otp', userAuth.isAuthenticated, userAuth.isBlocked, Profile.requestChangeEmailOtp);
+router.post('/profile/change-email/verify-otp', userAuth.isAuthenticated, userAuth.isBlocked, Profile.verifyChangeEmailOtp);
 router.post('/profile/change-email', userAuth.isAuthenticated, userAuth.isBlocked, Profile.sendChangeEmailLink);
 router.get('/profile/change-email/verify/:token', Profile.verifyChangeEmailLink); // Doesn't strictly need isAuth middleware if we handle it in the controller, but good practice to have it on the session.
 // Address
