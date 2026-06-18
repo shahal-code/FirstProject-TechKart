@@ -43,8 +43,6 @@ const adminSession = session({
 
 app.use(passport.initialize());
 
-
-
 //user session,passport,routes
 app.use("/user", userSession, passport.session(), userContext, setLocals, userRoutes);
 //admin session ,passport,routes
@@ -55,13 +53,11 @@ app.use(setLocals);
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-
 // Error Handling Middleware
 app.use(ErrorHandler.notFound);
 app.use(ErrorHandler.globalErrorHandler);
 
 //PORT
-
 
 app.listen(3000, () => {
   console.log(`Server running on http://localhost:${3000}`);
