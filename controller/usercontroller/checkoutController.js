@@ -182,9 +182,31 @@ export const getOrderSuccessView = async (req, res) => {
  */
 export const placeOrderFailed = async (req, res) => {
     try {
-        return res.status(400).json({
-            success: false,
-            message: "Payment was not completed. No order was placed."
+        const userId = req.session.user;
+        const { addressId, paymentMethod, expectedTotal } = req.body;
+
+        if (!addressId || !paymentMethod) {
+            return res.status(400).json({ success: false, message: "Missing required fields." });
+        }
+
+        const address = await AddressService.getAddressById(addressId);
+        if (!address) {
+            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+        }
+
+        // Create order with paymentFailed = true
+        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon, expectedTotal);
+
+        // If success, clear session coupon so it isn't hanging around
+        if (req.session.appliedCoupon) {
+            delete req.session.appliedCoupon;
+            await new Promise((resolve) => req.session.save(resolve));
+        }
+
+        return res.json({
+            success: true,
+            orderId: order.orderId,
+            message: "Payment was not completed. Order saved with Failed status."
         });
 
     } catch (error) {

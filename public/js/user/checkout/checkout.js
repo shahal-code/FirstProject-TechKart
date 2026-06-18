@@ -287,12 +287,34 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
 
     let paymentCompleted = false;
     let unsuccessfulPaymentHandled = false;
-    function handleUnsuccessfulPayment(message) {
+    async function handleUnsuccessfulPayment(message) {
         if (paymentCompleted || unsuccessfulPaymentHandled) return;
         unsuccessfulPaymentHandled = true;
-        restoreSubmitButton(submitBtn, originalBtnContent);
-        const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Your order was not placed.');
-        window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
+        
+        try {
+            const response = await fetch('/user/checkout/place-order-failed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await readJsonResponse(response);
+            
+            restoreSubmitButton(submitBtn, originalBtnContent);
+            const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Order saved with Failed status.');
+            
+            if (result.success && result.orderId) {
+                window.location.href = `/user/checkout/payment-failure?id=${result.orderId}&message=${failureMessage}`;
+            } else {
+                window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
+            }
+        } catch (error) {
+            restoreSubmitButton(submitBtn, originalBtnContent);
+            const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Your order was not placed.');
+            window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
+        }
     }
 
     const razorpay = new Razorpay(options);

@@ -83,6 +83,14 @@
                         <h1 class="text-xl font-bold tracking-tight">Order Details</h1>
                     </div>
                     <div class="flex items-center gap-4">
+                        <% if (order.paymentStatus === 'Failed' && order.status === 'Pending') { %>
+                            <a href="/user/checkout/payment-failure?id=<%= order.orderId %>"
+                                class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-xl hover:shadow-rose-500/20">
+                                <span class="material-symbols-outlined text-lg">refresh</span>
+                                Retry Payment
+                            </a>
+                        <% } %>
+
                         <% if (order.status === 'Pending') { %>
                             <button onclick="handleCancelOrder('<%= order._id %>')"
                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-rose-500/10">
@@ -126,10 +134,19 @@
                         <div class="flex flex-col items-end gap-2">
                             <span class="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Current
                                 Status</span>
-                            <% let statusKey=order.status.toLowerCase().replace(/\s+/g, '-' ); %>
+                            <% 
+                                let displayStatus = order.status;
+                                let statusKey = order.status.toLowerCase().replace(/\s+/g, '-');
+                                if (order.paymentStatus === 'Failed' && order.status === 'Pending') {
+                                    displayStatus = 'Payment Failed';
+                                    statusKey = 'cancelled';
+                                } else if (statusKey === 'return-request') {
+                                    statusKey = 'pending';
+                                }
+                            %>
                                 <span class="status-badge status-<%= statusKey %> text-sm py-2 px-5">
                                     <span class="size-2 rounded-full bg-current"></span>
-                                    <%= order.status %>
+                                    <%= displayStatus %>
                                 </span>
                         </div>
                     </div>
@@ -325,8 +342,9 @@
                                             <%= order.paymentMethod %>
                                         </span>
                                     </div>
-                                    <span
-                                        class="text-[10px] font-black uppercase tracking-widest text-emerald-500">Paid</span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest <%= order.paymentStatus === 'Failed' ? 'text-rose-500' : (order.paymentStatus === 'Paid' ? 'text-emerald-500' : 'text-amber-500') %>">
+                                        <%= order.paymentStatus %>
+                                    </span>
                                 </div>
                             </div>
 
