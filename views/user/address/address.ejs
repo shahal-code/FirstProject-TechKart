@@ -67,7 +67,7 @@
                 <div class="flex items-center gap-10">
                     <nav class="flex items-center gap-8">
                         <a class="text-white/70 hover:text-primary text-xs font-bold tracking-widest transition-colors"
-                            href="/">HOME</a>
+                            href="/user">HOME</a>
                         <a class="text-white/70 hover:text-primary text-xs font-bold tracking-widest transition-colors"
                             href="/user/shop">SHOP</a>
                         <a class="text-white/70 hover:text-primary text-xs font-bold tracking-widest transition-colors"
@@ -146,9 +146,16 @@
                                     <span class="material-symbols-outlined text-sm">call</span>
                                     <%= addr.phone %>
                                 </div>
+
+                                <div class="flex items-center gap-3 text-white/40 text-xs font-medium mb-8">
+                                    <span class="material-symbols-outlined text-sm">mail</span>
+                                    <%= addr.email %>
+                                </div>
+      
+                                
                                 <div class="flex gap-4 pt-6 border-t border-white/5">
                                     <% if (!addr.is_default) { %>
-                                        <button onclick="setDefaultAddress('<%= addr._id %>')"
+                                        <button onclick="window.location.href='/user/address/set-default/<%= addr._id %>'"
                                             class="flex-1 rounded-xl py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                                             <span class="material-symbols-outlined text-sm">check_circle</span>
                                             MAKE DEFAULT

@@ -7,7 +7,11 @@ export const load_address = async (req, res) => {
         const userId = req.session.user;
         const user = await ProfileService.getProfile(userId);
         const addresses = await AddressService.getAddressesByUserId(userId);
-        res.render("user/address/address", { user, addresses });
+        res.render("user/address/address", { 
+            user,
+             addresses,
+            path: "/user/address"
+         });
     } catch (error) {
         console.error("Error loading addresses:", error.message);
         res.status(500).send("Internal Server Error");

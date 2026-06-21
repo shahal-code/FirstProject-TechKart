@@ -54,8 +54,3 @@ if (modal) {
         }
     });
 }
-
-// Set Default Address Logic
-window.setDefaultAddress = function(addressId) {
-    window.location.href = `/user/address/set-default/${addressId}`;
-};

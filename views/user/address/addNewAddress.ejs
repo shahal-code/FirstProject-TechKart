@@ -165,7 +165,7 @@
                                 <label class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] ml-1">Email Address</label>
                                 <div class="relative group">
                                     <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors text-2xl">mail</span>
-                                    <input id="email" name="email" value="<%= locals.formData ? formData.email : '' %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter email address" type="email" oninput="clearError('email')" />
+                                    <input id="email" name="email" value="<%= locals.formData ? formData.email : user.email %>" class="form-input-custom w-full bg-white/5 border-white/10 rounded-[1.5rem] pl-16 pr-6 h-[4.5rem] text-lg focus:bg-white/[0.08] focus:border-primary focus:ring-0 transition-all placeholder:text-white/10" placeholder="Enter email address" type="email" oninput="clearError('email')" />
                                 </div>
                                 <p id="emailError" class="field-error"></p>
                             </div>
