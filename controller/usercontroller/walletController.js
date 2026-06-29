@@ -1,5 +1,6 @@
 import * as walletService from "../../services/user/walletService.js";
 import * as ProfileService from "../../services/user/profileService.js";
+import { WALLET_MESSAGES, AUTH_MESSAGES } from "../../constants/messages.js";
 
 export const getWalletView = async (req, res) => {
     try {
@@ -24,7 +25,7 @@ export const getWalletView = async (req, res) => {
         });
     } catch (error) {
         console.error("Wallet View Error:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -34,7 +35,7 @@ export const getWalletBalance = async (req, res) => {
         const wallet = await walletService.getOrCreateWallet(userId);
         res.json({ success: true, balance: wallet.balance });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to fetch wallet balance" });
+        res.status(500).json({ success: false, message: WALLET_MESSAGES.FETCH_BALANCE_FAILED });
     }
 };
 

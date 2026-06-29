@@ -3,6 +3,7 @@ import * as WishlistService from "../../services/user/wishlistServices.js";
 import * as CategoryService from "../../services/user/categoryService.js";
 import Review from "../../models/reviewModel.js";
 import Offer from "../../models/offerModel.js";
+import { PAGES_MESSAGES, AUTH_MESSAGES, GENERIC_MESSAGES } from "../../constants/messages.js";
 
 export const LandingOrHome_load = async (req, res) => {
     try {
@@ -32,7 +33,7 @@ export const LandingOrHome_load = async (req, res) => {
         });
     } catch (error) {
         console.log("Error loading home page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -64,7 +65,7 @@ export const Dashboard_load = async (req, res) => {
         });
     } catch (error) {
         console.log("Error loading dashboard:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -73,7 +74,7 @@ export const ContactPage_load = async (req, res) => {
         res.render("user/home/contact", { path: "/user/contact" });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -82,7 +83,7 @@ export const AboutPage_load = async (req, res) => {
         res.render("user/home/about", { path: "/user/about" });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -102,17 +103,17 @@ export const ShopPage_load = async (req, res) => {
         });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
 
 export const page_404 = async (req, res) => {
     try {
-        res.status(404).render("error/404", { message: "The page you are looking for has been upgraded or moved to a different dimension." });
+        res.status(404).render("error/404", { message: PAGES_MESSAGES.UPGRADED_OR_MOVED });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -121,7 +122,7 @@ export const Settings = async (req, res) => {
         res.render("views/settings");
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("internal server Eroor");
+        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }
 export const ProductDetails_load = async (req, res) => {
@@ -154,7 +155,7 @@ export const ProductDetails_load = async (req, res) => {
 
 
 
-            return res.status(404).render('error/404', { message: "The product you are looking for does not exist." });
+            return res.status(404).render('error/404', { message: PAGES_MESSAGES.PRODUCT_NOT_EXIST });
         }
 
         const wishlistProductIds = await WishlistService.getWishlistProductIds(req.session.user);
@@ -182,6 +183,6 @@ export const ProductDetails_load = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading product details:", error);
-        res.status(500).send("Server Error");
+        res.status(500).send(GENERIC_MESSAGES.SERVER_ERROR);
     }
 }

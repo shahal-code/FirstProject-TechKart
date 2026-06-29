@@ -81,7 +81,7 @@ export const updateCoupon = async (req, res) => {
         const { code, discountType, discountValue, minPurchaseAmount, maxDiscountAmount, expirationDate } = req.body;
 
         if (!code || !discountType || !discountValue || !expirationDate) {
-            return res.status(400).json({ success: false, message: "All required fields must be filled." });
+            return res.status(400).json({ success: false, message: COUPON_MESSAGES.REQUIRED_FIELDS_MISSING });
         }
 
         // Check if another coupon already uses this code

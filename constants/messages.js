@@ -178,15 +178,19 @@ export const PAYMENT_MESSAGES = {
 
 // ─── CHECKOUT ────────────────────────────────────────────────
 export const CHECKOUT_MESSAGES = {
-    MISSING_FIELDS:          "Missing required fields.",
-    ADDRESS_INVALID:         "Selected address is invalid.",
-    VERIFICATION_REQUIRED:   "Payment verification details are required.",
-    VERIFICATION_FAILED:     "Payment verification failed.",
-    ORDER_PLACED:            "Order placed successfully!",
-    PAYMENT_FAILED_SAVED:    "Payment was not completed. Order saved with Failed status.",
+    MISSING_FIELDS:              "Missing required fields.",
+    ADDRESS_INVALID:             "Selected address is invalid.",
+    VERIFICATION_REQUIRED:       "Payment verification details are required.",
+    VERIFICATION_FAILED:         "Payment verification failed.",
+    ORDER_PLACED:                "Order placed successfully!",
+    PAYMENT_FAILED_SAVED:        "Payment was not completed. Order saved with Failed status.",
     MISSING_VERIFICATION_FIELDS: "Missing required verification fields.",
-    PAYMENT_SUCCESS:         "Payment successful!",
-    COUPON_REQUIRED:         "Please enter a coupon code.",
+    PAYMENT_SUCCESS:             "Payment successful!",
+    COUPON_REQUIRED:             "Please enter a coupon code.",
+    COUPON_ALREADY_APPLIED:      "This coupon is already applied.",
+    COUPON_APPLIED:              "Coupon applied successfully!",
+    COUPON_REMOVED:              "Coupon removed successfully!",
+    COUPON_REMOVE_FAILED:        "Failed to remove coupon.",
 };
 
 // ─── PAGES ───────────────────────────────────────────────────
@@ -194,6 +198,11 @@ export const PAGES_MESSAGES = {
     UPGRADED_OR_MOVED:       "The page you are looking for has been upgraded or moved to a different dimension.",
     PRODUCT_UNAVAILABLE:     "This product is currently unavailable.",
     PRODUCT_NOT_EXIST:       "The product you are looking for does not exist.",
+};
+
+// ─── REPORT (Admin) ──────────────────────────────────────────
+export const REPORT_MESSAGES = {
+    LOAD_FAILED:             "Failed to load reports.",
 };
 
 // ─── GENERIC / SHARED ────────────────────────────────────────

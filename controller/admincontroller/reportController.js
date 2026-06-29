@@ -1,4 +1,5 @@
 import * as ReportService from "../../services/admin/reportService.js";
+import { REPORT_MESSAGES } from "../../constants/messages.js";
 
 /**
  * Load Sales Reports Page
@@ -18,6 +19,7 @@ export const loadReports = async (req, res) => {
         });
     } catch (error) {
         console.error("Load Reports Error:", error);
-        res.status(500).send("Failed to load reports.");
+        res.status(500).send(REPORT_MESSAGES.LOAD_FAILED);
     }
 };
+

@@ -3,6 +3,7 @@ import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 import * as PaymentService from "../../services/user/paymentServices.js";
 import CouponService from "../../services/user/couponService.js";
+import { CHECKOUT_MESSAGES } from "../../constants/messages.js";
 
 /**
  * Render Checkout Page
@@ -111,17 +112,17 @@ export const placeOrder = async (req, res) => {
         } = req.body;
 
         if (!addressId || !paymentMethod) {
-            return res.status(400).json({ success: false, message: "Missing required fields." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_FIELDS });
         }
 
         const address = await AddressService.getAddressById(addressId);
         if (!address) {
-            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.ADDRESS_INVALID });
         }
 
         if (paymentMethod === "UPI") {
             if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-                return res.status(400).json({ success: false, message: "Payment verification details are required." });
+                return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_REQUIRED });
             }
 
             const isPaymentValid = PaymentService.verifyRazorpaySignature({
@@ -131,7 +132,7 @@ export const placeOrder = async (req, res) => {
             });
 
             if (!isPaymentValid) {
-                return res.status(400).json({ success: false, message: "Payment verification failed." });
+                return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_FAILED });
             }
         }
 
@@ -146,7 +147,7 @@ export const placeOrder = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Order placed successfully!",
+            message: CHECKOUT_MESSAGES.ORDER_PLACED,
             redirectUrl: `/user/checkout/order-success?id=${order.orderId}`
         });
 
@@ -186,12 +187,12 @@ export const placeOrderFailed = async (req, res) => {
         const { addressId, paymentMethod, expectedTotal } = req.body;
 
         if (!addressId || !paymentMethod) {
-            return res.status(400).json({ success: false, message: "Missing required fields." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_FIELDS });
         }
 
         const address = await AddressService.getAddressById(addressId);
         if (!address) {
-            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.ADDRESS_INVALID });
         }
 
         // Create order with paymentFailed = true
@@ -206,7 +207,7 @@ export const placeOrderFailed = async (req, res) => {
         return res.json({
             success: true,
             orderId: order.orderId,
-            message: "Payment was not completed. Order saved with Failed status."
+            message: CHECKOUT_MESSAGES.PAYMENT_FAILED_SAVED
         });
 
     } catch (error) {
@@ -261,7 +262,7 @@ export const retryOrder = async (req, res) => {
         const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
         if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-            return res.status(400).json({ success: false, message: "Missing required verification fields." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_VERIFICATION_FIELDS });
         }
 
         const isPaymentValid = PaymentService.verifyRazorpaySignature({
@@ -271,14 +272,14 @@ export const retryOrder = async (req, res) => {
         });
 
         if (!isPaymentValid) {
-            return res.status(400).json({ success: false, message: "Payment verification failed." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_FAILED });
         }
 
         await OrderService.finalizeFailedOrderPayment(orderId, userId);
 
         res.json({
             success: true,
-            message: "Payment successful!",
+            message: CHECKOUT_MESSAGES.PAYMENT_SUCCESS,
             redirectUrl: `/user/checkout/order-success?id=${orderId}`
         });
     } catch (error) {
@@ -302,11 +303,11 @@ export const applyCoupon = async (req, res) => {
         const normalizedCode = code ? code.trim().toUpperCase() : "";
 
         if (!normalizedCode) {
-            return res.status(400).json({ success: false, message: "Please enter a coupon code." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_REQUIRED });
         }
 
         if (req.session.appliedCoupon?.code === normalizedCode) {
-            return res.status(400).json({ success: false, message: "This coupon is already applied." });
+            return res.status(400).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_ALREADY_APPLIED });
         }
 
         // Always compute cart total on the server — never trust the client
@@ -316,7 +317,7 @@ export const applyCoupon = async (req, res) => {
 
         req.session.appliedCoupon = coupon;
         await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
-        res.json({ success: true, message: "Coupon applied successfully!" });
+        res.json({ success: true, message: CHECKOUT_MESSAGES.COUPON_APPLIED });
     } catch (error) {
         console.error("Apply Coupon Error:", error);
         res.status(400).json({ success: false, message: error.message || "Failed to apply coupon." });
@@ -330,9 +331,9 @@ export const removeCoupon = async (req, res) => {
     try {
         delete req.session.appliedCoupon;
         await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
-        res.json({ success: true, message: "Coupon removed successfully!" });
+        res.json({ success: true, message: CHECKOUT_MESSAGES.COUPON_REMOVED });
     } catch (error) {
         console.error("Remove Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to remove coupon." });
+        res.status(500).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_REMOVE_FAILED });
     }
 };

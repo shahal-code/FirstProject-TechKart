@@ -20,7 +20,7 @@ export const loadOffers = async (req, res) => {
         res.render("admin/offers/offers", { offers, totalOffers, activeOffers, expiredOffers, activePage: "offers" });
     } catch (error) {
         console.error("Load Offers Error:", error);
-        res.status(500).send("Server Error");
+        res.status(500).send(OFFER_MESSAGES.SERVER_ERROR);
     }
 };
 
