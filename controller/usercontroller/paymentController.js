@@ -1,6 +1,7 @@
 import Cart from "../../models/cartModel.js";
 import * as paymentService from "../../services/user/paymentServices.js";
 import OrderService from "../../services/user/orderService.js";
+import { PAYMENT_MESSAGES } from "../../constants/messages.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -10,41 +11,41 @@ export const createOrder = async (req, res) => {
     if (!amount) {
       return res.status(400).json({
         success: false,
-        message: "Amount is required",
+        message: PAYMENT_MESSAGES.AMOUNT_REQUIRED,
       });
     }
 
     if (orderId) {
-        const existingOrder = await OrderService.getOrderByDisplayId(orderId, userId);
-        if (!existingOrder) {
-            return res.status(404).json({ success: false, message: "Order not found." });
-        }
-        if (existingOrder.status !== 'Pending') {
-            return res.status(400).json({ success: false, message: "Only pending failed orders can be retried." });
-        }
-        if (existingOrder.paymentStatus !== 'Failed' && !(existingOrder.paymentStatus === 'Pending' && existingOrder.inventoryProcessed === false)) {
-            return res.status(400).json({ success: false, message: "This order cannot be retried." });
-        }
-        if (Number(existingOrder.finalAmount) !== Number(amount)) {
-            return res.status(400).json({ success: false, message: "Order amount mismatch. Please reload and try again." });
-        }
+      const existingOrder = await OrderService.getOrderByDisplayId(orderId, userId);
+      if (!existingOrder) {
+        return res.status(404).json({ success: false, message: PAYMENT_MESSAGES.ORDER_NOT_FOUND });
+      }
+      if (existingOrder.status !== 'Pending') {
+        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.RETRY_PENDING_FAILED });
+      }
+      if (existingOrder.paymentStatus !== 'Failed' && !(existingOrder.paymentStatus === 'Pending' && existingOrder.inventoryProcessed === false)) {
+        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.RETRY_NOT_ALLOWED });
+      }
+      if (Number(existingOrder.finalAmount) !== Number(amount)) {
+        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.AMOUNT_MISMATCH });
+      }
     } else {
-        // Pre-flight check: validate the cart and recalculate price
-        try {
-            const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
+      // Pre-flight check: validate the cart and recalculate price
+      try {
+        const { finalAmount } = await OrderService.validateCartAndBuildOrder(userId, req.session.appliedCoupon);
 
-            const expected = Math.round(Number(amount));
-            const final = Math.round(Number(finalAmount));
-            if (expected !== final) {
-                let message = "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.";
-                if (final < expected) {
-                    message = "Great news! A new offer was just applied to your cart, reducing your total. Please refresh the checkout page to place your order at the new lower price!";
-                }
-                return res.status(400).json({ success: false, message });
-            }
-        } catch (validationError) {
-            return res.status(400).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
+        const expected = Math.round(Number(amount));
+        const final = Math.round(Number(finalAmount));
+        if (expected !== final) {
+          let message = PAYMENT_MESSAGES.PRICE_CHANGE_INCREASE;
+          if (final < expected) {
+            message = PAYMENT_MESSAGES.PRICE_CHANGE_DECREASE;
+          }
+          return res.status(400).json({ success: false, message });
         }
+      } catch (validationError) {
+        return res.status(400).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
+      }
     }
 
     const order = await paymentService.createRazorpayOrder(amount);
@@ -69,7 +70,7 @@ export const verifyPayment = async (req, res) => {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
         success: false,
-        message: "Payment verification details are required",
+        message: PAYMENT_MESSAGES.DETAILS_REQUIRED,
       });
     }
 
@@ -82,13 +83,13 @@ export const verifyPayment = async (req, res) => {
     if (!isValid) {
       return res.status(400).json({
         success: false,
-        message: "Invalid payment signature",
+        message: PAYMENT_MESSAGES.INVALID_SIGNATURE,
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Payment verified successfully",
+      message: PAYMENT_MESSAGES.VERIFIED,
     });
   } catch (error) {
     console.error("Payment Verification Error:", error);
@@ -98,3 +99,4 @@ export const verifyPayment = async (req, res) => {
     });
   }
 };
+

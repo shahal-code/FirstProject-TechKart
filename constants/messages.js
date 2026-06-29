@@ -118,7 +118,82 @@ export const COUPON_MESSAGES = {
 
 // ─── PRODUCT (Admin) ─────────────────────────────────────────
 export const PRODUCT_MESSAGES = {
+    DELETED:                 "Product deleted successfully",
+    VARIANT_DELETED:         "Variant deleted successfully",
     SERVER_ERROR:            "Server Error",
+};
+
+// ─── REVIEW ──────────────────────────────────────────────────
+export const REVIEW_MESSAGES = {
+    LOGIN_REQUIRED:          "Please log in to submit a review.",
+    LOGIN_REQUIRED_DELETE:   "Please log in to delete a review.",
+    FIELDS_REQUIRED:         "Rating and comment are required.",
+    NOT_FOUND:               "Product not found.",
+    REVIEW_NOT_FOUND:        "Review not found.",
+    ALREADY_REVIEWED:        "You have already reviewed this product.",
+    ADDED:                   "Review added successfully.",
+    ERROR_SUBMITTING:        "An error occurred while submitting the review.",
+    NOT_AUTHORIZED:          "You are not authorized to delete this review.",
+    DELETED:                 "Review deleted successfully.",
+    ERROR_DELETING:          "An error occurred while deleting the review.",
+};
+
+// ─── PROFILE ─────────────────────────────────────────────────
+export const PROFILE_MESSAGES = {
+    UPDATED:                 "Profile updated successfully",
+    SOMETHING_WRONG:         "Something went wrong",
+    PASSWORD_UPDATED:        "Password updated successfully",
+    NO_CURRENT_EMAIL:        "Could not find current email address.",
+    OTP_SEND_FAILED:         "Failed to send OTP. Please try again.",
+    OTP_SENT:                "OTP sent to your current email address.",
+    REQUEST_OTP_FAILED:      "Failed to request OTP.",
+    INVALID_OTP:             "Invalid OTP.",
+    OTP_EXPIRED:             "OTP has expired. Please request a new one.",
+    EMAIL_VERIFIED:          "Current email verified successfully.",
+    VERIFY_OTP_FAILED:       "Failed to verify OTP.",
+    VERIFY_CURRENT_FIRST:    "Please verify your current email first.",
+    SAME_EMAIL:              "This is already your current email address",
+    VERIFICATION_LINK_SENT:  "A verification link has been sent to your new email address. Please check your inbox (and spam folder).",
+    SEND_LINK_FAILED:        "Failed to send verification link. Please try again later.",
+};
+
+// ─── WALLET ──────────────────────────────────────────────────
+export const WALLET_MESSAGES = {
+    FETCH_BALANCE_FAILED:    "Failed to fetch wallet balance",
+};
+
+// ─── PAYMENT ─────────────────────────────────────────────────
+export const PAYMENT_MESSAGES = {
+    AMOUNT_REQUIRED:         "Amount is required",
+    ORDER_NOT_FOUND:         "Order not found.",
+    RETRY_PENDING_FAILED:    "Only pending failed orders can be retried.",
+    RETRY_NOT_ALLOWED:       "This order cannot be retried.",
+    AMOUNT_MISMATCH:         "Order amount mismatch. Please reload and try again.",
+    DETAILS_REQUIRED:        "Payment verification details are required",
+    INVALID_SIGNATURE:       "Invalid payment signature",
+    VERIFIED:                "Payment verified successfully",
+    PRICE_CHANGE_INCREASE:   "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.",
+    PRICE_CHANGE_DECREASE:   "Great news! A new offer was just applied to your cart, reducing your total. Please refresh the checkout page to place your order at the new lower price!",
+};
+
+// ─── CHECKOUT ────────────────────────────────────────────────
+export const CHECKOUT_MESSAGES = {
+    MISSING_FIELDS:          "Missing required fields.",
+    ADDRESS_INVALID:         "Selected address is invalid.",
+    VERIFICATION_REQUIRED:   "Payment verification details are required.",
+    VERIFICATION_FAILED:     "Payment verification failed.",
+    ORDER_PLACED:            "Order placed successfully!",
+    PAYMENT_FAILED_SAVED:    "Payment was not completed. Order saved with Failed status.",
+    MISSING_VERIFICATION_FIELDS: "Missing required verification fields.",
+    PAYMENT_SUCCESS:         "Payment successful!",
+    COUPON_REQUIRED:         "Please enter a coupon code.",
+};
+
+// ─── PAGES ───────────────────────────────────────────────────
+export const PAGES_MESSAGES = {
+    UPGRADED_OR_MOVED:       "The page you are looking for has been upgraded or moved to a different dimension.",
+    PRODUCT_UNAVAILABLE:     "This product is currently unavailable.",
+    PRODUCT_NOT_EXIST:       "The product you are looking for does not exist.",
 };
 
 // ─── GENERIC / SHARED ────────────────────────────────────────
@@ -127,3 +202,4 @@ export const GENERIC_MESSAGES = {
     INTERNAL_SERVER_ERROR:   "Internal Server Error",
     NOT_FOUND:               "Not found.",
 };
+

@@ -85,9 +85,9 @@ export const changePassword = async (req, res) => {
 
     } catch (error) {
         console.error("Change Password Error:", error);
-        res.status(error.message === "Incorrect current password" ? 400 : 500).json({ 
-            success: false, 
-            message: error.message || "Internal server error" 
+        res.status(error.message === "Incorrect current password" ? 400 : 500).json({
+            success: false,
+            message: error.message || "Internal server error"
         });
     }
 };
@@ -96,7 +96,7 @@ export const requestChangeEmailOtp = async (req, res) => {
     try {
         const userId = req.session.user;
         const user = await ProfileService.getProfile(userId);
-        
+
         if (!user || !user.email) {
             return res.status(400).json({ success: false, message: "Could not find current email address." });
         }
