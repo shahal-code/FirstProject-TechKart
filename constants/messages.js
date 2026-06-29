@@ -6,6 +6,10 @@
 
 // ─── AUTH ────────────────────────────────────────────────────
 export const AUTH_MESSAGES = {
+    INVALID_REFERRAL_CODE_PLEASE_CHECK_: "Invalid referral code. Please check and try again.",
+    USER_ALREADY_EXISTS                : "User already exists",
+    INVALID_PASSWORD                   : "Invalid Password",
+    USER_NOT_FOUND                     : "User not found",
     // OTP
     OTP_EXPIRED:             "OTP has expired. Please resend.",
     OTP_INVALID:             "Invalid OTP. Please try again.",
@@ -24,6 +28,12 @@ export const AUTH_MESSAGES = {
 
 // ─── CART ────────────────────────────────────────────────────
 export const CART_MESSAGES = {
+    THIS_PRODUCT_IS_CURRENTLY_UNAVAILAB: "This product is currently unavailable",
+    PRODUCT_IS_OUT_OF_STOCK            : "Product is out of stock",
+    ITEM_NOT_FOUND_IN_CART             : "Item not found in cart",
+    PRODUCT_NOT_FOUND                  : "Product not found",
+    VARIANT_NOT_FOUND                  : "Variant not found",
+    CART_NOT_FOUND                     : "Cart not found",
     LOGIN_REQUIRED:          "Please login to add items to cart",
     ITEM_ADDED:              "Item added to cart successfully",
     QUANTITY_UPDATED:        "Quantity updated",
@@ -40,6 +50,8 @@ export const CART_MESSAGES = {
 
 // ─── WISHLIST ────────────────────────────────────────────────
 export const WISHLIST_MESSAGES = {
+    THIS_PRODUCT_IS_CURRENTLY_UNAVAILAB: "This product is currently unavailable and cannot be added to wishlist",
+    PRODUCT_NOT_FOUND                  : "Product not found",
     LOGIN_REQUIRED:          "Please login to manage wishlist",
     VARIANT_REQUIRED:        "Variant ID is required",
     ADDED:                   "Added to wishlist",
@@ -49,6 +61,17 @@ export const WISHLIST_MESSAGES = {
 
 // ─── ORDER (User) ────────────────────────────────────────────
 export const ORDER_MESSAGES = {
+    GREAT_NEWS_A_NEW_OFFER_WAS_JUST_APP: "Great news! A new offer was just applied to your cart, reducing your total. Please refresh the checkout page to place your order at the new lower price!",
+    THE_ORDER_TOTAL_HAS_CHANGED_DUE_TO_: "The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.",
+    ONE_OR_MORE_ITEMS_ARE_NO_LONGER_AVA: "One or more items are no longer available in the requested quantity.",
+    THIS_ORDER_IS_NOT_ELIGIBLE_FOR_PAYM: "This order is not eligible for payment retry.",
+    ONLY_PENDING_FAILED_ORDERS_CAN_BE_R: "Only pending failed orders can be retried.",
+    ONLY_DELIVERED_ORDERS_CAN_BE_RETURN: "Only delivered orders can be returned.",
+    ONLY_DELIVERED_ITEMS_CAN_BE_RETURNE: "Only delivered items can be returned.",
+    INSUFFICIENT_WALLET_BALANCE        : "Insufficient wallet balance.",
+    ITEM_NOT_FOUND_IN_ORDER            : "Item not found in order.",
+    YOUR_CART_IS_EMPTY                 : "Your cart is empty.",
+    ORDER_NOT_FOUND                    : "Order not found.",
     CANCELLED:               "Order cancelled successfully.",
     RETURN_REQUESTED:        "Return request submitted.",
     ITEM_CANCELLED:          "Item cancelled successfully.",
@@ -59,6 +82,10 @@ export const ORDER_MESSAGES = {
 
 // ─── ORDER (Admin) ───────────────────────────────────────────
 export const ADMIN_ORDER_MESSAGES = {
+    RETURN_REQUESTS_MUST_BE_SUBMITTED_B: "Return requests must be submitted by the customer.",
+    ITEM_NOT_FOUND_IN_ORDER            : "Item not found in order.",
+    INVALID_ORDER_STATUS               : "Invalid order status.",
+    ORDER_NOT_FOUND                    : "Order not found.",
     STATUS_UPDATED:            "Order status updated successfully",
     STATUS_UPDATE_FAILED:      "Failed to update status",
     ITEM_STATUS_UPDATED:       "Item status updated successfully",
@@ -74,6 +101,9 @@ export const ADMIN_ORDER_MESSAGES = {
 
 // ─── CATEGORY (Admin) ────────────────────────────────────────
 export const CATEGORY_MESSAGES = {
+    CATEGORY_NAME_ALREADY_EXISTS       : "Category name already exists",
+    CATEGORY_ALREADY_EXISTS            : "Category already exists",
+    CATEGORY_NOT_FOUND                 : "Category not found",
     ADDED:                   "Category added successfully",
     UPDATED:                 "Category updated successfully",
     DELETED:                 "Category deleted successfully",
@@ -85,6 +115,11 @@ export const CATEGORY_MESSAGES = {
 
 // ─── OFFER (Admin) ───────────────────────────────────────────
 export const OFFER_MESSAGES = {
+    THIS_REFERRAL_CODE_HAS_REACHED_ITS_: "This referral code has reached its maximum usage limit.",
+    THIS_REFERRAL_CODE_IS_EXPIRED_OR_NO: "This referral code is expired or not active yet.",
+    YOU_HAVE_ALREADY_USED_THIS_REFERRAL: "You have already used this referral code.",
+    PLEASE_ENTER_A_REFERRAL_CODE       : "Please enter a referral code.",
+    INVALID_REFERRAL_CODE              : "Invalid referral code.",
     CREATED:                 "Offer created successfully!",
     UPDATED:                 "Offer updated successfully!",
     DELETED:                 "Offer deleted successfully.",
@@ -102,6 +137,13 @@ export const OFFER_MESSAGES = {
 
 // ─── COUPON (Admin) ──────────────────────────────────────────
 export const COUPON_MESSAGES = {
+    THE_APPLIED_COUPON_IS_NO_LONGER_VAL: "The applied coupon is no longer valid. Please remove it and try again.",
+    THE_APPLIED_COUPON_HAS_EXPIRED_PLEA: "The applied coupon has expired. Please remove it and try again.",
+    YOU_HAVE_ALREADY_USED_THIS_COUPON  : "You have already used this coupon.",
+    THIS_COUPON_HAS_ALREADY_BEEN_USED  : "This coupon has already been used.",
+    PLEASE_ENTER_A_COUPON_CODE         : "Please enter a coupon code.",
+    COUPON_IS_NOT_AVAILABLE            : "Coupon is not available.",
+    THIS_COUPON_HAS_EXPIRED            : "This coupon has expired.",
     CREATED:                 "Coupon created successfully!",
     UPDATED:                 "Coupon updated successfully!",
     DELETED:                 "Coupon deleted successfully.",
@@ -118,6 +160,10 @@ export const COUPON_MESSAGES = {
 
 // ─── PRODUCT (Admin) ─────────────────────────────────────────
 export const PRODUCT_MESSAGES = {
+    PLEASE_UPLOAD_AT_LEAST_3_IMAGES_FOR: "Please upload at least 3 images for the variant.",
+    VARIANT_MUST_HAVE_AT_LEAST_3_IMAGES: "Variant must have at least 3 images.",
+    PRODUCT_NOT_FOUND                  : "Product not found",
+    VARIANT_NOT_FOUND                  : "Variant not found",
     DELETED:                 "Product deleted successfully",
     VARIANT_DELETED:         "Variant deleted successfully",
     SERVER_ERROR:            "Server Error",
@@ -140,6 +186,8 @@ export const REVIEW_MESSAGES = {
 
 // ─── PROFILE ─────────────────────────────────────────────────
 export const PROFILE_MESSAGES = {
+    INCORRECT_CURRENT_PASSWORD         : "Incorrect current password",
+    USER_NOT_FOUND                     : "User not found",
     UPDATED:                 "Profile updated successfully",
     SOMETHING_WRONG:         "Something went wrong",
     PASSWORD_UPDATED:        "Password updated successfully",
@@ -159,11 +207,13 @@ export const PROFILE_MESSAGES = {
 
 // ─── WALLET ──────────────────────────────────────────────────
 export const WALLET_MESSAGES = {
+    INSUFFICIENT_WALLET_BALANCE        : "Insufficient wallet balance",
     FETCH_BALANCE_FAILED:    "Failed to fetch wallet balance",
 };
 
 // ─── PAYMENT ─────────────────────────────────────────────────
 export const PAYMENT_MESSAGES = {
+    INVALID_PAYMENT_AMOUNT             : "Invalid payment amount",
     AMOUNT_REQUIRED:         "Amount is required",
     ORDER_NOT_FOUND:         "Order not found.",
     RETRY_PENDING_FAILED:    "Only pending failed orders can be retried.",
@@ -207,6 +257,7 @@ export const REPORT_MESSAGES = {
 
 // ─── GENERIC / SHARED ────────────────────────────────────────
 export const GENERIC_MESSAGES = {
+    USER_NOT_FOUND                     : "User not found",
     SERVER_ERROR:            "Server Error",
     INTERNAL_SERVER_ERROR:   "Internal Server Error",
     NOT_FOUND:               "Not found.",

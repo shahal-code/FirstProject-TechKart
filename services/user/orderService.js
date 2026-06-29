@@ -5,11 +5,13 @@ import Product from "../../models/productModel.js";
 import CouponService from "./couponService.js";
 import { applyOffers } from "./productServices.js";
 import * as walletService from "./walletService.js";
+import { ORDER_MESSAGES } from "../../constants/messages.js";
+
 
 class OrderService {
     async validateCartAndBuildOrder(userId, appliedCoupon = null) {
         const cart = await Cart.findOne({ userId }).populate({ path: 'items.productId', populate: { path: 'category_id' } });
-        if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
+        if (!cart || cart.items.length === 0) throw new Error(ORDER_MESSAGES.YOUR_CART_IS_EMPTY);
 
         const productsToApply = cart.items.map(item => item.productId).filter(Boolean);
         if (productsToApply.length > 0) {
@@ -83,7 +85,7 @@ class OrderService {
                 );
 
                 if (result.modifiedCount !== 1) {
-                    throw new Error("One or more items are no longer available in the requested quantity.");
+                    throw new Error(ORDER_MESSAGES.ONE_OR_MORE_ITEMS_ARE_NO_LONGER_AVA);
                 }
 
                 reservedItems.push(item);
@@ -133,9 +135,9 @@ class OrderService {
             const final = Math.round(Number(finalAmount));
             if (expected !== final) {
                 if (final < expected) {
-                    throw new Error("Great news! A new offer was just applied to your cart, reducing your total. Please refresh the checkout page to place your order at the new lower price!");
+                    throw new Error(ORDER_MESSAGES.GREAT_NEWS_A_NEW_OFFER_WAS_JUST_APP);
                 } else {
-                    throw new Error("The order total has changed due to expired offers or price updates. Please refresh the checkout page to see the new total.");
+                    throw new Error(ORDER_MESSAGES.THE_ORDER_TOTAL_HAS_CHANGED_DUE_TO_);
                 }
             }
         }
@@ -150,7 +152,7 @@ class OrderService {
         if (paymentMethod === 'Wallet' && !paymentFailed) {
             const wallet = await walletService.getOrCreateWallet(userId);
             if (wallet.balance < finalAmount) {
-                throw new Error("Insufficient wallet balance.");
+                throw new Error(ORDER_MESSAGES.INSUFFICIENT_WALLET_BALANCE);
             }
         }
 
@@ -268,7 +270,7 @@ class OrderService {
 
     async updatePaymentStatus(displayId, userId, status) {
         const order = await Order.findOne({ orderId: displayId, userId });
-        if (!order) throw new Error("Order not found");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
         order.paymentStatus = status;
         await order.save();
         return order;
@@ -276,15 +278,15 @@ class OrderService {
 
     async finalizeFailedOrderPayment(displayId, userId) {
         const order = await Order.findOne({ orderId: displayId, userId });
-        if (!order) throw new Error("Order not found");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
         if (order.status !== 'Pending') {
-            throw new Error("Only pending failed orders can be retried.");
+            throw new Error(ORDER_MESSAGES.ONLY_PENDING_FAILED_ORDERS_CAN_BE_R);
         }
         if (order.paymentStatus === 'Paid' && order.inventoryProcessed !== false) {
             return order;
         }
         if (order.paymentStatus !== 'Failed' && !(order.paymentStatus === 'Pending' && order.inventoryProcessed === false)) {
-            throw new Error("This order is not eligible for payment retry.");
+            throw new Error(ORDER_MESSAGES.THIS_ORDER_IS_NOT_ELIGIBLE_FOR_PAYM);
         }
 
         await this.reserveInventoryForItems(order.orderedItems);
@@ -309,7 +311,7 @@ class OrderService {
 
     async cancelOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(order.status)) {
@@ -376,10 +378,10 @@ class OrderService {
 
     async returnOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         if (order.status !== 'Delivered') {
-            throw new Error("Only delivered orders can be returned.");
+            throw new Error(ORDER_MESSAGES.ONLY_DELIVERED_ORDERS_CAN_BE_RETURN);
         }
 
         order.status = 'Return Request';
@@ -399,10 +401,10 @@ class OrderService {
 
     async cancelOrderItem(orderId, itemId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         const item = order.orderedItems.id(itemId);
-        if (!item) throw new Error("Item not found in order.");
+        if (!item) throw new Error(ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
         const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(item.status)) {
@@ -469,13 +471,13 @@ class OrderService {
 
     async returnOrderItem(orderId, itemId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         const item = order.orderedItems.id(itemId);
-        if (!item) throw new Error("Item not found in order.");
+        if (!item) throw new Error(ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
         if (item.status !== 'Delivered') {
-            throw new Error("Only delivered items can be returned.");
+            throw new Error(ORDER_MESSAGES.ONLY_DELIVERED_ITEMS_CAN_BE_RETURNE);
         }
 
         item.status = 'Return Request';

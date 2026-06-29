@@ -1,6 +1,8 @@
 import Coupon from "../../models/couponModel.js";
 import Cart from "../../models/cartModel.js";
 import { applyOffers } from "./productServices.js";
+import { COUPON_MESSAGES } from "../../constants/messages.js";
+
 
 class CouponService {
     /**
@@ -62,24 +64,24 @@ class CouponService {
      */
     async validateCoupon(code, userId, serverCartTotal) {
         if (!code) {
-            throw new Error("Please enter a coupon code.");
+            throw new Error(COUPON_MESSAGES.PLEASE_ENTER_A_COUPON_CODE);
         }
 
         const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true });
 
         if (!coupon) {
-            throw new Error("Coupon is not available.");
+            throw new Error(COUPON_MESSAGES.COUPON_IS_NOT_AVAILABLE);
         }
 
         if (new Date() > coupon.expirationDate) {
-            throw new Error("This coupon has expired.");
+            throw new Error(COUPON_MESSAGES.THIS_COUPON_HAS_EXPIRED);
         }
 
         const alreadyUsed = coupon.usedBy.some(
             usedUserId => usedUserId.toString() === userId.toString()
         );
         if (alreadyUsed) {
-            throw new Error("You have already used this coupon.");
+            throw new Error(COUPON_MESSAGES.YOU_HAVE_ALREADY_USED_THIS_COUPON);
         }
 
         const total = Number(serverCartTotal) || 0;
@@ -101,18 +103,18 @@ class CouponService {
         // Re-fetch from DB in case coupon was deactivated / already used
         const coupon = await Coupon.findOne({ _id: appliedCoupon._id, isActive: true });
         if (!coupon) {
-            throw new Error("The applied coupon is no longer valid. Please remove it and try again.");
+            throw new Error(COUPON_MESSAGES.THE_APPLIED_COUPON_IS_NO_LONGER_VAL);
         }
 
         if (new Date() > coupon.expirationDate) {
-            throw new Error("The applied coupon has expired. Please remove it and try again.");
+            throw new Error(COUPON_MESSAGES.THE_APPLIED_COUPON_HAS_EXPIRED_PLEA);
         }
 
         const alreadyUsed = coupon.usedBy.some(
             usedUserId => usedUserId.toString() === userId.toString()
         );
         if (alreadyUsed) {
-            throw new Error("This coupon has already been used.");
+            throw new Error(COUPON_MESSAGES.THIS_COUPON_HAS_ALREADY_BEEN_USED);
         }
 
         const total = Number(serverCartTotal) || 0;

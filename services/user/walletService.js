@@ -1,4 +1,6 @@
 import Wallet from "../../models/walletModel.js";
+import { WALLET_MESSAGES } from "../../constants/messages.js";
+
 
 // Get or create wallet for a user
 export const getOrCreateWallet = async (userId) => {
@@ -28,7 +30,7 @@ export const creditWallet = async (userId, amount, description, orderId = null) 
 export const debitWallet = async (userId, amount, description, orderId = null) => {
     const wallet = await getOrCreateWallet(userId);
     if (wallet.balance < amount) {
-        throw new Error("Insufficient wallet balance");
+        throw new Error(WALLET_MESSAGES.INSUFFICIENT_WALLET_BALANCE);
     }
     wallet.balance -= amount;
     wallet.transactions.push({

@@ -1,5 +1,7 @@
 import crypto from "crypto";
 import razorpay from "../../config/razorpay.js";
+import { PAYMENT_MESSAGES } from "../../constants/messages.js";
+
 
 // Razorpay maximum allowed amount is ₹5,00,000 (50,000,000 paise)
 const RAZORPAY_MAX_AMOUNT_INR = 500000;
@@ -8,7 +10,7 @@ export const createRazorpayOrder = async (amount) => {
   const amountInPaise = Math.round(Number(amount) * 100);
 
   if (!Number.isInteger(amountInPaise) || amountInPaise <= 0) {
-    throw new Error("Invalid payment amount");
+    throw new Error(PAYMENT_MESSAGES.INVALID_PAYMENT_AMOUNT);
   }
 
   if (Number(amount) > RAZORPAY_MAX_AMOUNT_INR) {

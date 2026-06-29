@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Product from "../../models/productModel.js";
 import * as walletService from "../user/walletService.js";
+import { ADMIN_ORDER_MESSAGES } from "../../constants/messages.js";
+
 
 const ORDER_PROGRESS_STATUSES = ['Pending', 'Shipped', 'Out for Delivery', 'Delivered'];
 const RETURN_STATUSES = ['Return Request', 'Returned'];
@@ -10,7 +12,7 @@ const VALID_ORDER_STATUSES = [...ORDER_PROGRESS_STATUSES, 'Cancelled', ...RETURN
 
 const validateStatusTransition = (currentStatus, nextStatus, entityName = "Order") => {
     if (!VALID_ORDER_STATUSES.includes(nextStatus)) {
-        throw new Error("Invalid order status.");
+        throw new Error(ADMIN_ORDER_MESSAGES.INVALID_ORDER_STATUS);
     }
 
     if (currentStatus === nextStatus) return;
@@ -25,7 +27,7 @@ const validateStatusTransition = (currentStatus, nextStatus, entityName = "Order
     }
 
     if (nextStatus === 'Return Request') {
-        throw new Error("Return requests must be submitted by the customer.");
+        throw new Error(ADMIN_ORDER_MESSAGES.RETURN_REQUESTS_MUST_BE_SUBMITTED_B);
     }
 
     const currentIndex = ORDER_PROGRESS_STATUSES.indexOf(currentStatus);
@@ -171,10 +173,10 @@ export const updateOrderStatus = async (orderId, status) => {
 
 export const updateOrderItemStatus = async (orderId, itemId, status) => {
     const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found.");
+    if (!order) throw new Error(ADMIN_ORDER_MESSAGES.ORDER_NOT_FOUND);
 
     const item = order.orderedItems.id(itemId);
-    if (!item) throw new Error("Item not found in order.");
+    if (!item) throw new Error(ADMIN_ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
     const oldStatus = item.status;
     if (oldStatus === status) return order;

@@ -2,6 +2,8 @@ import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
 import { applyOffers } from "./productServices.js";
+import { CART_MESSAGES } from "../../constants/messages.js";
+
 
 // Fetch user's cart
 export const getCart = async (userId) => {
@@ -49,16 +51,16 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
 
     // Check if product exists and variant is valid
     const product = await Product.findById(productId).populate('category_id');
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(CART_MESSAGES.PRODUCT_NOT_FOUND);
     if (product.is_blocked || (product.category_id && product.category_id.is_blocked)) {
-        throw new Error("This product is currently unavailable");
+        throw new Error(CART_MESSAGES.THIS_PRODUCT_IS_CURRENTLY_UNAVAILAB);
     }
 
     const variant = product.variants.id(variantId);
-    if (!variant) throw new Error("Variant not found");
+    if (!variant) throw new Error(CART_MESSAGES.VARIANT_NOT_FOUND);
 
     if (variant.stock <= 0) {
-        throw new Error("Product is out of stock");
+        throw new Error(CART_MESSAGES.PRODUCT_IS_OUT_OF_STOCK);
     }
 
     if (variant.stock < quantity) {
@@ -103,14 +105,14 @@ export const addToCart = async (userId, productId, variantId, quantity = 1) => {
 // Update item quantity
 export const updateQuantity = async (userId, itemId, newQuantity) => {
     const cart = await Cart.findOne({ userId });
-    if (!cart) throw new Error("Cart not found");
+    if (!cart) throw new Error(CART_MESSAGES.CART_NOT_FOUND);
 
     const item = cart.items.id(itemId);
-    if (!item) throw new Error("Item not found in cart");
+    if (!item) throw new Error(CART_MESSAGES.ITEM_NOT_FOUND_IN_CART);
 
     const product = await Product.findById(item.productId).populate('category_id');
     if (!product || product.is_blocked || (product.category_id && product.category_id.is_blocked)) {
-        throw new Error("This product is currently unavailable");
+        throw new Error(CART_MESSAGES.THIS_PRODUCT_IS_CURRENTLY_UNAVAILAB);
     }
     const variant = product.variants.id(item.variantId);
 
@@ -132,7 +134,7 @@ export const updateQuantity = async (userId, itemId, newQuantity) => {
 // Remove item from cart
 export const removeItem = async (userId, itemId) => {
     const cart = await Cart.findOne({ userId });
-    if (!cart) throw new Error("Cart not found");
+    if (!cart) throw new Error(CART_MESSAGES.CART_NOT_FOUND);
 
     cart.items = cart.items.filter(item => item._id.toString() !== itemId);
     await cart.save();

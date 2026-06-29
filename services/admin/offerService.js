@@ -1,4 +1,6 @@
 import Offer from "../../models/offerModel.js";
+import { OFFER_MESSAGES } from "../../constants/messages.js";
+
 
 const adminOfferFilter = { offerType: { $in: ["product", "category"] } };
 
@@ -71,7 +73,7 @@ class OfferService {
      */
     async validateReferralCode(code, userId) {
         if (!code) {
-            throw new Error("Please enter a referral code.");
+            throw new Error(OFFER_MESSAGES.PLEASE_ENTER_A_REFERRAL_CODE);
         }
 
         const now = new Date();
@@ -82,19 +84,19 @@ class OfferService {
         });
         
         if (!offer) {
-            throw new Error("Invalid referral code.");
+            throw new Error(OFFER_MESSAGES.INVALID_REFERRAL_CODE);
         }
 
         if (now < offer.startDate || now > offer.endDate) {
-            throw new Error("This referral code is expired or not active yet.");
+            throw new Error(OFFER_MESSAGES.THIS_REFERRAL_CODE_IS_EXPIRED_OR_NO);
         }
 
         if (offer.maxUses !== null && offer.usedCount >= offer.maxUses) {
-            throw new Error("This referral code has reached its maximum usage limit.");
+            throw new Error(OFFER_MESSAGES.THIS_REFERRAL_CODE_HAS_REACHED_ITS_);
         }
 
         if (offer.usedBy.includes(userId)) {
-            throw new Error("You have already used this referral code.");
+            throw new Error(OFFER_MESSAGES.YOU_HAVE_ALREADY_USED_THIS_REFERRAL);
         }
 
         return offer;

@@ -1,5 +1,7 @@
 import Category from "../../models/categoryModel.js";
 import Product from "../../models/productModel.js";
+import { CATEGORY_MESSAGES } from "../../constants/messages.js";
+
 
 
  // Get all categories with pagination and product counts.
@@ -66,7 +68,7 @@ export const createCategory = async (categoryData) => {
     });
 
     if (existingCategory) {
-        throw new Error("Category already exists");
+        throw new Error(CATEGORY_MESSAGES.CATEGORY_ALREADY_EXISTS);
     }
 
     const newCategory = new Category({
@@ -91,7 +93,7 @@ export const updateCategory = async (id, categoryData) => {
     });
 
     if (existingCategory) {
-        throw new Error("Category name already exists");
+        throw new Error(CATEGORY_MESSAGES.CATEGORY_NAME_ALREADY_EXISTS);
     }
 
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -105,7 +107,7 @@ export const updateCategory = async (id, categoryData) => {
     );
 
     if (!updatedCategory) {
-        throw new Error("Category not found");
+        throw new Error(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
 
     return updatedCategory;
@@ -117,7 +119,7 @@ export const updateCategory = async (id, categoryData) => {
 export const toggleCategoryStatus = async (id) => {
     const category = await Category.findById(id);
     if (!category) {
-        throw new Error("Category not found");
+        throw new Error(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
     category.is_blocked = !category.is_blocked;
     return await category.save();
@@ -129,7 +131,7 @@ export const toggleCategoryStatus = async (id) => {
 export const deleteCategory = async (id) => {
     const deletedCategory = await Category.findByIdAndDelete(id);
     if (!deletedCategory) {
-        throw new Error("Category not found");
+        throw new Error(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
     return deletedCategory;
 };
