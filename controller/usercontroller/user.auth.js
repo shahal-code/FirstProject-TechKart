@@ -1,7 +1,7 @@
 import * as AuthService from "../../services/user/authService.js";
 import { AUTH_MESSAGES } from "../../constants/messages.js";
-import {
 import { STATUS_CODES } from "../../constants/statusCode.js";
+import {
 
     validateSignupData,
     validateLoginData,
