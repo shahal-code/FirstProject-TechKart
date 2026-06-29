@@ -1,6 +1,8 @@
 import orderService from "../../services/user/orderService.js";
 import { generateInvoice } from "../../utils/invoiceGenerator.js";
 import { ORDER_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 
 export const getOrders = async (req, res) => {
@@ -21,7 +23,7 @@ export const getOrders = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching user orders:", error);
-        res.status(500).redirect("/user/profile");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).redirect("/user/profile");
     }
 };
 
@@ -32,7 +34,7 @@ export const getOrderDetails = async (req, res) => {
 
         const order = await orderService.getOrderById(orderId, userId);
         if (!order) {
-            return res.status(404).redirect("/user/orders");
+            return res.status(STATUS_CODES.NOT_FOUND).redirect("/user/orders");
         }
 
         res.render("user/orders/orderDetails", {
@@ -41,7 +43,7 @@ export const getOrderDetails = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching order details:", error);
-        res.status(500).redirect("/user/orders");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).redirect("/user/orders");
     }
 };
 
@@ -53,10 +55,10 @@ export const cancelOrder = async (req, res) => {
 
         await orderService.cancelOrder(orderId, userId, reason);
 
-        res.status(200).json({ success: true, message: ORDER_MESSAGES.CANCELLED });
+        res.status(STATUS_CODES.OK).json({ success: true, message: ORDER_MESSAGES.CANCELLED });
     } catch (error) {
         console.error("Error cancelling order:", error);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
@@ -68,10 +70,10 @@ export const returnOrder = async (req, res) => {
 
         await orderService.returnOrder(orderId, userId, reason);
 
-        res.status(200).json({ success: true, message: ORDER_MESSAGES.RETURN_REQUESTED });
+        res.status(STATUS_CODES.OK).json({ success: true, message: ORDER_MESSAGES.RETURN_REQUESTED });
     } catch (error) {
         console.error("Error returning order:", error);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
@@ -82,7 +84,7 @@ export const downloadInvoice = async (req, res) => {
 
         const order = await orderService.getOrderById(orderId, userId);
         if (!order) {
-            return res.status(404).send(ORDER_MESSAGES.INVOICE_NOT_AVAILABLE);
+            return res.status(STATUS_CODES.NOT_FOUND).send(ORDER_MESSAGES.INVOICE_NOT_AVAILABLE);
         }
 
         // Set response headers
@@ -94,7 +96,7 @@ export const downloadInvoice = async (req, res) => {
 
     } catch (error) {
         console.error("Invoice Download Error:", error);
-        res.status(500).send(ORDER_MESSAGES.INVOICE_FAILED);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(ORDER_MESSAGES.INVOICE_FAILED);
     }
 };
 
@@ -106,10 +108,10 @@ export const cancelOrderItem = async (req, res) => {
 
         await orderService.cancelOrderItem(orderId, itemId, userId, reason);
 
-        res.status(200).json({ success: true, message: ORDER_MESSAGES.ITEM_CANCELLED });
+        res.status(STATUS_CODES.OK).json({ success: true, message: ORDER_MESSAGES.ITEM_CANCELLED });
     } catch (error) {
         console.error("Error cancelling order item:", error);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
@@ -121,9 +123,9 @@ export const returnOrderItem = async (req, res) => {
 
         await orderService.returnOrderItem(orderId, itemId, userId, reason);
 
-        res.status(200).json({ success: true, message: ORDER_MESSAGES.ITEM_RETURN_REQUESTED });
+        res.status(STATUS_CODES.OK).json({ success: true, message: ORDER_MESSAGES.ITEM_RETURN_REQUESTED });
     } catch (error) {
         console.error("Error returning order item:", error);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };

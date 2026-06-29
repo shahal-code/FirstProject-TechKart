@@ -1,8 +1,10 @@
+import { STATUS_CODES } from "../constants/statusCode.js";
+
 
 // Middleware to handle 404 Not Found errors
 export const notFound = (req, res, next) => {
     const error = new Error(`Not Found - ${req.originalUrl}`);
-    res.status(404);
+    res.status(STATUS_CODES.NOT_FOUND);
     next(error);
 };
 

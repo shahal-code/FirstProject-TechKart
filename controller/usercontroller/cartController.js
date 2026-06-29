@@ -2,6 +2,8 @@ import * as cartService from "../../services/user/cartService.js";
 import CouponService from "../../services/user/couponService.js";
 import OrderService from "../../services/user/orderService.js";
 import { CART_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 // Render Cart Page
 export const getCartView = async (req, res) => {
@@ -37,7 +39,7 @@ export const getCartView = async (req, res) => {
         });
     } catch (error) {
         console.error("Cart Error:", error);
-        res.status(500).send(CART_MESSAGES.LOAD_FAILED);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.LOAD_FAILED);
     }
 };
 
@@ -46,7 +48,7 @@ export const addItem = async (req, res) => {
     try {
         const userId = req.session.user;
         if (!userId) {
-            return res.status(401).json({
+            return res.status(STATUS_CODES.UNAUTHORIZED).json({
                 success: false,
                 message: CART_MESSAGES.LOGIN_REQUIRED,
                 redirect: "/user/login"
@@ -56,9 +58,9 @@ export const addItem = async (req, res) => {
         const { productId, variantId, quantity } = req.body;
 
         const cart = await cartService.addToCart(userId, productId, variantId, Number(quantity));
-        res.status(200).json({ success: true, cart, message: CART_MESSAGES.ITEM_ADDED });
+        res.status(STATUS_CODES.OK).json({ success: true, cart, message: CART_MESSAGES.ITEM_ADDED });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message, code: error.code || null });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message, code: error.code || null });
     }
 };
 
@@ -83,9 +85,9 @@ export const updateQuantity = async (req, res) => {
             }
         }
 
-        res.status(200).json({ success: true, cart, message: CART_MESSAGES.QUANTITY_UPDATED, couponRemoved, couponWarning });
+        res.status(STATUS_CODES.OK).json({ success: true, cart, message: CART_MESSAGES.QUANTITY_UPDATED, couponRemoved, couponWarning });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
@@ -111,9 +113,9 @@ export const removeItem = async (req, res) => {
             }
         }
 
-        res.status(200).json({ success: true, cart, message: CART_MESSAGES.ITEM_REMOVED, couponRemoved, couponWarning });
+        res.status(STATUS_CODES.OK).json({ success: true, cart, message: CART_MESSAGES.ITEM_REMOVED, couponRemoved, couponWarning });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
@@ -139,12 +141,12 @@ export const validateCheckout = async (req, res) => {
                 icon = "success";
             }
 
-            return res.status(400).json({ success: false, message, title, icon });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message, title, icon });
         }
 
-        res.status(200).json({ success: true });
+        res.status(STATUS_CODES.OK).json({ success: true });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message || CART_MESSAGES.VALIDATION_FAILED });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message || CART_MESSAGES.VALIDATION_FAILED });
     }
 };
 

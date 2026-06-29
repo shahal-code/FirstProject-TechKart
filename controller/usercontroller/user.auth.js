@@ -1,6 +1,8 @@
 import * as AuthService from "../../services/user/authService.js";
 import { AUTH_MESSAGES } from "../../constants/messages.js";
 import {
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
     validateSignupData,
     validateLoginData,
     validateEmail,
@@ -17,7 +19,7 @@ export const loadlogin = async (req, res) => {
         res.render("user/auth/login", { message, errors, email });
     } catch (error) {
         console.error("Error loading login page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -54,7 +56,7 @@ export const loadsignup = async (req, res) => {
         res.render("user/auth/signup", { message, errors, fullname, email, referralCode });
     } catch (error) {
         console.error("Error loading signup page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -91,7 +93,7 @@ export const load_otp = async (req, res) => {
         res.render("user/auth/otp", { message, actionUrl: "/user/otp", resendUrl: "/user/resend-otp", expiresIn });
     } catch (error) {
         console.error("Error loading OTP page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -124,7 +126,7 @@ export const Verifyotp = async (req, res) => {
 export const resendOTP = async (req, res) => {
     try {
         const email = req.session.userData ? req.session.userData.email : req.session.resetEmail;
-        if (!email) return res.status(400).json({ success: false, message: AUTH_MESSAGES.SESSION_EXPIRED });
+        if (!email) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: AUTH_MESSAGES.SESSION_EXPIRED });
 
         const { otp, otpExpiry } = await AuthService.resendOtp(email);
         req.session.otp = otp;
@@ -133,13 +135,13 @@ export const resendOTP = async (req, res) => {
         req.session.save((err) => {
             if (err) {
                 console.error("Session save error:", err);
-                return res.status(500).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
+                return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
             }
-            res.status(200).json({ success: true, message: AUTH_MESSAGES.OTP_RESENT });
+            res.status(STATUS_CODES.OK).json({ success: true, message: AUTH_MESSAGES.OTP_RESENT });
         });
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
-        res.status(500).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
     }
 };
 
@@ -150,7 +152,7 @@ export const load_Forgot_Password = async (req, res) => {
         res.render("user/auth/forgot-password", { message, email });
     } catch (error) {
         console.error("Error loading forgot password page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 

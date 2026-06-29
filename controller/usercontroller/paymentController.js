@@ -2,6 +2,8 @@ import Cart from "../../models/cartModel.js";
 import * as paymentService from "../../services/user/paymentServices.js";
 import OrderService from "../../services/user/orderService.js";
 import { PAYMENT_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 export const createOrder = async (req, res) => {
   try {
@@ -9,7 +11,7 @@ export const createOrder = async (req, res) => {
     const userId = req.session.user;
 
     if (!amount) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: PAYMENT_MESSAGES.AMOUNT_REQUIRED,
       });
@@ -18,16 +20,16 @@ export const createOrder = async (req, res) => {
     if (orderId) {
       const existingOrder = await OrderService.getOrderByDisplayId(orderId, userId);
       if (!existingOrder) {
-        return res.status(404).json({ success: false, message: PAYMENT_MESSAGES.ORDER_NOT_FOUND });
+        return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: PAYMENT_MESSAGES.ORDER_NOT_FOUND });
       }
       if (existingOrder.status !== 'Pending') {
-        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.RETRY_PENDING_FAILED });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PAYMENT_MESSAGES.RETRY_PENDING_FAILED });
       }
       if (existingOrder.paymentStatus !== 'Failed' && !(existingOrder.paymentStatus === 'Pending' && existingOrder.inventoryProcessed === false)) {
-        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.RETRY_NOT_ALLOWED });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PAYMENT_MESSAGES.RETRY_NOT_ALLOWED });
       }
       if (Number(existingOrder.finalAmount) !== Number(amount)) {
-        return res.status(400).json({ success: false, message: PAYMENT_MESSAGES.AMOUNT_MISMATCH });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PAYMENT_MESSAGES.AMOUNT_MISMATCH });
       }
     } else {
       // Pre-flight check: validate the cart and recalculate price
@@ -41,22 +43,22 @@ export const createOrder = async (req, res) => {
           if (final < expected) {
             message = PAYMENT_MESSAGES.PRICE_CHANGE_DECREASE;
           }
-          return res.status(400).json({ success: false, message });
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message });
         }
       } catch (validationError) {
-        return res.status(400).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: validationError.message || "Cart validation failed. Please refresh the page." });
       }
     }
 
     const order = await paymentService.createRazorpayOrder(amount);
 
-    res.status(200).json({
+    res.status(STATUS_CODES.OK).json({
       success: true,
       order,
     });
   } catch (error) {
     console.error("Razorpay Order Creation Error:", error);
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || "Failed to create payment order",
     });
@@ -68,7 +70,7 @@ export const verifyPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: PAYMENT_MESSAGES.DETAILS_REQUIRED,
       });
@@ -81,19 +83,19 @@ export const verifyPayment = async (req, res) => {
     });
 
     if (!isValid) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: PAYMENT_MESSAGES.INVALID_SIGNATURE,
       });
     }
 
-    res.status(200).json({
+    res.status(STATUS_CODES.OK).json({
       success: true,
       message: PAYMENT_MESSAGES.VERIFIED,
     });
   } catch (error) {
     console.error("Payment Verification Error:", error);
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || "Failed to verify payment",
     });

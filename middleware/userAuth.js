@@ -2,6 +2,8 @@ import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
 import Wishlist from "../models/wishlistModel.js";
 import Product from "../models/productModel.js";
+import { STATUS_CODES } from "../constants/statusCode.js";
+
 
 export const isAuthenticated = async (req, res, next) => {
   if (req.session.user) {
@@ -14,7 +16,7 @@ export const isAuthenticated = async (req, res, next) => {
         req.session.destroy((err) => {
           if (err) console.log("Session destruction error:", err);
           if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-            return res.status(401).json({ success: false, message: 'Account blocked' });
+            return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: 'Account blocked' });
           }
           res.redirect("/user/login?message=Your account has been blocked by the administrator");
         });
@@ -22,13 +24,13 @@ export const isAuthenticated = async (req, res, next) => {
     } catch (error) {
       console.log("Middleware Error:", error);
       if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-        return res.status(401).json({ success: false, message: 'Authentication failed' });
+        return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: 'Authentication failed' });
       }
       res.redirect("/user/login");
     }
   } else {
     if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-      return res.status(401).json({ 
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({ 
         success: false, 
         message: 'Authentication required',
         unauthenticated: true 
@@ -70,7 +72,7 @@ export const isBlocked = async (req, res, next) => {
       if (user && user.isBlocked) {
         return req.session.destroy((err) => {
           if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-            return res.status(403).json({ success: false, message: 'Account blocked' });
+            return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: 'Account blocked' });
           }
           res.redirect("/user/login?message=Your account has been blocked");
         });

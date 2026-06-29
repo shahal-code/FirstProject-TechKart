@@ -3,6 +3,8 @@ import { validateChangePasswordData, validateEmail } from '../../utils/validatio
 import { sendVerificationLink, sendOtpEmail } from '../../config/nodemailer.js';
 import { PROFILE_MESSAGES, AUTH_MESSAGES, GENERIC_MESSAGES } from '../../constants/messages.js';
 import crypto from 'crypto';
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 export const load_profile = async (req, res) => {
     try {
@@ -10,7 +12,7 @@ export const load_profile = async (req, res) => {
         res.render("user/profile/profile", { user, path: "/user/profile" });
     } catch (error) {
         console.error("Error loading profile:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -20,7 +22,7 @@ export const load_editProfile = async (req, res) => {
         res.render("user/profile/edit-profile", { user, path: "/user/profile" });
     } catch (error) {
         console.error("Error loading edit profile page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -44,7 +46,7 @@ export const editProfile = async (req, res) => {
 
     } catch (error) {
         console.error("Edit Profile Error:", error);
-        res.status(500).json({ success: false, message: PROFILE_MESSAGES.SOMETHING_WRONG });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: PROFILE_MESSAGES.SOMETHING_WRONG });
     }
 };
 
@@ -57,7 +59,7 @@ export const load_changePassword = async (req, res) => {
         res.render("user/auth/change-password", { user, path: "/user/profile" });
     } catch (error) {
         console.error("Error loading change password page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -70,7 +72,7 @@ export const load_changeEmail = async (req, res) => {
         res.render("user/auth/change-email", { user, path: "/user/profile" });
     } catch (error) {
         console.error("Error loading change email page:", error.message);
-        res.status(500).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -79,7 +81,7 @@ export const changePassword = async (req, res) => {
         const { currentPassword, newPassword, confirmPassword } = req.body;
         const userId = req.session.user;
         const errors = validateChangePasswordData(req.body);
-        if (errors) return res.status(400).json({ success: false, errors });
+        if (errors) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, errors });
 
         await ProfileService.changePassword(userId, currentPassword, newPassword);
         res.json({ success: true, message: PROFILE_MESSAGES.PASSWORD_UPDATED, redirect: "/user/profile" });
@@ -99,7 +101,7 @@ export const requestChangeEmailOtp = async (req, res) => {
         const user = await ProfileService.getProfile(userId);
 
         if (!user || !user.email) {
-            return res.status(400).json({ success: false, message: PROFILE_MESSAGES.NO_CURRENT_EMAIL });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PROFILE_MESSAGES.NO_CURRENT_EMAIL });
         }
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -110,13 +112,13 @@ export const requestChangeEmailOtp = async (req, res) => {
 
         const isSent = await sendOtpEmail(user.email, otp);
         if (!isSent) {
-            return res.status(500).json({ success: false, message: PROFILE_MESSAGES.OTP_SEND_FAILED });
+            return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: PROFILE_MESSAGES.OTP_SEND_FAILED });
         }
 
         res.json({ success: true, message: PROFILE_MESSAGES.OTP_SENT });
     } catch (error) {
         console.error("Request OTP Error:", error);
-        res.status(500).json({ success: false, message: PROFILE_MESSAGES.REQUEST_OTP_FAILED });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: PROFILE_MESSAGES.REQUEST_OTP_FAILED });
     }
 };
 
@@ -126,11 +128,11 @@ export const verifyChangeEmailOtp = async (req, res) => {
         const sessionOtpData = req.session.changeEmailOTP;
 
         if (!sessionOtpData || sessionOtpData.otp !== otp) {
-            return res.status(400).json({ success: false, message: PROFILE_MESSAGES.INVALID_OTP });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PROFILE_MESSAGES.INVALID_OTP });
         }
         if (Date.now() > sessionOtpData.expiresAt) {
             delete req.session.changeEmailOTP;
-            return res.status(400).json({ success: false, message: PROFILE_MESSAGES.OTP_EXPIRED });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PROFILE_MESSAGES.OTP_EXPIRED });
         }
 
         // OTP valid, allow moving to new email step
@@ -140,7 +142,7 @@ export const verifyChangeEmailOtp = async (req, res) => {
         res.json({ success: true, message: PROFILE_MESSAGES.EMAIL_VERIFIED });
     } catch (error) {
         console.error("Verify OTP Error:", error);
-        res.status(500).json({ success: false, message: PROFILE_MESSAGES.VERIFY_OTP_FAILED });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: PROFILE_MESSAGES.VERIFY_OTP_FAILED });
     }
 };
 export const sendChangeEmailLink = async (req, res) => {
@@ -149,14 +151,14 @@ export const sendChangeEmailLink = async (req, res) => {
         const userId = req.session.user;
 
         if (!req.session.currentEmailVerifiedForChange) {
-            return res.status(403).json({ success: false, message: PROFILE_MESSAGES.VERIFY_CURRENT_FIRST });
+            return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: PROFILE_MESSAGES.VERIFY_CURRENT_FIRST });
         }
 
         const emailError = validateEmail(newEmail);
-        if (emailError) return res.status(400).json({ success: false, message: emailError });
+        if (emailError) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: emailError });
 
         const user = await ProfileService.getProfile(userId);
-        if (user.email === newEmail) return res.status(400).json({ success: false, message: PROFILE_MESSAGES.SAME_EMAIL });
+        if (user.email === newEmail) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: PROFILE_MESSAGES.SAME_EMAIL });
 
         const token = crypto.randomBytes(32).toString('hex');
         req.session.changeEmailToken = {
@@ -178,7 +180,7 @@ export const sendChangeEmailLink = async (req, res) => {
 
     } catch (error) {
         console.error("Send Email Link Error:", error);
-        res.status(500).json({ success: false, message: PROFILE_MESSAGES.SEND_LINK_FAILED });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: PROFILE_MESSAGES.SEND_LINK_FAILED });
     }
 };
 

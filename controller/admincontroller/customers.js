@@ -1,6 +1,8 @@
 import User from "../../models/userModel.js";
 import * as CustomerService from "../../services/admin/customerService.js";
 import { GENERIC_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 export const getUsers = async (req, res) => {
   try {
@@ -34,7 +36,7 @@ export const getUsers = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
-    res.status(500).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
