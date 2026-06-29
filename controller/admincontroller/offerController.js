@@ -3,6 +3,7 @@ import Offer from "../../models/offerModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
 import OfferService from "../../services/admin/offerService.js";
+import { OFFER_MESSAGES } from "../../constants/messages.js";
 
 const ADMIN_OFFER_TYPES = ["product", "category"];
 
@@ -33,7 +34,7 @@ export const getAddOfferPage = async (req, res) => {
         res.render("admin/offers/add-offer", { products, categories, activePage: "offers" });
     } catch (error) {
         console.error("Load Add Offer Page Error:", error);
-        res.status(500).send("Server Error");
+        res.status(500).send(OFFER_MESSAGES.SERVER_ERROR);
     }
 };
 
@@ -64,15 +65,15 @@ export const createOffer = async (req, res) => {
         const { name, description, offerType, discountType, discountValue, maxDiscountAmount, applicableTo, startDate, endDate } = req.body;
 
         if (!name || !offerType || !discountType || !discountValue || !startDate || !endDate) {
-            return res.status(400).json({ success: false, message: "Required fields are missing." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.REQUIRED_FIELDS_MISSING });
         }
 
         if (!ADMIN_OFFER_TYPES.includes(offerType)) {
-            return res.status(400).json({ success: false, message: "Only product and category offers can be managed from admin." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.ADMIN_ONLY });
         }
 
         if (!applicableTo) {
-            return res.status(400).json({ success: false, message: "Please select an applicable item." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.SELECT_APPLICABLE_ITEM });
         }
 
         const offerData = {
@@ -98,14 +99,14 @@ export const createOffer = async (req, res) => {
         const offer = new Offer(offerData);
         await offer.save();
 
-        res.json({ success: true, message: "Offer created successfully!" });
+        res.json({ success: true, message: OFFER_MESSAGES.CREATED });
     } catch (error) {
         console.error("Create Offer Error:", error);
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern || {})[0] || 'field';
             return res.status(400).json({ success: false, message: `A duplicate value was detected (${field}). Please use a unique offer name.` });
         }
-        res.status(500).json({ success: false, message: "Failed to create offer." });
+        res.status(500).json({ success: false, message: OFFER_MESSAGES.CREATE_FAILED });
     }
 };
 
@@ -118,21 +119,21 @@ export const updateOffer = async (req, res) => {
         const { name, description, discountType, discountValue, maxDiscountAmount, applicableTo, startDate, endDate } = req.body;
 
         if (!name || !discountType || !discountValue || !startDate || !endDate) {
-            return res.status(400).json({ success: false, message: "Required fields are missing." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.REQUIRED_FIELDS_MISSING });
         }
 
         const existingOffer = await Offer.findById(id).select("offerType");
         if (!existingOffer) {
-            return res.status(404).json({ success: false, message: "Offer not found." });
+            return res.status(404).json({ success: false, message: OFFER_MESSAGES.NOT_FOUND });
         }
 
         const offerType = existingOffer.offerType;
         if (!ADMIN_OFFER_TYPES.includes(offerType)) {
-            return res.status(400).json({ success: false, message: "Referral offers cannot be managed from admin." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.REFERRAL_NOT_ALLOWED });
         }
 
         if (!applicableTo) {
-            return res.status(400).json({ success: false, message: "Please select an applicable item." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.SELECT_APPLICABLE_ITEM });
         }
 
         const offerData = {
@@ -155,14 +156,14 @@ export const updateOffer = async (req, res) => {
 
         await Offer.findByIdAndUpdate(id, offerData);
 
-        res.json({ success: true, message: "Offer updated successfully!" });
+        res.json({ success: true, message: OFFER_MESSAGES.UPDATED });
     } catch (error) {
         console.error("Update Offer Error:", error);
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern || {})[0] || 'field';
             return res.status(400).json({ success: false, message: `A duplicate value was detected (${field}). Please use a unique offer name.` });
         }
-        res.status(500).json({ success: false, message: "Failed to update offer." });
+        res.status(500).json({ success: false, message: OFFER_MESSAGES.UPDATE_FAILED });
     }
 };
 
@@ -174,17 +175,17 @@ export const toggleOfferStatus = async (req, res) => {
         const { id } = req.params;
         const offer = await Offer.findById(id);
         if (!offer) {
-            return res.status(404).json({ success: false, message: "Offer not found." });
+            return res.status(404).json({ success: false, message: OFFER_MESSAGES.NOT_FOUND });
         }
         if (!ADMIN_OFFER_TYPES.includes(offer.offerType)) {
-            return res.status(400).json({ success: false, message: "Referral offers cannot be managed from admin." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.REFERRAL_NOT_ALLOWED });
         }
         offer.isActive = !offer.isActive;
         await offer.save();
         res.json({ success: true, message: `Offer ${offer.isActive ? 'activated' : 'deactivated'} successfully.` });
     } catch (error) {
         console.error("Toggle Offer Error:", error);
-        res.status(500).json({ success: false, message: "Failed to update offer status." });
+        res.status(500).json({ success: false, message: OFFER_MESSAGES.STATUS_UPDATE_FAILED });
     }
 };
 
@@ -196,16 +197,16 @@ export const deleteOffer = async (req, res) => {
         const { id } = req.params;
         const offer = await Offer.findById(id).select("offerType");
         if (!offer) {
-            return res.status(404).json({ success: false, message: "Offer not found." });
+            return res.status(404).json({ success: false, message: OFFER_MESSAGES.NOT_FOUND });
         }
         if (!ADMIN_OFFER_TYPES.includes(offer.offerType)) {
-            return res.status(400).json({ success: false, message: "Referral offers cannot be managed from admin." });
+            return res.status(400).json({ success: false, message: OFFER_MESSAGES.REFERRAL_NOT_ALLOWED });
         }
 
         await Offer.findByIdAndDelete(id);
-        res.json({ success: true, message: "Offer deleted successfully." });
+        res.json({ success: true, message: OFFER_MESSAGES.DELETED });
     } catch (error) {
         console.error("Delete Offer Error:", error);
-        res.status(500).json({ success: false, message: "Failed to delete offer." });
+        res.status(500).json({ success: false, message: OFFER_MESSAGES.DELETE_FAILED });
     }
 };

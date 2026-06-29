@@ -1,5 +1,6 @@
 import orderService from "../../services/user/orderService.js";
 import { generateInvoice } from "../../utils/invoiceGenerator.js";
+import { ORDER_MESSAGES } from "../../constants/messages.js";
 
 
 export const getOrders = async (req, res) => {
@@ -52,7 +53,7 @@ export const cancelOrder = async (req, res) => {
 
         await orderService.cancelOrder(orderId, userId, reason);
 
-        res.status(200).json({ success: true, message: "Order cancelled successfully." });
+        res.status(200).json({ success: true, message: ORDER_MESSAGES.CANCELLED });
     } catch (error) {
         console.error("Error cancelling order:", error);
         res.status(400).json({ success: false, message: error.message });
@@ -67,7 +68,7 @@ export const returnOrder = async (req, res) => {
 
         await orderService.returnOrder(orderId, userId, reason);
 
-        res.status(200).json({ success: true, message: "Return request submitted." });
+        res.status(200).json({ success: true, message: ORDER_MESSAGES.RETURN_REQUESTED });
     } catch (error) {
         console.error("Error returning order:", error);
         res.status(400).json({ success: false, message: error.message });
@@ -81,7 +82,7 @@ export const downloadInvoice = async (req, res) => {
 
         const order = await orderService.getOrderById(orderId, userId);
         if (!order) {
-            return res.status(404).send("Invoice not available.");
+            return res.status(404).send(ORDER_MESSAGES.INVOICE_NOT_AVAILABLE);
         }
 
         // Set response headers
@@ -93,7 +94,7 @@ export const downloadInvoice = async (req, res) => {
 
     } catch (error) {
         console.error("Invoice Download Error:", error);
-        res.status(500).send("Failed to generate invoice.");
+        res.status(500).send(ORDER_MESSAGES.INVOICE_FAILED);
     }
 };
 
@@ -105,7 +106,7 @@ export const cancelOrderItem = async (req, res) => {
 
         await orderService.cancelOrderItem(orderId, itemId, userId, reason);
 
-        res.status(200).json({ success: true, message: "Item cancelled successfully." });
+        res.status(200).json({ success: true, message: ORDER_MESSAGES.ITEM_CANCELLED });
     } catch (error) {
         console.error("Error cancelling order item:", error);
         res.status(400).json({ success: false, message: error.message });
@@ -120,7 +121,7 @@ export const returnOrderItem = async (req, res) => {
 
         await orderService.returnOrderItem(orderId, itemId, userId, reason);
 
-        res.status(200).json({ success: true, message: "Item return request submitted." });
+        res.status(200).json({ success: true, message: ORDER_MESSAGES.ITEM_RETURN_REQUESTED });
     } catch (error) {
         console.error("Error returning order item:", error);
         res.status(400).json({ success: false, message: error.message });
