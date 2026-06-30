@@ -1,4 +1,4 @@
-<aside class="w-72 h-full flex flex-col border-r border-white/10 bg-background-dark p-6">
+<aside class="w-72 h-full hidden lg:flex flex-col border-r border-white/10 bg-background-dark p-6">
     <div class="flex items-center gap-4 mb-10 px-2">
         <div class="size-8 text-primary">
             <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -121,5 +121,51 @@
         </div>
     </div>
 </aside>
+
+<!-- Mobile Profile Bottom Dock -->
+<nav class="lg:hidden fixed z-[110] bg-[#0D0D0D]/90 backdrop-blur-2xl border border-white/10 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.8)] left-4 right-4 max-w-[400px] mx-auto overflow-hidden" style="bottom: calc(1.25rem + env(safe-area-inset-bottom));">
+    <div class="flex items-center h-[65px] px-6 gap-8 overflow-x-auto no-scrollbar w-full">
+        <a href="/user/dashboard" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/dashboard' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/dashboard' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/dashboard' ? '1' : '0' %>">dashboard</span>
+            <span class="text-[9px] font-bold tracking-wider">Dashboard</span>
+        </a>
+        <a href="/user/profile" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/profile' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/profile' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/profile' ? '1' : '0' %>">person</span>
+            <span class="text-[9px] font-bold tracking-wider">Profile</span>
+        </a>
+        <a href="/user/orders" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/orders' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/orders' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/orders' ? '1' : '0' %>">package_2</span>
+            <span class="text-[9px] font-bold tracking-wider">Orders</span>
+        </a>
+        <a href="/user/wallet" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/wallet' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/wallet' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/wallet' ? '1' : '0' %>">account_balance_wallet</span>
+            <span class="text-[9px] font-bold tracking-wider">Wallet</span>
+        </a>
+        <a href="/user/address" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/address' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/address' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/address' ? '1' : '0' %>">location_on</span>
+            <span class="text-[9px] font-bold tracking-wider">Addresses</span>
+        </a>
+        <a href="/user/profile/change-password" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? '1' : '0' %>"><%= loginMethod === 'google' ? 'lock' : 'security' %></span>
+            <span class="text-[9px] font-bold tracking-wider">Security</span>
+        </a>
+        <a href="/user/logout" class="flex flex-col items-center justify-center gap-1 text-rose-500 hover:text-rose-400 transition-colors">
+            <span class="material-symbols-outlined text-[22px]">logout</span>
+            <span class="text-[9px] font-bold tracking-wider">Logout</span>
+        </a>
+    </div>
+</nav>
+
+<style>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>
 
 <script src="/js/partials/sidebar.js"></script>
