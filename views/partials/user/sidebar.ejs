@@ -145,10 +145,12 @@
             <span class="material-symbols-outlined text-[22px] <%= path === '/user/address' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/address' ? '1' : '0' %>">location_on</span>
             <span class="text-[9px] font-bold tracking-wider">Addresses</span>
         </a>
+        <% if (loginMethod !== 'google') { %>
         <a href="/user/profile/change-password" class="flex flex-col items-center justify-center gap-1 <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
-            <span class="material-symbols-outlined text-[22px] <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? '1' : '0' %>"><%= loginMethod === 'google' ? 'lock' : 'security' %></span>
+            <span class="material-symbols-outlined text-[22px] <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= path === '/user/profile/change-password' || path === '/user/profile/change-email' ? '1' : '0' %>">security</span>
             <span class="text-[9px] font-bold tracking-wider">Security</span>
         </a>
+        <% } %>
         <a href="/user/logout" class="flex flex-col items-center justify-center gap-1 text-rose-500 hover:text-rose-400 transition-colors">
             <span class="material-symbols-outlined text-[22px]">logout</span>
             <span class="text-[9px] font-bold tracking-wider">Logout</span>
