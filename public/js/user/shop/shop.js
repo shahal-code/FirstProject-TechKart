@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Helper to get all checked values for a name
     function getCheckedValues(name) {
-        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+        const checked = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+        return [...new Set(checked)];
     }
 
     // Make updateFilters globally accessible
@@ -27,13 +28,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 3. Get Selected Price
         const checkedPrice = document.querySelector('input[name="price"]:checked');
-        const priceSlider = document.getElementById('priceRangeSlider');
+        const desktopSlider = document.getElementById('priceRangeSlider');
+        const mobileSlider = document.getElementById('mobilePriceRangeSlider');
+        const sliderValue = (mobileSlider && mobileSlider.value !== '5000') ? mobileSlider.value : (desktopSlider ? desktopSlider.value : '5000');
 
         if (checkedPrice) {
             searchParams.set('price', checkedPrice.value);
             searchParams.delete('maxPrice');
-        } else if (priceSlider && priceSlider.value !== '5000') {
-            searchParams.set('maxPrice', priceSlider.value);
+        } else if (sliderValue !== '5000' && sliderValue !== '500000') {
+            searchParams.set('maxPrice', sliderValue);
             searchParams.delete('price');
         } else {
             searchParams.delete('price');
