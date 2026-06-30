@@ -1,5 +1,8 @@
 import Coupon from "../../models/couponModel.js";
 import CouponService from "../../services/admin/couponService.js";
+import { COUPON_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 /**
  * Load Coupons Page
@@ -12,7 +15,7 @@ export const loadCoupons = async (req, res) => {
         res.render("admin/coupons/coupons", { coupons, totalCoupons, activeCoupons, expiredCoupons, activePage: "coupons" });
     } catch (error) {
         console.error("Load Coupons Error:", error);
-        res.status(500).send("Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(COUPON_MESSAGES.SERVER_ERROR);
     }
 };
 
@@ -45,12 +48,12 @@ export const createCoupon = async (req, res) => {
         const { code, discountType, discountValue, minPurchaseAmount, maxDiscountAmount, expirationDate } = req.body;
 
         if (!code || !discountType || !discountValue || !expirationDate) {
-            return res.status(400).json({ success: false, message: "All required fields must be filled." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: COUPON_MESSAGES.REQUIRED_FIELDS_MISSING });
         }
 
         const existing = await Coupon.findOne({ code: code.toUpperCase() });
         if (existing) {
-            return res.status(400).json({ success: false, message: "A coupon with this code already exists." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: COUPON_MESSAGES.CODE_EXISTS });
         }
 
         const coupon = new Coupon({
@@ -64,10 +67,10 @@ export const createCoupon = async (req, res) => {
         });
 
         await coupon.save();
-        res.json({ success: true, message: "Coupon created successfully!" });
+        res.json({ success: true, message: COUPON_MESSAGES.CREATED });
     } catch (error) {
         console.error("Create Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to create coupon." });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.CREATE_FAILED });
     }
 };
 
@@ -80,13 +83,13 @@ export const updateCoupon = async (req, res) => {
         const { code, discountType, discountValue, minPurchaseAmount, maxDiscountAmount, expirationDate } = req.body;
 
         if (!code || !discountType || !discountValue || !expirationDate) {
-            return res.status(400).json({ success: false, message: "All required fields must be filled." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: COUPON_MESSAGES.REQUIRED_FIELDS_MISSING });
         }
 
         // Check if another coupon already uses this code
         const existing = await Coupon.findOne({ code: code.toUpperCase(), _id: { $ne: id } });
         if (existing) {
-            return res.status(400).json({ success: false, message: "Another coupon with this code already exists." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: COUPON_MESSAGES.CODE_EXISTS_OTHER });
         }
 
         await Coupon.findByIdAndUpdate(id, {
@@ -98,10 +101,10 @@ export const updateCoupon = async (req, res) => {
             expirationDate: new Date(expirationDate)
         });
 
-        res.json({ success: true, message: "Coupon updated successfully!" });
+        res.json({ success: true, message: COUPON_MESSAGES.UPDATED });
     } catch (error) {
         console.error("Update Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to update coupon." });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.UPDATE_FAILED });
     }
 };
 
@@ -113,14 +116,14 @@ export const toggleCouponStatus = async (req, res) => {
         const { id } = req.params;
         const coupon = await Coupon.findById(id);
         if (!coupon) {
-            return res.status(404).json({ success: false, message: "Coupon not found." });
+            return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: COUPON_MESSAGES.NOT_FOUND });
         }
         coupon.isActive = !coupon.isActive;
         await coupon.save();
         res.json({ success: true, message: `Coupon ${coupon.isActive ? 'activated' : 'deactivated'} successfully.` });
     } catch (error) {
         console.error("Toggle Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to update coupon status." });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.STATUS_UPDATE_FAILED });
     }
 };
 
@@ -131,9 +134,9 @@ export const deleteCoupon = async (req, res) => {
     try {
         const { id } = req.params;
         await Coupon.findByIdAndDelete(id);
-        res.json({ success: true, message: "Coupon deleted successfully." });
+        res.json({ success: true, message: COUPON_MESSAGES.DELETED });
     } catch (error) {
         console.error("Delete Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to delete coupon." });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.DELETE_FAILED });
     }
 };

@@ -1,5 +1,8 @@
 import * as AuthService from "../../services/user/authService.js";
+import { AUTH_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
 import {
+
     validateSignupData,
     validateLoginData,
     validateEmail,
@@ -16,7 +19,7 @@ export const loadlogin = async (req, res) => {
         res.render("user/auth/login", { message, errors, email });
     } catch (error) {
         console.error("Error loading login page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -53,7 +56,7 @@ export const loadsignup = async (req, res) => {
         res.render("user/auth/signup", { message, errors, fullname, email, referralCode });
     } catch (error) {
         console.error("Error loading signup page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -90,7 +93,7 @@ export const load_otp = async (req, res) => {
         res.render("user/auth/otp", { message, actionUrl: "/user/otp", resendUrl: "/user/resend-otp", expiresIn });
     } catch (error) {
         console.error("Error loading OTP page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -100,7 +103,7 @@ export const Verifyotp = async (req, res) => {
         const otpError = validateOtp(otp);
         if (otpError) return res.redirect(303, `/user/otp?message=${encodeURIComponent(otpError)}`);
 
-        if (Date.now() > req.session.otpExpiry) return res.redirect(303, `/user/otp?message=${encodeURIComponent("OTP has expired. Please resend.")}`);
+        if (Date.now() > req.session.otpExpiry) return res.redirect(303, `/user/otp?message=${encodeURIComponent(AUTH_MESSAGES.OTP_EXPIRED)}`);
 
         if (otp === req.session.otp) {
             if (req.session.resetEmail) return res.redirect(303, "/user/reset-password");
@@ -112,18 +115,18 @@ export const Verifyotp = async (req, res) => {
 
             return res.redirect(303, "/user/login");
         } else {
-            return res.redirect(303, `/user/otp?message=${encodeURIComponent("Invalid OTP. Please try again.")}`);
+            return res.redirect(303, `/user/otp?message=${encodeURIComponent(AUTH_MESSAGES.OTP_INVALID)}`);
         }
     } catch (error) {
         console.error("OTP Verification Error:", error.message);
-        res.redirect(303, `/user/otp?message=${encodeURIComponent("Verification failed. Please try again.")}`);
+        res.redirect(303, `/user/otp?message=${encodeURIComponent(AUTH_MESSAGES.OTP_VERIFICATION_FAILED)}`);
     }
 };
 
 export const resendOTP = async (req, res) => {
     try {
         const email = req.session.userData ? req.session.userData.email : req.session.resetEmail;
-        if (!email) return res.status(400).json({ success: false, message: "Session expired" });
+        if (!email) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: AUTH_MESSAGES.SESSION_EXPIRED });
 
         const { otp, otpExpiry } = await AuthService.resendOtp(email);
         req.session.otp = otp;
@@ -132,13 +135,13 @@ export const resendOTP = async (req, res) => {
         req.session.save((err) => {
             if (err) {
                 console.error("Session save error:", err);
-                return res.status(500).json({ success: false, message: "Failed to resend OTP" });
+                return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
             }
-            res.status(200).json({ success: true, message: "OTP resent successfully" });
+            res.status(STATUS_CODES.OK).json({ success: true, message: AUTH_MESSAGES.OTP_RESENT });
         });
     } catch (error) {
         console.error("Resend OTP Error:", error.message);
-        res.status(500).json({ success: false, message: "Failed to resend OTP" });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: AUTH_MESSAGES.OTP_RESEND_FAILED });
     }
 };
 
@@ -149,7 +152,7 @@ export const load_Forgot_Password = async (req, res) => {
         res.render("user/auth/forgot-password", { message, email });
     } catch (error) {
         console.error("Error loading forgot password page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(AUTH_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -185,7 +188,7 @@ export const reset_Password = async (req, res) => {
     try {
         const passwordError = validatePassword(password);
         if (passwordError) return res.redirect(303, `/user/reset-password?message=${encodeURIComponent(passwordError)}`);
-        if (password !== confirmPassword) return res.redirect(303, `/user/reset-password?message=${encodeURIComponent("Passwords do not match")}`);
+        if (password !== confirmPassword) return res.redirect(303, `/user/reset-password?message=${encodeURIComponent(AUTH_MESSAGES.PASSWORDS_DO_NOT_MATCH)}`);
 
         await AuthService.resetPassword(req.session.resetEmail, password);
 
@@ -196,7 +199,7 @@ export const reset_Password = async (req, res) => {
         res.redirect(303, "/user/login");
     } catch (error) {
         console.error("Password Reset Error:", error.message);
-        res.redirect(303, `/user/reset-password?message=${encodeURIComponent("Password reset failed. Please try again.")}`);
+        res.redirect(303, `/user/reset-password?message=${encodeURIComponent(AUTH_MESSAGES.PASSWORD_RESET_FAILED)}`);
     }
 };
 

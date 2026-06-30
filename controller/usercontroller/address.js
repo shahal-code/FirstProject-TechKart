@@ -1,16 +1,23 @@
 import * as AddressService from "../../services/user/addressService.js";
 import * as ProfileService from "../../services/user/profileService.js";
 import { validateAddressData } from "../../utils/validation.js";
+import { GENERIC_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 export const load_address = async (req, res) => {
     try {
         const userId = req.session.user;
         const user = await ProfileService.getProfile(userId);
         const addresses = await AddressService.getAddressesByUserId(userId);
-        res.render("user/address/address", { user, addresses });
+        res.render("user/address/address", { 
+            user,
+             addresses,
+            path: "/user/address"
+         });
     } catch (error) {
         console.error("Error loading addresses:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -24,7 +31,7 @@ export const load_addAddress = async (req, res) => {
         res.render("user/address/addNewAddress", { user, errors, formData,req });
     } catch (error) {
         console.error("Error loading add address page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -48,7 +55,7 @@ export const addAddress = async (req, res) => {
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error adding address:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -72,7 +79,7 @@ export const load_editAddress = async (req, res) => {
         res.render("user/address/editAddress", { address, user, errors, formData, req });
     } catch (error) {
         console.error("Error loading edit address page:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -96,7 +103,7 @@ export const editAddress = async (req, res) => {
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error editing address:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -107,7 +114,7 @@ export const deleteAddress = async (req, res) => {
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error deleting address:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -119,6 +126,6 @@ export const setDefaultAddress = async (req, res) => {
         res.redirect("/user/address");
     } catch (error) {
         console.error("Error setting default address:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };

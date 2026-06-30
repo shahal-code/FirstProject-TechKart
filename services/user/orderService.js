@@ -5,23 +5,24 @@ import Product from "../../models/productModel.js";
 import CouponService from "./couponService.js";
 import { applyOffers } from "./productServices.js";
 import * as walletService from "./walletService.js";
+import { ORDER_MESSAGES } from "../../constants/messages.js";
+
 
 class OrderService {
-    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null) {
-        // Fetch Cart
+    async validateCartAndBuildOrder(userId, appliedCoupon = null) {
         const cart = await Cart.findOne({ userId }).populate({ path: 'items.productId', populate: { path: 'category_id' } });
-        if (!cart || cart.items.length === 0) throw new Error("Your cart is empty.");
+        if (!cart || cart.items.length === 0) throw new Error(ORDER_MESSAGES.YOUR_CART_IS_EMPTY);
 
         const productsToApply = cart.items.map(item => item.productId).filter(Boolean);
         if (productsToApply.length > 0) {
             await applyOffers(productsToApply);
         }
 
-        // Validate Stock and Prepare Items
         let subtotal = 0;
         const orderedItems = cart.items.map(item => {
             const product = item.productId;
             const category = product?.category_id;
+
             if (!product || product.is_blocked || product.is_unlisted || (category && category.is_blocked)) {
                 throw new Error(`Product ${product ? product.name : 'Unknown'} is no longer available.`);
             }
@@ -33,33 +34,125 @@ class OrderService {
             subtotal += variant.price * item.quantity;
             return {
                 product: item.productId._id,
-                variantId: item.variantId,
+                variantId: item.variantId.toString(),
                 quantity: item.quantity,
                 price: variant.price
             };
         });
 
-        // Final Calculations
         const tax = subtotal * 0.18;
         let finalAmount = subtotal + tax;
         let discount = 0;
 
-        if (appliedCoupon && finalAmount >= appliedCoupon.minPurchaseAmount) {
-            discount = CouponService.calculateDiscount(appliedCoupon, finalAmount);
+        if (appliedCoupon) {
+            // SECURITY: Re-validate coupon server-side at order-placement time.
+            // This blocks the "apply coupon → remove item → place order" scam.
+            // reValidateCoupon throws a descriptive error if the minimum is no
+            // longer met, or if the coupon has since expired / been revoked.
+            const validCoupon = await CouponService.reValidateCoupon(
+                appliedCoupon,
+                userId,
+                finalAmount
+            );
+
+            discount = CouponService.calculateDiscount(validCoupon, finalAmount);
             finalAmount = finalAmount - discount;
             if (finalAmount < 0) finalAmount = 0;
+        }
+
+        return { cart, orderedItems, subtotal, discount, finalAmount };
+    }
+
+    async reserveInventoryForItems(orderedItems) {
+        const reservedItems = [];
+
+        try {
+            for (const item of orderedItems) {
+                const result = await Product.updateOne(
+                    {
+                        _id: item.product,
+                        is_blocked: { $ne: true },
+                        is_unlisted: { $ne: true },
+                        variants: {
+                            $elemMatch: {
+                                _id: new mongoose.Types.ObjectId(item.variantId),
+                                is_blocked: { $ne: true },
+                                stock: { $gte: item.quantity }
+                            }
+                        }
+                    },
+                    { $inc: { "variants.$.stock": -item.quantity } }
+                );
+
+                if (result.modifiedCount !== 1) {
+                    throw new Error(ORDER_MESSAGES.ONE_OR_MORE_ITEMS_ARE_NO_LONGER_AVA);
+                }
+
+                reservedItems.push(item);
+            }
+        } catch (error) {
+            await this.releaseInventoryForItems(reservedItems);
+            throw error;
+        }
+    }
+
+    async releaseInventoryForItems(orderedItems) {
+        for (const item of orderedItems) {
+            await Product.updateOne(
+                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                { $inc: { "variants.$.stock": item.quantity } }
+            );
+        }
+    }
+
+    async removeOrderedItemsFromCart(userId, orderedItems) {
+        const cart = await Cart.findOne({ userId });
+        if (!cart) return;
+
+        for (const orderedItem of orderedItems) {
+            const cartItem = cart.items.find(item =>
+                item.productId.toString() === orderedItem.product.toString() &&
+                item.variantId.toString() === orderedItem.variantId.toString()
+            );
+
+            if (!cartItem) continue;
+
+            if (cartItem.quantity <= orderedItem.quantity) {
+                cart.items.pull(cartItem._id);
+            } else {
+                cartItem.quantity -= orderedItem.quantity;
+            }
+        }
+
+        await cart.save();
+    }
+
+    async createOrder(userId, address, paymentMethod, paymentFailed = false, appliedCoupon = null, expectedTotal = null) {
+        const { orderedItems, subtotal, discount, finalAmount } = await this.validateCartAndBuildOrder(userId, appliedCoupon);
+
+        if (expectedTotal !== null) {
+            const expected = Math.round(Number(expectedTotal));
+            const final = Math.round(Number(finalAmount));
+            if (expected !== final) {
+                if (final < expected) {
+                    throw new Error(ORDER_MESSAGES.GREAT_NEWS_A_NEW_OFFER_WAS_JUST_APP);
+                } else {
+                    throw new Error(ORDER_MESSAGES.THE_ORDER_TOTAL_HAS_CHANGED_DUE_TO_);
+                }
+            }
         }
 
         let paymentStatus = paymentMethod === 'COD' ? 'Pending' : 'Paid';
         if (paymentFailed) {
             paymentStatus = 'Failed';
         }
+        const inventoryProcessed = !paymentFailed;
 
         // Wallet Balance Check
         if (paymentMethod === 'Wallet' && !paymentFailed) {
             const wallet = await walletService.getOrCreateWallet(userId);
             if (wallet.balance < finalAmount) {
-                throw new Error("Insufficient wallet balance.");
+                throw new Error(ORDER_MESSAGES.INSUFFICIENT_WALLET_BALANCE);
             }
         }
 
@@ -82,35 +175,55 @@ class OrderService {
             },
             paymentMethod,
             status: 'Pending',
-            paymentStatus
+            paymentStatus,
+            inventoryProcessed
         });
 
-        await order.save();
+        let inventoryReserved = false;
 
-        if (appliedCoupon) {
-            await CouponService.markCouponAsUsed(appliedCoupon._id, userId);
+        try {
+            await order.save();
+
+            if (inventoryProcessed) {
+                await this.reserveInventoryForItems(orderedItems);
+                inventoryReserved = true;
+            }
+
+            if (paymentMethod === 'Wallet' && !paymentFailed) {
+                await walletService.debitWallet(
+                    userId,
+                    finalAmount,
+                    `Payment for order ${order.orderId}`,
+                    order.orderId
+                );
+            }
+        } catch (error) {
+            if (inventoryReserved) {
+                await this.releaseInventoryForItems(orderedItems);
+            }
+
+            if (order._id) {
+                await Order.deleteOne({ _id: order._id });
+            }
+
+            throw error;
         }
 
-        // Wallet Deduction
-        if (paymentMethod === 'Wallet' && !paymentFailed) {
-            await walletService.debitWallet(
-                userId,
-                finalAmount,
-                `Payment for order ${order.orderId}`,
-                order.orderId
-            );
+        if (appliedCoupon && !paymentFailed) {
+            try {
+                await CouponService.markCouponAsUsed(appliedCoupon._id, userId);
+            } catch (error) {
+                console.error(`Failed to mark coupon ${appliedCoupon._id} as used for order ${order.orderId}:`, error);
+            }
         }
 
-        // Atomic Stock Update
-        for (const item of cart.items) {
-            await Product.updateOne(
-                { _id: item.productId._id, "variants._id": item.variantId },
-                { $inc: { "variants.$.stock": -item.quantity } }
-            );
+        if (inventoryProcessed) {
+            try {
+                await this.removeOrderedItemsFromCart(userId, orderedItems);
+            } catch (error) {
+                console.error(`Failed to reconcile cart for order ${order.orderId}:`, error);
+            }
         }
-
-        //  Clear Cart
-        await Cart.deleteOne({ userId });
 
         return order;
     }
@@ -157,17 +270,50 @@ class OrderService {
 
     async updatePaymentStatus(displayId, userId, status) {
         const order = await Order.findOne({ orderId: displayId, userId });
-        if (!order) throw new Error("Order not found");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
         order.paymentStatus = status;
         await order.save();
         return order;
     }
 
+    async finalizeFailedOrderPayment(displayId, userId) {
+        const order = await Order.findOne({ orderId: displayId, userId });
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
+        if (order.status !== 'Pending') {
+            throw new Error(ORDER_MESSAGES.ONLY_PENDING_FAILED_ORDERS_CAN_BE_R);
+        }
+        if (order.paymentStatus === 'Paid' && order.inventoryProcessed !== false) {
+            return order;
+        }
+        if (order.paymentStatus !== 'Failed' && !(order.paymentStatus === 'Pending' && order.inventoryProcessed === false)) {
+            throw new Error(ORDER_MESSAGES.THIS_ORDER_IS_NOT_ELIGIBLE_FOR_PAYM);
+        }
+
+        await this.reserveInventoryForItems(order.orderedItems);
+
+        try {
+            order.paymentStatus = 'Paid';
+            order.inventoryProcessed = true;
+            await order.save();
+        } catch (error) {
+            await this.releaseInventoryForItems(order.orderedItems);
+            throw error;
+        }
+
+        try {
+            await this.removeOrderedItemsFromCart(userId, order.orderedItems);
+        } catch (error) {
+            console.error(`Failed to reconcile cart after payment retry for order ${order.orderId}:`, error);
+        }
+
+        return order;
+    }
+
     async cancelOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
-        const allowedStatus = ['Pending', 'Processing', 'Shipped'];
+        const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(order.status)) {
             throw new Error(`Order cannot be cancelled. Current status: ${order.status}`);
         }
@@ -178,15 +324,24 @@ class OrderService {
             const allActive = order.orderedItems.every(i => i.status !== 'Cancelled' && i.status !== 'Returned');
             
             if (allActive) {
-                // If cancelling the whole untouched order, refund the exact final amount (accounts for discounts)
+                // Cancelling the entire untouched order — refund the exact amount paid
                 refundAmount = order.finalAmount;
             } else {
-                // If partially cancelled before, refund only the remaining active items
-                order.orderedItems.forEach(item => {
-                    if (item.status !== 'Cancelled' && item.status !== 'Returned') {
-                        refundAmount += (item.price * item.quantity);
-                    }
-                });
+                // SECURITY: Proportional refund for remaining active items.
+                // Using raw item prices here would let a scammer profit from the discount
+                // by cancelling only the "padding" items they added to meet the coupon minimum.
+                //
+                // Formula: each item's refund = (item_subtotal / order_subtotal) * finalAmount
+                // This distributes the discount + tax proportionally, so the scam yields nothing.
+                const activeItemsSubtotal = order.orderedItems
+                    .filter(i => i.status !== 'Cancelled' && i.status !== 'Returned')
+                    .reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+                if (order.totalPrice > 0) {
+                    refundAmount = (activeItemsSubtotal / order.totalPrice) * order.finalAmount;
+                } else {
+                    refundAmount = activeItemsSubtotal;
+                }
             }
 
             if (refundAmount > 0) {
@@ -208,10 +363,12 @@ class OrderService {
             if (item.status !== 'Cancelled' && item.status !== 'Returned') {
                 item.status = 'Cancelled';
                 item.cancellationReason = reason;
-                await Product.updateOne(
-                    { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
-                    { $inc: { "variants.$.stock": item.quantity } }
-                );
+                if (order.inventoryProcessed !== false) {
+                    await Product.updateOne(
+                        { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                        { $inc: { "variants.$.stock": item.quantity } }
+                    );
+                }
             }
         }
 
@@ -221,10 +378,10 @@ class OrderService {
 
     async returnOrder(orderId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         if (order.status !== 'Delivered') {
-            throw new Error("Only delivered orders can be returned.");
+            throw new Error(ORDER_MESSAGES.ONLY_DELIVERED_ORDERS_CAN_BE_RETURN);
         }
 
         order.status = 'Return Request';
@@ -244,22 +401,37 @@ class OrderService {
 
     async cancelOrderItem(orderId, itemId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         const item = order.orderedItems.id(itemId);
-        if (!item) throw new Error("Item not found in order.");
+        if (!item) throw new Error(ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
-        const allowedStatus = ['Pending', 'Processing', 'Shipped', 'Out for Delivery'];
+        const allowedStatus = ['Pending'];
         if (!allowedStatus.includes(item.status)) {
             throw new Error(`Item cannot be cancelled. Current status: ${item.status}`);
+        }
+
+        // SECURITY: Block individual item cancellation when a coupon discount was applied.
+        //
+        // Why: If a user placed an order with 2 items to meet the coupon minimum, then
+        // cancels 1 item after receiving the discount, they exploit the coupon for free.
+        //
+        // Policy: Orders with a coupon discount must be cancelled in full.
+        // The user receives back exactly what they paid (order.finalAmount) to their wallet.
+        if (order.discount > 0) {
+            throw new Error(
+                "This order was placed with a coupon discount. " +
+                "Individual item cancellation is not allowed. " +
+                "Please cancel the entire order to receive a full refund of your paid amount."
+            );
         }
 
         item.status = 'Cancelled';
         item.cancellationReason = reason;
 
-        // Refund for the item
         if (order.paymentMethod !== 'COD' && (order.paymentStatus === 'Paid' || order.paymentStatus === 'Partially Refunded')) {
-            const refundAmount = item.price * item.quantity;
+            // No coupon discount — safe to refund at face value + tax
+            const refundAmount = item.price * item.quantity * 1.18;
             await walletService.creditWallet(
                 userId,
                 refundAmount,
@@ -269,11 +441,20 @@ class OrderService {
             order.paymentStatus = 'Partially Refunded';
         }
 
+        // Adjust order totals so invoice and UI reflect the correct remaining balance
+        const itemSubtotal = item.price * item.quantity;
+        order.totalPrice -= itemSubtotal;
+        order.finalAmount -= (itemSubtotal * 1.18);
+        if (order.totalPrice < 0) order.totalPrice = 0;
+        if (order.finalAmount < 0) order.finalAmount = 0;
+
         // Revert Stock
-        await Product.updateOne(
-            { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
-            { $inc: { "variants.$.stock": item.quantity } }
-        );
+        if (order.inventoryProcessed !== false) {
+            await Product.updateOne(
+                { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
+                { $inc: { "variants.$.stock": item.quantity } }
+            );
+        }
 
         // Update overall order status if all items are cancelled
         const allCancelled = order.orderedItems.every(i => i.status === 'Cancelled');
@@ -290,13 +471,13 @@ class OrderService {
 
     async returnOrderItem(orderId, itemId, userId, reason) {
         const order = await Order.findOne({ _id: orderId, userId });
-        if (!order) throw new Error("Order not found.");
+        if (!order) throw new Error(ORDER_MESSAGES.ORDER_NOT_FOUND);
 
         const item = order.orderedItems.id(itemId);
-        if (!item) throw new Error("Item not found in order.");
+        if (!item) throw new Error(ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
         if (item.status !== 'Delivered') {
-            throw new Error("Only delivered items can be returned.");
+            throw new Error(ORDER_MESSAGES.ONLY_DELIVERED_ITEMS_CAN_BE_RETURNE);
         }
 
         item.status = 'Return Request';

@@ -83,7 +83,15 @@
                         <h1 class="text-xl font-bold tracking-tight">Order Details</h1>
                     </div>
                     <div class="flex items-center gap-4">
-                        <% if (['Pending', 'Shipped' , 'Out for Delivery' ].includes(order.status)) { %>
+                        <% if (order.paymentStatus === 'Failed' && order.status === 'Pending') { %>
+                            <a href="/user/checkout/payment-failure?id=<%= order.orderId %>"
+                                class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-xl hover:shadow-rose-500/20">
+                                <span class="material-symbols-outlined text-lg">refresh</span>
+                                Retry Payment
+                            </a>
+                        <% } %>
+
+                        <% if (order.status === 'Pending') { %>
                             <button onclick="handleCancelOrder('<%= order._id %>')"
                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-rose-500/10">
                                 <span class="material-symbols-outlined text-lg">cancel</span>
@@ -99,13 +107,11 @@
                                     </button>
                                     <% } %>
 
-                                    <% if (["Shipped","Out for Delivery","Delivered"].includes(order.status)) { %>
                                     <button onclick="downloadInvoice('<%= order._id %>')"
                                         class="bg-primary/10 hover:bg-primary/20 text-primary px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-primary/10">
                                         <span class="material-symbols-outlined text-lg">download</span>
                                         Invoice
                                     </button>
-                                    <% } %>
                     </div>
                 </header>
 
@@ -128,10 +134,19 @@
                         <div class="flex flex-col items-end gap-2">
                             <span class="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Current
                                 Status</span>
-                            <% let statusKey=order.status.toLowerCase().replace(/\s+/g, '-' ); %>
+                            <% 
+                                let displayStatus = order.status;
+                                let statusKey = order.status.toLowerCase().replace(/\s+/g, '-');
+                                if (order.paymentStatus === 'Failed' && order.status === 'Pending') {
+                                    displayStatus = 'Payment Failed';
+                                    statusKey = 'cancelled';
+                                } else if (statusKey === 'return-request') {
+                                    statusKey = 'pending';
+                                }
+                            %>
                                 <span class="status-badge status-<%= statusKey %> text-sm py-2 px-5">
                                     <span class="size-2 rounded-full bg-current"></span>
-                                    <%= order.status %>
+                                    <%= displayStatus %>
                                 </span>
                         </div>
                     </div>
@@ -260,7 +275,7 @@
                                                     </div>
                                                     
                                                     <div class="flex gap-3">
-                                                        <% if (['Pending', 'Shipped', 'Out for Delivery'].includes(item.status) && !['Cancelled', 'Return Request', 'Returned'].includes(order.status)) { %>
+                                                        <% if (item.status === 'Pending' && !['Cancelled', 'Return Request', 'Returned'].includes(order.status)) { %>
                                                             <button onclick="handleCancelItem('<%= order._id %>', '<%= item._id %>')"
                                                                 class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-4 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-rose-500/10">
                                                                 <span class="material-symbols-outlined text-sm">cancel</span>
@@ -327,17 +342,30 @@
                                             <%= order.paymentMethod %>
                                         </span>
                                     </div>
-                                    <span
-                                        class="text-[10px] font-black uppercase tracking-widest text-emerald-500">Paid</span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest <%= order.paymentStatus === 'Failed' ? 'text-rose-500' : (order.paymentStatus === 'Paid' ? 'text-emerald-500' : 'text-amber-500') %>">
+                                        <%= order.paymentStatus %>
+                                    </span>
                                 </div>
                             </div>
 
                             <!-- Price Breakdown -->
                             <div class="glass-card rounded-3xl p-6 space-y-4">
                                 <h3 class="font-bold mb-6">Order Summary</h3>
+                                <% 
+                                    let activeSubtotal = 0;
+                                    order.orderedItems.forEach(item => {
+                                        if (item.status !== 'Cancelled' && item.status !== 'Returned') {
+                                            activeSubtotal += item.price * item.quantity;
+                                        }
+                                    });
+                                    let activeTax = activeSubtotal * 0.18;
+                                    let activeDiscount = order.discount || 0;
+                                    let activeTotalAmount = activeSubtotal + activeTax - activeDiscount;
+                                    if (activeTotalAmount < 0) activeTotalAmount = 0;
+                                %>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Subtotal</span>
-                                    <span class="font-medium">₹<%= order.totalPrice.toLocaleString() %></span>
+                                    <span class="font-medium">₹<%= activeSubtotal.toLocaleString() %></span>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Shipping</span>
@@ -345,12 +373,12 @@
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-white/40">Estimated Tax (18%)</span>
-                                    <span class="font-medium">₹<%= (order.totalPrice * 0.18).toLocaleString() %></span>
+                                    <span class="font-medium">₹<%= activeTax.toLocaleString() %></span>
                                 </div>
-                                <% if (order.discount> 0) { %>
+                                <% if (activeDiscount > 0) { %>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-white/40">Discount</span>
-                                        <span class="text-rose-500 font-bold">-₹<%= order.discount.toLocaleString() %>
+                                        <span class="text-rose-500 font-bold">-₹<%= activeDiscount.toLocaleString() %>
                                         </span>
                                     </div>
                                     <% } %>
@@ -358,7 +386,7 @@
                                         <div class="flex justify-between items-center">
                                             <span class="font-bold">Total Amount</span>
                                             <span class="text-2xl font-black text-primary">₹<%=
-                                                    order.finalAmount.toLocaleString() %></span>
+                                                    activeTotalAmount.toLocaleString() %></span>
                                         </div>
                             </div>
                         </div>

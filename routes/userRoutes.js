@@ -75,6 +75,7 @@ router.get('/cart', userAuth.isAuthenticated, userAuth.isBlocked, cartController
 router.post('/cart/add', userAuth.isAuthenticated, userAuth.isBlocked, cartController.addItem);
 router.post('/cart/update', userAuth.isAuthenticated, userAuth.isBlocked, cartController.updateQuantity);
 router.post('/cart/remove', userAuth.isAuthenticated, userAuth.isBlocked, cartController.removeItem);
+router.post('/cart/validate-checkout', userAuth.isAuthenticated, userAuth.isBlocked, cartController.validateCheckout);
 
 // Checkout
 router.get('/checkout', userAuth.isAuthenticated, userAuth.isBlocked, Checkout.getCheckoutView);
@@ -127,6 +128,8 @@ router.get('/profile/change-password', userAuth.isAuthenticated, userAuth.isBloc
 router.post('/profile/change-password', userAuth.isAuthenticated, userAuth.isBlocked, Profile.changePassword);
 
 router.get('/profile/change-email', userAuth.isAuthenticated, userAuth.isBlocked, Profile.load_changeEmail);
+router.post('/profile/change-email/request-otp', userAuth.isAuthenticated, userAuth.isBlocked, Profile.requestChangeEmailOtp);
+router.post('/profile/change-email/verify-otp', userAuth.isAuthenticated, userAuth.isBlocked, Profile.verifyChangeEmailOtp);
 router.post('/profile/change-email', userAuth.isAuthenticated, userAuth.isBlocked, Profile.sendChangeEmailLink);
 router.get('/profile/change-email/verify/:token', Profile.verifyChangeEmailLink); // Doesn't strictly need isAuth middleware if we handle it in the controller, but good practice to have it on the session.
 // Address

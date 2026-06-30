@@ -102,7 +102,25 @@ async function handleCancelItem(orderId, itemId) {
                 throw new Error(data.message);
             }
         } catch (error) {
-            Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#0D0D0D', color: '#fff' });
+            if (error.message.includes("cancel the entire order")) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Action Blocked',
+                    text: error.message,
+                    background: '#0D0D0D',
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonText: 'Cancel Entire Order',
+                    confirmButtonColor: '#f43f5e',
+                    cancelButtonText: 'Close'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleCancelOrder(orderId);
+                    }
+                });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message, background: '#0D0D0D', color: '#fff' });
+            }
         }
     }
 }

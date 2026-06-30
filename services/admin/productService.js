@@ -1,5 +1,7 @@
 import { Query } from "mongoose";
 import Product from "../../models/productModel.js";
+import { PRODUCT_MESSAGES } from "../../constants/messages.js";
+
 
 
 // Get all products with pagination and category populate.
@@ -58,10 +60,10 @@ export const createProduct = async (productData) => {
  */
 export const addVariant = async (productId, variantData, files) => {
     const product = await Product.findById(productId);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
 
     const images = files ? files.map(file => file.path) : [];
-    if (images.length < 3) throw new Error("Please upload at least 3 images for the variant.");
+    if (images.length < 3) throw new Error(PRODUCT_MESSAGES.PLEASE_UPLOAD_AT_LEAST_3_IMAGES_FOR);
 
     const newVariant = {
         ...variantData,
@@ -79,10 +81,10 @@ export const addVariant = async (productId, variantData, files) => {
  */
 export const updateVariant = async (productId, variantId, variantData, files) => {
     const product = await Product.findById(productId);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
 
     const variantIndex = product.variants.findIndex(v => v._id.toString() === variantId);
-    if (variantIndex === -1) throw new Error("Variant not found");
+    if (variantIndex === -1) throw new Error(PRODUCT_MESSAGES.VARIANT_NOT_FOUND);
 
     let images = product.variants[variantIndex].images;
 
@@ -99,7 +101,7 @@ export const updateVariant = async (productId, variantId, variantData, files) =>
         images = images.concat(files.map(f => f.path));
     }
 
-    if (images.length < 3) throw new Error("Variant must have at least 3 images.");
+    if (images.length < 3) throw new Error(PRODUCT_MESSAGES.VARIANT_MUST_HAVE_AT_LEAST_3_IMAGES);
 
     product.variants[variantIndex] = {
         ...product.variants[variantIndex].toObject(),
@@ -116,7 +118,7 @@ export const updateVariant = async (productId, variantId, variantData, files) =>
  */
 export const deleteVariant = async (productId, variantId) => {
     const product = await Product.findById(productId);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
 
     product.variants = product.variants.filter(v => v._id.toString() !== variantId);
     return await product.save();
@@ -129,7 +131,7 @@ export const updateProduct = async (id, productData) => {
     const { name, description, category_id, display, battery, price } = productData;
 
     const product = await Product.findById(id);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
 
     product.name = name;
     product.description = description;
@@ -156,7 +158,7 @@ export const updateProduct = async (id, productData) => {
  */
 export const deleteProduct = async (id) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
-    if (!deletedProduct) throw new Error("Product not found");
+    if (!deletedProduct) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
     return deletedProduct;
 };
 
@@ -165,7 +167,7 @@ export const deleteProduct = async (id) => {
  */
 export const toggleProductStatus = async (id) => {
     const product = await Product.findById(id);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(PRODUCT_MESSAGES.PRODUCT_NOT_FOUND);
 
     product.is_blocked = !product.is_blocked;
     return await product.save();

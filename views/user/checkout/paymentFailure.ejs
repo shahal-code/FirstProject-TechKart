@@ -72,6 +72,7 @@
             <div class="absolute -bottom-1/4 -right-1/4 size-[500px] bg-rose-500/10 blur-[120px] rounded-full"></div>
         </div>
 
+        <% const hasOrder = typeof order !== 'undefined' && order; %>
         <div class="max-w-xl w-full text-center space-y-10">
             <!-- Animated Failure Icon -->
             <div class="relative inline-block">
@@ -89,15 +90,23 @@
                     Payment <span class="text-primary">Failed</span>
                 </h1>
                 <p class="text-white/40 text-lg font-medium max-w-sm mx-auto leading-relaxed">
-                    We couldn't process your payment. Don't worry, your items are safe.
+                    <% if (hasOrder) { %>
+                        We couldn't process your payment. Don't worry, your items are safe.
+                    <% } else { %>
+                        We couldn't process your payment. No order was placed.
+                    <% } %>
                 </p>
             </div>
 
             <!-- Order ID Card -->
             <div class="glass-card rounded-[2rem] p-6 max-w-sm mx-auto flex items-center justify-between group hover:bg-white/[0.05] transition-all animate-fade-up delay-2">
                 <div class="text-left">
-                    <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Order Reference</p>
-                    <p class="text-xl font-bold tracking-widest text-primary"><%= orderId %></p>
+                    <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">
+                        <%= hasOrder ? 'Order Reference' : 'Payment Status' %>
+                    </p>
+                    <p class="text-xl font-bold tracking-widest text-primary">
+                        <%= hasOrder ? orderId : 'NOT PLACED' %>
+                    </p>
                 </div>
                 <div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <span class="material-symbols-outlined text-white/40 group-hover:text-primary transition-colors">receipt_long</span>
@@ -106,16 +115,29 @@
 
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6 animate-fade-up delay-3">
-                <button id="retry-btn" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group relative overflow-hidden">
-                    <span class="relative z-10 flex items-center gap-3">
-                        <span class="material-symbols-outlined group-hover:-rotate-180 transition-transform duration-500">refresh</span>
-                        Retry Payment
-                    </span>
-                </button>
-                <a href="/user/orders" class="bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3">
-                    View Orders
-                    <span class="material-symbols-outlined">receipt</span>
-                </a>
+                <% if (hasOrder) { %>
+                    <button id="retry-btn" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group relative overflow-hidden">
+                        <span class="relative z-10 flex items-center gap-3">
+                            <span class="material-symbols-outlined group-hover:-rotate-180 transition-transform duration-500">refresh</span>
+                            Retry Payment
+                        </span>
+                    </button>
+                    <a href="/user/orders" class="bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3">
+                        View Orders
+                        <span class="material-symbols-outlined">receipt</span>
+                    </a>
+                <% } else { %>
+                    <a href="/user/checkout" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group relative overflow-hidden">
+                        <span class="relative z-10 flex items-center gap-3">
+                            <span class="material-symbols-outlined group-hover:-rotate-180 transition-transform duration-500">refresh</span>
+                            Try Again
+                        </span>
+                    </a>
+                    <a href="/user/cart" class="bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3">
+                        View Cart
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                    </a>
+                <% } %>
             </div>
 
             <!-- Support Footer -->
@@ -127,9 +149,9 @@
 
     <script>
         window.paymentFailureData = {
-            orderAmount: <%= order.finalAmount %>,
+            orderAmount: <%= hasOrder ? order.finalAmount : 'null' %>,
             razorpayKey: "<%= razorpayKey %>",
-            orderId: '<%= orderId %>',
+            orderId: <%- JSON.stringify(orderId || null) %>,
             userName: <%- JSON.stringify((user?.fullname || '').replace(/[^a-zA-Z\s]/g, '').trim() || 'Customer') %>,
             userEmail: <%- JSON.stringify(user?.email || '') %>,
             userPhone: <%- JSON.stringify(user?.phone || '') %>

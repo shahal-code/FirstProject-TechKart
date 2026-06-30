@@ -1,4 +1,4 @@
-// ─── Shared Validators ────────────────────────────────────────────────────────
+// Shared Validators
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) return "Email is required";

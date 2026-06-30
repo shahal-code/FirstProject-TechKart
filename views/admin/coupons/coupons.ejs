@@ -197,7 +197,7 @@
                                                     title="Edit">
                                                     <span class="material-symbols-outlined text-[18px]">edit</span>
                                                 </button>
-                                                <button onclick="toggleCouponStatus('<%= coupon._id %>')"
+                                                <button onclick="toggleCouponStatus('<%= coupon._id %>', <%= coupon.isActive %>, '<%= coupon.code %>')"
                                                     class="text-slate-500 hover:text-white transition-colors"
                                                     title="<%= coupon.isActive ? 'Deactivate' : 'Activate' %>">
                                                     <span class="material-symbols-outlined text-[18px]">

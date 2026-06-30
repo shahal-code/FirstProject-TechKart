@@ -1,6 +1,9 @@
 import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
 import Wishlist from "../models/wishlistModel.js";
+import Product from "../models/productModel.js";
+import { STATUS_CODES } from "../constants/statusCode.js";
+
 
 export const isAuthenticated = async (req, res, next) => {
   if (req.session.user) {
@@ -13,7 +16,7 @@ export const isAuthenticated = async (req, res, next) => {
         req.session.destroy((err) => {
           if (err) console.log("Session destruction error:", err);
           if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-            return res.status(401).json({ success: false, message: 'Account blocked' });
+            return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: 'Account blocked' });
           }
           res.redirect("/user/login?message=Your account has been blocked by the administrator");
         });
@@ -21,13 +24,13 @@ export const isAuthenticated = async (req, res, next) => {
     } catch (error) {
       console.log("Middleware Error:", error);
       if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-        return res.status(401).json({ success: false, message: 'Authentication failed' });
+        return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: 'Authentication failed' });
       }
       res.redirect("/user/login");
     }
   } else {
     if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-      return res.status(401).json({ 
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({ 
         success: false, 
         message: 'Authentication required',
         unauthenticated: true 
@@ -69,7 +72,7 @@ export const isBlocked = async (req, res, next) => {
       if (user && user.isBlocked) {
         return req.session.destroy((err) => {
           if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
-            return res.status(403).json({ success: false, message: 'Account blocked' });
+            return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: 'Account blocked' });
           }
           res.redirect("/user/login?message=Your account has been blocked");
         });
@@ -105,10 +108,26 @@ export const userContext = async (req, res, next) => {
         cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
       }
 
-      const wishlist = await Wishlist.findOne({ userId });
+      const wishlist = await Wishlist.findOne({ userId }).populate({
+        path: "products.productId",
+        populate: { path: "category_id" }
+      });
       if (wishlist && wishlist.products) {
-        wishlistCount = wishlist.products.length;
-        wishlistProductIds = wishlist.products.map(p => p.productId.toString());
+        // Count ALL products in the wishlist for the badge (including blocked ones)
+        // — same as how cart counts all items even unavailable ones.
+        // The product is still saved in the wishlist, it's just currently blocked.
+        const validProducts = wishlist.products.filter(item => item && item.productId);
+        wishlistCount = validProducts.length;
+
+        // wishlistProductIds only includes available products — used to fill
+        // the heart icon on shop/home pages (don't mark blocked products as wishlisted)
+        wishlistProductIds = validProducts
+          .filter(item =>
+            item.productId.is_blocked !== true &&
+            item.productId.category_id &&
+            item.productId.category_id.is_blocked !== true
+          )
+          .map(p => p.productId._id.toString());
       }
     }
 

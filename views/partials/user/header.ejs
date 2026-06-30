@@ -2,22 +2,42 @@
     rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/cart/cartUtils.js"></script>
+<style>
+@media (max-width: 768px) {
+    .swal2-popup {
+        width: 85% !important;
+        padding: 1.5em !important;
+        font-size: 0.8rem !important;
+        border-radius: 20px !important;
+    }
+    .swal2-title {
+        font-size: 1.25rem !important;
+    }
+    .swal2-html-container {
+        font-size: 0.875rem !important;
+    }
+    .swal2-icon {
+        transform: scale(0.7) !important;
+        margin: 1em auto 0.5em auto !important;
+    }
+    .swal2-actions {
+        margin-top: 1em !important;
+    }
+}
+</style>
 
 <header id="mainHeader"
     class="fixed top-0 z-50 w-full border-b border-white/0 bg-transparent px-4 md:px-10 py-4 transition-all duration-300">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4 md:gap-8">
         <div class="flex items-center gap-4 md:gap-12 flex-1">
-            <button onclick="toggleMobileMenu()" class="lg:hidden text-white hover:text-primary transition-colors">
-                <span class="material-symbols-outlined text-2xl">menu</span>
-            </button>
             <div class="flex items-center gap-2 text-primary">
                 <div class="size-8 flex items-center justify-center">
                     <span class="material-symbols-outlined text-3xl">laptop_mac</span>
                 </div>
-                <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading">TECHKART</h2>
+                <h2 class="text-white text-xl md:text-2xl font-black leading-tight premium-heading"><a href="/user/dashboard">TECHKART</a></h2>
             </div>
             <form action="/user/shop" method="GET"
-                class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden md:flex flex-col flex-1 max-w-md !h-10' %>">
+                class="<%= (locals.path === '/user/shop') ? 'hidden invisible border-none p-0 m-0 w-0 h-0 pointer-events-none' : 'hidden lg:flex flex-col flex-1 max-w-md !h-10' %>">
                 <div
                     class="flex w-full flex-1 items-stretch rounded-full h-full bg-white/5 border border-white/10 overflow-hidden focus-within:border-primary transition-colors">
                     <div class="text-gray-500 flex items-center justify-center pl-4">
@@ -41,7 +61,13 @@
                     <a class="<%= currentPath === '/user/about' ? 'text-primary after:w-full' : 'text-gray-400 after:w-0' %> text-xs font-bold uppercase tracking-widest hover:text-primary transition-all relative py-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                         href="/user/about">ABOUT US</a>
             </nav>
-            <div class="flex items-center gap-3 md:gap-4">
+            
+            <!-- Mobile Profile Icon -->
+            <a href="<%= locals.user ? '/user/profile' : '/user/login' %>" class="lg:hidden flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl"><%= locals.user ? 'person' : 'login' %></span>
+            </a>
+
+            <div class="hidden lg:flex items-center gap-3 md:gap-4">
                 <a href="/user/wishlist" onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>"
                     class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 border border-white/10 text-white hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 relative">
                     <span class="material-symbols-outlined text-xl">favorite</span>
@@ -81,77 +107,37 @@
 <!-- Spacer to prevent content from hiding under fixed header -->
 <div class="h-[73px] md:h-[81px]"></div>
 
-<!-- Mobile Navigation Menu - Moved outside header for solid background -->
-<div id="mobileMenu" class="fixed inset-0 z-[100] hidden">
-    <!-- Backdrop -->
-    <div onclick="toggleMobileMenu()" class="absolute inset-0 bg-[#000000]/95 backdrop-blur-md"></div>
+<!-- Mobile Bottom Dock -->
+<nav class="lg:hidden fixed z-[100] bg-[#0D0D0D]/90 backdrop-blur-2xl border border-white/10 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.8)] left-4 right-4 max-w-[400px] mx-auto" style="bottom: calc(1.25rem + env(safe-area-inset-bottom));">
+    <div class="flex items-center justify-around h-[65px] px-2">
+        
+        <a href="/user/dashboard" class="flex flex-col items-center justify-center w-full h-full gap-1 <%= currentPath === '/user/dashboard' || currentPath === '/' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= currentPath === '/user/dashboard' || currentPath === '/' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= currentPath === '/user/dashboard' || currentPath === '/' ? '1' : '0' %>">home</span>
+            <span class="text-[9px] font-bold tracking-wider">Home</span>
+        </a>
 
-    <!-- Drawer -->
-    <div class="absolute inset-y-0 left-0 w-72 bg-[#0D0D0D] border-r border-white/10 p-6 flex flex-col gap-8 shadow-[20px_0_60px_rgba(0,0,0,0.9)] opacity-100"
-        style="background-color: #0D0D0D !important;">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 text-primary">
-                <span class="material-symbols-outlined text-3xl font-bold">laptop_mac</span>
-                <h2 class="text-white text-xl font-black tracking-tighter italic">TECHKART</h2>
+        <a href="/user/shop" class="flex flex-col items-center justify-center w-full h-full gap-1 <%= currentPath === '/user/shop' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors">
+            <span class="material-symbols-outlined text-[22px] <%= currentPath === '/user/shop' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= currentPath === '/user/shop' ? '1' : '0' %>">storefront</span>
+            <span class="text-[9px] font-bold tracking-wider">Shop</span>
+        </a>
+
+        <a href="/user/wishlist" onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>" class="flex flex-col items-center justify-center w-full h-full gap-1 <%= currentPath === '/user/wishlist' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors relative">
+            <div class="relative flex flex-col items-center">
+                <span class="material-symbols-outlined text-[22px] <%= currentPath === '/user/wishlist' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= currentPath === '/user/wishlist' ? '1' : '0' %>">favorite</span>
+                <span class="wishlist-badge-count absolute -top-1 -right-2 size-3.5 bg-primary text-white text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D] <%= locals.wishlistCount > 0 ? '' : 'hidden' %>"><%= locals.wishlistCount || 0 %></span>
             </div>
-            <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white p-2">
-                <span class="material-symbols-outlined text-2xl">close</span>
-            </button>
-        </div>
+            <span class="text-[9px] font-bold tracking-wider">Wishlist</span>
+        </a>
 
-        <div class="flex flex-col gap-3">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2 px-4 italic">Navigation Menu
-            </p>
-            <a href="/user/dashboard"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl bg-primary text-sm font-black text-white shadow-[0_10px_20px_rgba(0,85,255,0.2)]">
-                <span class="material-symbols-outlined text-xl">home</span>
-                HOME
-            </a>
-            <a href="/user/shop"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-                <span class="material-symbols-outlined text-xl">shopping_bag</span>
-                SHOP
-            </a>
-            <a href="/user/wishlist"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-                <span class="material-symbols-outlined text-xl">favorite</span>
-                WISHLIST
-            </a>
-            <a href="/user/contact"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-                <span class="material-symbols-outlined text-xl">call</span>
-                CONTACT US
-            </a>
-            <a href="/user/about"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-                <span class="material-symbols-outlined text-xl">info</span>
-                ABOUT US
-            </a>
-            <a href="/user/cart"
-                class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-                <span class="material-symbols-outlined text-xl">shopping_cart</span>
-                CART
-            </a>
-        </div>
-
-        <div class="mt-auto pt-6 border-t border-white/10">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 px-4">Search Catalog</p>
-            <form action="/user/shop" method="GET"
-                class="<%= (locals.path === '/user/shop') ? 'hidden invisible' : 'relative mb-6' %>">
-                <span
-                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
-                <input name="search"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-xs text-white focus:outline-none focus:border-primary transition-all focus:bg-white/[0.08]"
-                    placeholder="Search product..." value="<%= locals.query?.search || '' %>" />
-            </form>
-            <div class="flex items-center justify-between px-2">
-                <p class="text-[8px] text-gray-600 uppercase tracking-widest font-bold">TechKart Premium © 2024</p>
-                <div class="flex gap-2">
-                    <div class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[8px] text-gray-500 font-bold uppercase tracking-widest">v1.2.0</span>
-                </div>
+        <a href="/user/cart" onclick="<%= !locals.user ? 'event.preventDefault(); showAuthToast();' : '' %>" class="flex flex-col items-center justify-center w-full h-full gap-1 <%= currentPath === '/user/cart' ? 'text-primary' : 'text-gray-400 hover:text-white' %> transition-colors relative">
+            <div class="relative flex flex-col items-center">
+                <span class="material-symbols-outlined text-[22px] <%= currentPath === '/user/cart' ? 'fill-current' : '' %>" style="font-variation-settings: 'FILL' <%= currentPath === '/user/cart' ? '1' : '0' %>">shopping_cart</span>
+                <span class="cart-badge-count absolute -top-1 -right-2 size-3.5 bg-primary text-white text-[8px] font-black flex items-center justify-center rounded-full border border-[#0D0D0D] <%= locals.cartCount > 0 ? '' : 'hidden' %>"><%= locals.cartCount || 0 %></span>
             </div>
-        </div>
+            <span class="text-[9px] font-bold tracking-wider">Cart</span>
+        </a>
+
     </div>
-</div>
+</nav>
+
 <script src="/js/partials/header.js"></script>

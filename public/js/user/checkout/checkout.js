@@ -1,9 +1,11 @@
 // Alert for unavailable items
+window.checkoutData = window.checkoutData || {};
+
 if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
     Swal.fire({
         icon: 'warning',
-        title: 'Items Removed',
-        text: `The following products are no longer available and have been removed from your order: ${window.checkoutData.unavailableItems.join(', ')}`,
+        title: 'Unavailable Items',
+        text: `The following products are unavailable and remain in your cart until you remove them: ${window.checkoutData.unavailableItems.join(', ')}`,
         background: '#161b22',
         color: '#fff',
         confirmButtonColor: '#0055ff'
@@ -43,13 +45,14 @@ async function applyCoupon() {
     }
 
     try {
+        // cartTotal is intentionally NOT sent — server computes it to prevent manipulation
         const response = await fetch('/user/checkout/apply-coupon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, cartTotal: window.checkoutData.subtotal })
+            body: JSON.stringify({ code })
         });
-        const result = await response.json();
-        
+        const result = await readJsonResponse(response);
+
         if (result.success) {
             Swal.fire({ icon: 'success', title: 'Success!', text: result.message, background: '#161b22', color: '#fff', timer: 1500, showConfirmButton: false })
             .then(() => window.location.reload());
@@ -58,6 +61,13 @@ async function applyCoupon() {
         }
     } catch (error) {
         console.error("Apply Coupon Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Coupon Error',
+            text: error.message || 'Failed to apply coupon.',
+            background: '#161b22',
+            color: '#fff'
+        });
     }
 }
 
@@ -73,15 +83,61 @@ async function removeCoupon() {
     }
 }
 
+function toggleCouponList() {
+    const couponList = document.getElementById('available-coupons');
+    if (!couponList) return;
+    couponList.classList.toggle('hidden');
+}
+
+function fillCouponCode(code) {
+    const input = document.getElementById('couponCode');
+    if (!input) return;
+    input.value = code;
+    input.focus();
+}
+
 function showOrderError(error) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Order Failed',
-        text: error.message,
-        background: '#161b22',
-        color: '#fff',
-        confirmButtonColor: '#0055ff'
-    });
+    const isUnavailable = error.message && (
+        error.message.toLowerCase().includes('unavailable') ||
+        error.message.toLowerCase().includes('no longer available') ||
+        error.message.toLowerCase().includes('blocked')
+    );
+
+    if (isUnavailable) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Product Unavailable',
+            text: error.message,
+            background: '#161b22',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#0055ff',
+            cancelButtonColor: '#30363d',
+            confirmButtonText: 'Go to Cart',
+            cancelButtonText: 'Stay Here'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/user/cart';
+            } else {
+                window.location.reload();
+            }
+        });
+    } else {
+        const isPositive = error.message && error.message.toLowerCase().includes('great news');
+        
+        Swal.fire({
+            icon: isPositive ? 'success' : 'error',
+            title: isPositive ? 'Offer Applied!' : 'Order Failed',
+            text: error.message,
+            background: '#161b22',
+            color: '#fff',
+            confirmButtonColor: '#0055ff'
+        }).then(() => {
+            if (error.message && (error.message.includes('refresh the checkout page') || error.message.includes('expired offers'))) {
+                window.location.reload();
+            }
+        });
+    }
 }
 
 function restoreSubmitButton(submitBtn, originalBtnContent) {
@@ -184,24 +240,18 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
                     upi_qr: {
                         name: "Scan and Pay via UPI",
                         instruments: [
-                            {
-                                method: "upi",
-                                flows: ["qr"]
-                            },
-                            {
-                                method: "upi"
-                            }
+                            { method: "upi", flows: ["qr"] },
+                            { method: "upi" }
                         ]
                     }
                 },
                 sequence: ["block.upi_qr", "upi"],
-                preferences: {
-                    show_default_blocks: true
-                }
+                preferences: { show_default_blocks: true }
             }
         },
         handler: async function (paymentResponse) {
             try {
+                paymentCompleted = true;
                 const verifyResponse = await fetch('/user/payment/verify', {
                     method: 'POST',
                     headers: {
@@ -230,33 +280,19 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
         },
         modal: {
             ondismiss: async function () {
-                try {
-                    const failResponse = await fetch('/user/checkout/place-order-failed', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    const result = await readJsonResponse(failResponse);
-                    if (result.success) {
-                        window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
-                    } else {
-                        restoreSubmitButton(submitBtn, originalBtnContent);
-                    }
-                } catch (e) {
-                    console.error(e);
-                    restoreSubmitButton(submitBtn, originalBtnContent);
-                }
+                handleUnsuccessfulPayment('Payment was cancelled. Your order was not placed.');
             }
         }
     };
 
-    const razorpay = new Razorpay(options);
-    razorpay.on('payment.failed', async function (response) {
+    let paymentCompleted = false;
+    let unsuccessfulPaymentHandled = false;
+    async function handleUnsuccessfulPayment(message) {
+        if (paymentCompleted || unsuccessfulPaymentHandled) return;
+        unsuccessfulPaymentHandled = true;
+        
         try {
-            const failResponse = await fetch('/user/checkout/place-order-failed', {
+            const response = await fetch('/user/checkout/place-order-failed', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -264,13 +300,26 @@ async function handleRazorpayPayment(data, submitBtn, originalBtnContent) {
                 },
                 body: JSON.stringify(data)
             });
-            const result = await readJsonResponse(failResponse);
-            if (result.success) {
-                window.location.href = result.redirectUrl || '/user/checkout/payment-failure';
+            const result = await readJsonResponse(response);
+            
+            restoreSubmitButton(submitBtn, originalBtnContent);
+            const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Order saved with Failed status.');
+            
+            if (result.success && result.orderId) {
+                window.location.href = `/user/checkout/payment-failure?id=${result.orderId}&message=${failureMessage}`;
+            } else {
+                window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            restoreSubmitButton(submitBtn, originalBtnContent);
+            const failureMessage = encodeURIComponent(message || 'Payment was unsuccessful. Your order was not placed.');
+            window.location.href = `/user/checkout/payment-failure?message=${failureMessage}`;
         }
+    }
+
+    const razorpay = new Razorpay(options);
+    razorpay.on('payment.failed', function (response) {
+        handleUnsuccessfulPayment(response?.error?.description || 'Payment was unsuccessful. Your order was not placed.');
     });
     razorpay.open();
 }
@@ -280,6 +329,19 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
+    data.expectedTotal = window.checkoutData.total;
+
+    if (window.checkoutData.unavailableItems && window.checkoutData.unavailableItems.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Unavailable Items',
+            text: 'Remove unavailable items from the cart before placing the order.',
+            background: '#161b22',
+            color: '#fff',
+            confirmButtonColor: '#0055ff'
+        });
+        return;
+    }
 
     // Validate address selection
     if (!data.addressId) {

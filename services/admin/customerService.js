@@ -1,4 +1,6 @@
 import User from "../../models/userModel.js";
+import { GENERIC_MESSAGES } from "../../constants/messages.js";
+
 
 
 //  Get all users with pagination and search using aggregation.
@@ -41,7 +43,7 @@ export const getCustomerStats = async ()=>{
 export const toggleBlockStatus = async (id) => {
   const user = await User.findById(id);
   if (!user) {
-    throw new Error("User not found");
+    throw new Error(GENERIC_MESSAGES.USER_NOT_FOUND);
   }
   user.isBlocked = !user.isBlocked;
   return await user.save();

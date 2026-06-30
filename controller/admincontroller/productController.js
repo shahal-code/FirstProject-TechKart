@@ -1,6 +1,9 @@
 import * as ProductService from "../../services/admin/productService.js";
 import * as CategoryService from "../../services/admin/categoryService.js";
 import Product from "../../models/productModel.js";
+import { PRODUCT_MESSAGES, GENERIC_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 // Load Product Inventory Page
 export const loadProducts = async (req, res) => {
@@ -32,7 +35,7 @@ export const loadProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading products:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -47,7 +50,7 @@ export const getAddProductPage = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading add product page:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -58,7 +61,7 @@ export const addProduct = async (req, res) => {
         res.redirect(`/admin/product/manage-variants/${newProduct._id}`);
     } catch (error) {
         console.error("Error adding product:", error);
-        res.status(400).send(`Error: ${error.message}`);
+        res.status(STATUS_CODES.BAD_REQUEST).send(`Error: ${error.message}`);
     }
 };
 
@@ -80,7 +83,7 @@ export const getManageVariantsPage = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading manage variants page:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -92,7 +95,7 @@ export const addVariant = async (req, res) => {
         res.redirect(`/admin/product/manage-variants/${id}`);
     } catch (error) {
         console.error("Error adding variant:", error);
-        res.status(400).send(`Error: ${error.message}`);
+        res.status(STATUS_CODES.BAD_REQUEST).send(`Error: ${error.message}`);
     }
 };
 
@@ -104,7 +107,7 @@ export const updateVariant = async (req, res) => {
         res.redirect(`/admin/product/manage-variants/${id}`);
     } catch (error) {
         console.error("Error updating variant:", error);
-        res.status(400).send(`Error: ${error.message}`);
+        res.status(STATUS_CODES.BAD_REQUEST).send(`Error: ${error.message}`);
     }
 };
 
@@ -113,10 +116,10 @@ export const deleteVariant = async (req, res) => {
     try {
         const { id, variantId } = req.params;
         await ProductService.deleteVariant(id, variantId);
-        res.status(200).json({ message: "Variant deleted successfully" });
+        res.status(STATUS_CODES.OK).json({ message: PRODUCT_MESSAGES.VARIANT_DELETED });
     } catch (error) {
         console.error("Error deleting variant:", error);
-        res.status(500).json({ error: error.message });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
 
@@ -138,7 +141,7 @@ export const getEditProductPage = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading edit product page:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send(GENERIC_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -150,7 +153,7 @@ export const updateProduct = async (req, res) => {
         res.redirect("/admin/product");
     } catch (error) {
         console.error("Error updating product:", error);
-        res.status(400).send(`Error: ${error.message}`);
+        res.status(STATUS_CODES.BAD_REQUEST).send(`Error: ${error.message}`);
     }
 };
 
@@ -159,11 +162,11 @@ export const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
         await ProductService.deleteProduct(id);
-        res.status(200).json({ message: "Product deleted successfully" });
+        res.status(STATUS_CODES.OK).json({ message: PRODUCT_MESSAGES.DELETED });
     } catch (error) {
         console.error("Error deleting product:", error);
         res.status(error.message === "Product not found" ? 404 : 500).json({ 
-            error: error.message || "Internal Server Error" 
+            error: error.message || GENERIC_MESSAGES.INTERNAL_SERVER_ERROR
         });
     }
 };
@@ -173,13 +176,13 @@ export const toggleProductStatus = async (req, res) => {
     try {
         const { id } = req.params;
         const product = await ProductService.toggleProductStatus(id);
-        res.status(200).json({ 
+        res.status(STATUS_CODES.OK).json({ 
             message: `Product ${product.is_blocked ? 'blocked' : 'unblocked'} successfully`,
             is_blocked: product.is_blocked 
         });
     } catch (error) {
         console.error("Error toggling product status:", error);
-        res.status(500).json({ error: error.message });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
 

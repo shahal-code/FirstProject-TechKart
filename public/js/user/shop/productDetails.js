@@ -2,13 +2,16 @@ let cartItems = JSON.parse(document.getElementById('cart-items-json').textConten
 const variants = JSON.parse(document.getElementById('product-variants-json').textContent);
 const productOffer = JSON.parse(document.getElementById('product-offer-json').textContent);
 
+// Find the first in-stock variant, fall back to variants[0] if all are out of stock
+const defaultVariant = variants.find(v => v.stock > 0) || variants[0];
+
 let selectedFilters = {
-    ram: variants[0]?.ram,
-    storage: variants[0]?.storage,
-    size: variants[0]?.size,
-    color: variants[0]?.color
+    ram: defaultVariant?.ram,
+    storage: defaultVariant?.storage,
+    size: defaultVariant?.size,
+    color: defaultVariant?.color
 };
-let currentVariant = variants[0];
+let currentVariant = defaultVariant;
 let currentQty = 1;
 
 function updateSelection(type, value) {
@@ -263,6 +266,62 @@ window.addEventListener('load', () => {
     setupZoom();
     updateUI();
 });
+
+/**
+ * Called by cartUtils.js when server returns a blocked/unavailable product error.
+ * Updates the product page UI to reflect the unavailable state without a page reload.
+ */
+window.markProductUnavailable = function(message) {
+    // 1. Update stock indicator
+    const stockDot = document.getElementById('stock-dot');
+    const stockStatus = document.getElementById('stock-status');
+    if (stockDot) {
+        stockDot.className = 'w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)] animate-pulse';
+    }
+    if (stockStatus) {
+        stockStatus.textContent = 'Unavailable';
+        stockStatus.className = 'text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500';
+    }
+
+    // 2. Disable Add to Cart button
+    const addToCartBtn = document.getElementById('mainAddToCartBtn');
+    if (addToCartBtn) {
+        addToCartBtn.disabled = true;
+        addToCartBtn.textContent = 'Currently Unavailable';
+        addToCartBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-blue-600', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
+        addToCartBtn.classList.add('bg-white/10', 'text-gray-500', 'cursor-not-allowed', 'opacity-50');
+    }
+
+    // 3. Hide quantity selector
+    const qtySelector = document.getElementById('qty-selector-container');
+    if (qtySelector) qtySelector.style.display = 'none';
+
+    // 4. Disable wishlist button
+    document.querySelectorAll('button[onclick*="toggleWishlist"]').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-40', 'cursor-not-allowed');
+        btn.onclick = null;
+    });
+
+    // 5. Insert unavailable banner if not already present
+    const existingBanner = document.getElementById('unavailable-banner');
+    if (!existingBanner) {
+        const productTitle = document.querySelector('h1.text-6xl');
+        if (productTitle) {
+            const banner = document.createElement('div');
+            banner.id = 'unavailable-banner';
+            banner.className = 'mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3';
+            banner.innerHTML = `
+                <span class="material-symbols-outlined text-rose-500">block</span>
+                <div>
+                    <h3 class="text-rose-500 font-bold tracking-widest uppercase text-sm">Currently Unavailable</h3>
+                    <p class="text-rose-400/80 text-xs mt-1">${message || 'This product is currently unavailable.'}</p>
+                </div>
+            `;
+            productTitle.parentNode.insertBefore(banner, productTitle);
+        }
+    }
+};
 
 // Add to Cart Logic
 async function handleAddToCart(productId, event = null) {

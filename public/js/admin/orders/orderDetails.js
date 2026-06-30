@@ -1,15 +1,37 @@
+const ITEM_PROGRESS_STATUSES = ['Pending', 'Shipped', 'Out for Delivery', 'Delivered'];
+
+function getItemStatusOptions(currentStatus) {
+    if (currentStatus === 'Return Request') {
+        return {
+            'Delivered': 'Delivered',
+            'Returned': 'Returned'
+        };
+    }
+
+    if (['Cancelled', 'Returned'].includes(currentStatus)) {
+        return {
+            [currentStatus]: currentStatus
+        };
+    }
+
+    const currentIndex = ITEM_PROGRESS_STATUSES.indexOf(currentStatus);
+    const availableStatuses = ITEM_PROGRESS_STATUSES.slice(Math.max(currentIndex, 0));
+
+    if (currentStatus !== 'Delivered') {
+        availableStatuses.push('Cancelled');
+    }
+
+    return availableStatuses.reduce((options, status) => {
+        options[status] = status;
+        return options;
+    }, {});
+}
+
 async function updateItemStatus(orderId, itemId, currentStatus) {
     const { value: status } = await Swal.fire({
         title: 'Update Item Status',
         input: 'select',
-        inputOptions: {
-            'Pending': 'Pending',
-            'Shipped': 'Shipped',
-            'Out for Delivery': 'Out for Delivery',
-            'Delivered': 'Delivered',
-            'Cancelled': 'Cancelled',
-            'Returned': 'Returned'
-        },
+        inputOptions: getItemStatusOptions(currentStatus),
         inputValue: currentStatus,
         showCancelButton: true,
         background: '#0d0d0d',

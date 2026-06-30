@@ -39,6 +39,7 @@
         @layer base {
             body {
                 font-family: 'Inter', sans-serif;
+                @apply bg-[#0D0D0D] text-gray-200 antialiased;
             }
         }
         .glass-card {
@@ -60,7 +61,7 @@
     </style>
 </head>
 
-<body class="dark bg-[#0D0D0D] text-gray-200 antialiased">
+<body class="dark">
     <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
         <div class="layout-container flex h-full grow flex-col">
             <%- include('../../partials/user/header') %>
@@ -76,20 +77,19 @@
                                             Generation Computing</span>
                                     </div>
                                     <h1
-                                        class="text-white text-5xl md:text-7xl font-black leading-[1.05] premium-heading uppercase">
+                                        class="text-white text-4xl sm:text-5xl md:text-7xl font-black leading-[1.05] premium-heading uppercase">
                                         Power for Every <br /><span class="text-primary">Passion</span>
                                     </h1>
-                                    <p class="text-gray-400 text-lg md:text-xl font-medium max-w-lg leading-relaxed">
+                                    <p class="text-gray-400 text-base md:text-xl font-medium max-w-lg leading-relaxed">
                                         Experience the pinnacle of engineering. We bridge the gap between raw
-                                        performance
-                                        and minimalist luxury.
+                                        performance and minimalist luxury.
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap gap-5">
-                                    <a href="/user/shop"
+                                    <button onclick="window.location.href='/user/shop'"
                                         class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-primary text-white text-sm font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_30px_-5px_#0055FF] hover:scale-105">
                                         Shop All Laptops
-                                    </a>
+                                    </button>
                                     <button
                                         class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 border border-white/20 text-white text-sm font-bold uppercase tracking-widest hover:bg-white/5 transition-all">
                                         Explore Lineup
@@ -135,15 +135,57 @@
                         </div>
                     </div>
 
-                    <div class="bg-white/[0.02] py-24 border-y border-white/5">
+                    <% if (typeof offers !== 'undefined' && offers.length > 0) { %>
+                        <div class="max-w-[1200px] mx-auto px-4 pb-16 md:pb-24">
+                            <div class="flex items-center justify-between mb-8 md:mb-12">
+                                <h2 class="text-white text-2xl md:text-3xl font-black premium-heading uppercase flex items-center gap-2 md:gap-3">
+                                    <span class="material-symbols-outlined text-rose-500 text-4xl">local_offer</span>
+                                    Exclusive Offers
+                                </h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <% offers.forEach(offer => { %>
+                                    <div class="glass-card rounded-2xl p-6 md:p-8 relative overflow-hidden group border-rose-500/10 hover:border-rose-500/30 transition-all">
+                                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+                                        <div class="relative z-10 flex flex-col h-full">
+                                            <div class="flex items-center gap-3 mb-4">
+                                                <span class="px-3 py-1 rounded-full bg-rose-500/10 text-rose-500 text-[10px] font-black uppercase tracking-widest border border-rose-500/20">
+                                                    <%= offer.offerType %> Offer
+                                                </span>
+                                                <span class="text-white/40 text-[10px] font-bold uppercase tracking-widest">
+                                                    Valid till <%= new Date(offer.endDate).toLocaleDateString() %>
+                                                </span>
+                                            </div>
+                                            <h3 class="text-white text-2xl font-black uppercase mb-2 group-hover:text-rose-500 transition-colors"><%= offer.name %></h3>
+                                            <p class="text-gray-400 text-sm mb-6 flex-1"><%= offer.description || 'Grab this amazing offer while it lasts!' %></p>
+                                            
+                                            <div class="flex items-end justify-between mt-auto">
+                                                <div>
+                                                    <span class="text-rose-500 text-3xl font-black">
+                                                        <%= offer.discountType === 'percentage' ? offer.discountValue + '%' : '₹' + offer.discountValue %>
+                                                    </span>
+                                                    <span class="text-white/40 text-[10px] font-bold uppercase tracking-widest block mt-1">Discount</span>
+                                                </div>
+                                                <a href="/user/shop" class="flex items-center justify-center size-10 rounded-full bg-white/5 hover:bg-rose-500 hover:text-white transition-all text-white/60">
+                                                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <div class="bg-white/[0.02] py-16 md:py-24 border-y border-white/5">
                         <div class="max-w-[1200px] mx-auto px-4">
-                            <div class="mb-16 text-center">
-                                <h2 class="text-white text-4xl font-black premium-heading uppercase mb-4">Choose Your
+                            <div class="mb-10 md:mb-16 text-center">
+                                <h2 class="text-white text-3xl md:text-4xl font-black premium-heading uppercase mb-4">Choose Your
                                     Path
                                 </h2>
                                 <div class="h-1 w-20 bg-primary mx-auto rounded-full"></div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                                 <% if (typeof categories !=='undefined' && categories.length> 0) { %>
                                     <% const iconMap={ 'gaming' : 'sports_esports' , 'business' : 'work' , 'student'
                                         : 'school' , 'creator' : 'palette' , 'professional' : 'work' }; %>
@@ -158,23 +200,23 @@
                                             }
                                             %>
                                             <div onclick="window.location.href='/user/shop?category=<%= category._id %>'"
-                                                class="glass-card group flex flex-col gap-6 rounded-2xl p-8 transition-all cursor-pointer">
+                                                class="glass-card group flex flex-col items-center md:items-start text-center md:text-left gap-3 md:gap-6 rounded-xl md:rounded-2xl p-4 md:p-8 transition-all cursor-pointer hover:-translate-y-1">
                                                 <div
-                                                    class="bg-white/5 size-14 flex items-center justify-center rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                                    <span class="material-symbols-outlined text-3xl">
+                                                    class="bg-white/5 size-12 md:size-14 flex items-center justify-center rounded-xl md:rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                    <span class="material-symbols-outlined text-2xl md:text-3xl">
                                                         <%= icon %>
                                                     </span>
                                                 </div>
-                                                <div class="flex flex-col gap-2">
-                                                    <h3 class="text-white text-xl font-bold premium-heading uppercase">
+                                                <div class="flex flex-col gap-1 md:gap-2">
+                                                    <h3 class="text-white text-xs sm:text-sm md:text-xl font-bold premium-heading uppercase line-clamp-2 md:line-clamp-1">
                                                         <%= category.name %>
                                                     </h3>
-                                                    <p class="text-gray-400 text-sm leading-relaxed line-clamp-2">
+                                                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed line-clamp-2 hidden md:block">
                                                         <%= category.description %>
                                                     </p>
                                                 </div>
                                                 <div
-                                                    class="flex items-center text-primary text-[11px] font-black uppercase tracking-widest mt-auto">
+                                                    class="hidden md:flex items-center text-primary text-[10px] md:text-[11px] font-black uppercase tracking-widest mt-auto">
                                                     Learn More <span
                                                         class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-2 transition-transform">arrow_forward</span>
                                                 </div>
@@ -185,9 +227,9 @@
                         </div>
                     </div>
 
-                    <div class="max-w-[1200px] mx-auto px-4 py-24">
-                        <div class="flex items-center justify-between mb-16">
-                            <h2 class="text-white text-4xl font-black premium-heading uppercase">Current Favorites</h2>
+                    <div class="max-w-[1200px] mx-auto px-4 py-16 md:py-24">
+                        <div class="flex items-center justify-between mb-10 md:mb-16">
+                            <h2 class="text-white text-3xl md:text-4xl font-black premium-heading uppercase">Current Favorites</h2>
                             <a class="text-primary font-bold text-xs uppercase tracking-[0.2em] border-b-2 border-primary pb-1"
                                 href="/user/shop">See All</a>
                         </div>
@@ -197,9 +239,10 @@
                                     class="glass-card group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
                                     <a href="/user/product/<%= product._id %>"
                                         class="aspect-[4/3] bg-white/[0.03] relative overflow-hidden block">
-                                        <img src="<%= (product.variants && product.variants.length > 0 && product.variants[0].images) ? product.variants[0].images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
+                                        <% const cardVariant = product.variants.find(v => v.stock > 0) || product.variants[0]; %>
+                                        <img src="<%= (product.variants && product.variants.length > 0 && cardVariant.images) ? cardVariant.images[0] : (product.images ? product.images[0] : '/img/placeholder.jpg') %>"
                                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
-                                        <% if (product.variants[0]?.stock <=0) { %>
+                                        <% if (product.variants.every(v => v.stock <= 0)) { %>
                                             <div
                                                 class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
                                                 <span
@@ -214,26 +257,26 @@
                                                         style="<%= (wishlistProductIds && wishlistProductIds.includes(product._id.toString())) ? 'font-variation-settings: \'FILL\' 1' : '' %>">favorite</span>
                                                 </button>
                                     </a>
-                                    <div class="p-8">
+                                    <div class="p-5 md:p-8">
                                         <div class="flex justify-between items-start mb-3">
                                             <a href="/user/product/<%= product._id %>">
                                                 <h3
-                                                    class="text-white text-2xl font-black premium-heading uppercase hover:text-primary transition-colors">
+                                                    class="text-white text-xl md:text-2xl font-black premium-heading uppercase hover:text-primary transition-colors">
                                                     <%= product.name %>
                                                 </h3>
                                             </a>
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex flex-col items-end gap-1 md:flex-row md:items-center md:gap-2">
                                                 <% if (product.variants[0]?.originalPrice && product.variants[0]?.originalPrice > product.variants[0]?.price) { %>
-                                                    <span class="text-gray-500 line-through text-sm">₹<%= product.variants[0]?.originalPrice %></span>
+                                                    <span class="text-gray-500 line-through text-xs md:text-sm">₹<%= product.variants[0]?.originalPrice %></span>
                                                 <% } %>
-                                                <span class="text-primary font-bold text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
+                                                <span class="text-primary font-bold text-xl md:text-2xl">₹<%= product.variants[0]?.price || '0' %></span>
                                             </div>
                                         </div>
-                                        <p class="text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2">
+                                        <p class="text-gray-400 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed line-clamp-2">
                                             <%= product.description %>
                                         </p>
                                         <button
-                                            onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>', 1, event)"
+                                            onclick="addToCart('<%= product._id %>', '<%= product.variants[0]?._id %>')"
                                             class="w-full flex items-center justify-center gap-3 bg-white text-black font-black text-xs uppercase tracking-widest py-4 rounded-full hover:bg-primary hover:text-white transition-all duration-300">
                                             <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
                                             Add to Cart

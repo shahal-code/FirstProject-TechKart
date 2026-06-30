@@ -3,6 +3,9 @@ import * as CartService from "../../services/user/cartService.js";
 import OrderService from "../../services/user/orderService.js";
 import * as PaymentService from "../../services/user/paymentServices.js";
 import CouponService from "../../services/user/couponService.js";
+import { CHECKOUT_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 /**
  * Render Checkout Page
@@ -20,53 +23,35 @@ export const getCheckoutView = async (req, res) => {
             return res.redirect('/user/cart');
         }
 
-        // Calculate totals and filter items for the view
+        // Calculate totals while preserving unavailable items in the checkout view
         let subtotal = 0;
         let unavailableNames = [];
-        let unavailableItemIds = [];
+        let hasAvailableItems = false;
 
-        const activeItems = cart.items.filter(item => {
+        cart.items.forEach(item => {
             const product = item.productId;
             const category = product?.category_id;
             
-            // Check if product or category is blocked
             const isBlocked = !product || product.is_blocked || (category && category.is_blocked);
             
             if (isBlocked) {
+                item.isUnavailable = true;
                 if (product?.name) unavailableNames.push(product.name);
-                unavailableItemIds.push(item._id);
-                return false;
+                return;
             }
             
             const variant = product?.variants?.find(v => v._id.toString() === item.variantId.toString());
             if (variant) {
                 subtotal += variant.price * item.quantity;
-                return true;
+                hasAvailableItems = true;
+                return;
             }
             
+            item.isUnavailable = true;
             if (product?.name) unavailableNames.push(product.name);
-            unavailableItemIds.push(item._id);
-            return false;
         });
 
-        // Perform Database Cleanup: Remove blocked items from the actual cart in DB
-        if (unavailableItemIds.length > 0) {
-            for (const itemId of unavailableItemIds) {
-                await CartService.removeItem(userId, itemId.toString());
-            }
-            console.log(`Auto-cleaned ${unavailableItemIds.length} unavailable items from cart for user ${userId}`);
-        }
-
-        // Update cart items to only show active ones in the view
-        cart.items = activeItems;
-
-        if (unavailableItemIds.length > 0) {
-            // Redirect back to cart so the user is aware items were removed before checking out
-            return res.redirect('/user/cart?error=checkout_blocked');
-        }
-
-        if (cart.items.length === 0) {
-            // Should be caught above, but just in case
+        if (!hasAvailableItems) {
             return res.redirect('/user/cart');
         }
 
@@ -74,19 +59,23 @@ export const getCheckoutView = async (req, res) => {
         let total = subtotal + tax;
         let discount = 0;
         let appliedCoupon = req.session.appliedCoupon;
+        let couponWarning = null;
 
-        // Calculate discount if a coupon is in session
+        // Re-validate coupon on every page load to catch cart-manipulation scams
         if (appliedCoupon) {
             if (total >= appliedCoupon.minPurchaseAmount) {
                 discount = CouponService.calculateDiscount(appliedCoupon, total);
                 total = total - discount;
                 if (total < 0) total = 0;
             } else {
-                // Cart total is too low, remove coupon silently
+                // Cart total dropped below the minimum — auto-remove and warn the user
+                couponWarning = `Coupon "${appliedCoupon.code}" removed: cart total is below the ₹${appliedCoupon.minPurchaseAmount} minimum required.`;
                 delete req.session.appliedCoupon;
                 appliedCoupon = null;
             }
         }
+
+        const availableCoupons = await CouponService.getApplicableCoupons(userId, subtotal + tax);
 
         res.render('user/checkout/checkout', {
             user: res.locals.user || req.user,
@@ -94,17 +83,18 @@ export const getCheckoutView = async (req, res) => {
             cart,
             subtotal,
             tax,
-            discount, 
+            discount,
             total,
             appliedCoupon,
+            availableCoupons,
+            couponWarning,
             unavailableNames,
             path: '/user/checkout',
             razorpayKey: process.env.RAZORPAY_KEY_ID
-
         });
     } catch (error) {
         console.error("Checkout Page Error:", error);
-        res.status(500).redirect('/user/cart');
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).redirect('/user/cart');
     }
 };
 
@@ -119,21 +109,22 @@ export const placeOrder = async (req, res) => {
             paymentMethod,
             razorpay_order_id,
             razorpay_payment_id,
-            razorpay_signature
+            razorpay_signature,
+            expectedTotal
         } = req.body;
 
         if (!addressId || !paymentMethod) {
-            return res.status(400).json({ success: false, message: "Missing required fields." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_FIELDS });
         }
 
         const address = await AddressService.getAddressById(addressId);
         if (!address) {
-            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.ADDRESS_INVALID });
         }
 
         if (paymentMethod === "UPI") {
             if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-                return res.status(400).json({ success: false, message: "Payment verification details are required." });
+                return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_REQUIRED });
             }
 
             const isPaymentValid = PaymentService.verifyRazorpaySignature({
@@ -143,12 +134,12 @@ export const placeOrder = async (req, res) => {
             });
 
             if (!isPaymentValid) {
-                return res.status(400).json({ success: false, message: "Payment verification failed." });
+                return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_FAILED });
             }
         }
 
         // Use the service to handle logic
-        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon);
+        const order = await OrderService.createOrder(userId, address, paymentMethod, false, req.session.appliedCoupon, expectedTotal);
 
         // If success, clear session
         if (req.session.appliedCoupon) {
@@ -158,13 +149,13 @@ export const placeOrder = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Order placed successfully!",
+            message: CHECKOUT_MESSAGES.ORDER_PLACED,
             redirectUrl: `/user/checkout/order-success?id=${order.orderId}`
         });
 
     } catch (error) {
         console.error("Order Placement Error:", error);
-        res.status(400).json({
+        res.status(STATUS_CODES.BAD_REQUEST).json({
             success: false,
             message: error.message || "Failed to place order. Please try again."
         });
@@ -190,40 +181,40 @@ export const getOrderSuccessView = async (req, res) => {
 };
 
 /**
- * Handle Failed Payment Order Creation
+ * Reject failed payment order creation
  */
 export const placeOrderFailed = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { addressId, paymentMethod } = req.body;
+        const { addressId, paymentMethod, expectedTotal } = req.body;
 
         if (!addressId || !paymentMethod) {
-            return res.status(400).json({ success: false, message: "Missing required fields." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_FIELDS });
         }
 
         const address = await AddressService.getAddressById(addressId);
         if (!address) {
-            return res.status(400).json({ success: false, message: "Selected address is invalid." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.ADDRESS_INVALID });
         }
 
-        // Create order with 'Failed' status by passing true as the 4th parameter
-        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon);
+        // Create order with paymentFailed = true
+        const order = await OrderService.createOrder(userId, address, paymentMethod, true, req.session.appliedCoupon, expectedTotal);
 
-        // If success, clear session
+        // If success, clear session coupon so it isn't hanging around
         if (req.session.appliedCoupon) {
             delete req.session.appliedCoupon;
             await new Promise((resolve) => req.session.save(resolve));
         }
 
-        res.json({
+        return res.json({
             success: true,
-            message: "Order placed with failed payment.",
-            redirectUrl: `/user/checkout/payment-failure?id=${order.orderId}`
+            orderId: order.orderId,
+            message: CHECKOUT_MESSAGES.PAYMENT_FAILED_SAVED
         });
 
     } catch (error) {
         console.error("Failed Order Placement Error:", error);
-        res.status(400).json({
+        res.status(STATUS_CODES.BAD_REQUEST).json({
             success: false,
             message: error.message || "Failed to process order failure."
         });
@@ -237,7 +228,16 @@ export const getPaymentFailureView = async (req, res) => {
     try {
         const orderId = req.query.id;
         const userId = req.session.user;
-        if (!orderId) return res.redirect('/user/shop');
+
+        if (!orderId) {
+            return res.render('user/checkout/paymentFailure', {
+                orderId: null,
+                order: null,
+                user: res.locals.user || req.user,
+                razorpayKey: process.env.RAZORPAY_KEY_ID,
+                path: '/user/checkout/payment-failure'
+            });
+        }
         
         const order = await OrderService.getOrderByDisplayId(orderId, userId);
         if (!order) return res.redirect('/user/shop');
@@ -264,7 +264,7 @@ export const retryOrder = async (req, res) => {
         const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
         if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-            return res.status(400).json({ success: false, message: "Missing required verification fields." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.MISSING_VERIFICATION_FIELDS });
         }
 
         const isPaymentValid = PaymentService.verifyRazorpaySignature({
@@ -274,19 +274,19 @@ export const retryOrder = async (req, res) => {
         });
 
         if (!isPaymentValid) {
-            return res.status(400).json({ success: false, message: "Payment verification failed." });
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.VERIFICATION_FAILED });
         }
 
-        await OrderService.updatePaymentStatus(orderId, userId, 'Paid');
+        await OrderService.finalizeFailedOrderPayment(orderId, userId);
 
         res.json({
             success: true,
-            message: "Payment successful!",
+            message: CHECKOUT_MESSAGES.PAYMENT_SUCCESS,
             redirectUrl: `/user/checkout/order-success?id=${orderId}`
         });
     } catch (error) {
         console.error("Retry Order Error:", error);
-        res.status(400).json({
+        res.status(STATUS_CODES.BAD_REQUEST).json({
             success: false,
             message: error.message || "Failed to update payment status."
         });
@@ -295,26 +295,34 @@ export const retryOrder = async (req, res) => {
 
 /**
  * Apply Coupon
+ * NOTE: We deliberately ignore any cartTotal from the client and compute it
+ * server-side to prevent users from sending a fake inflated value.
  */
 export const applyCoupon = async (req, res) => {
     try {
-        const { code, cartTotal } = req.body;
+        const { code } = req.body;          // cartTotal from client is intentionally ignored
         const userId = req.session.user;
+        const normalizedCode = code ? code.trim().toUpperCase() : "";
 
-        if (!code) {
-            return res.status(400).json({ success: false, message: "Please enter a coupon code." });
+        if (!normalizedCode) {
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_REQUIRED });
         }
 
-        const coupon = await CouponService.validateCoupon(code, userId, cartTotal);
+        if (req.session.appliedCoupon?.code === normalizedCode) {
+            return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_ALREADY_APPLIED });
+        }
+
+        // Always compute cart total on the server — never trust the client
+        const serverCartTotal = await CouponService.getServerCartTotal(userId);
+
+        const coupon = await CouponService.validateCoupon(normalizedCode, userId, serverCartTotal);
 
         req.session.appliedCoupon = coupon;
-        req.session.save((err) => {
-            if (err) throw err;
-            res.json({ success: true, message: "Coupon applied successfully!" });
-        });
+        await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+        res.json({ success: true, message: CHECKOUT_MESSAGES.COUPON_APPLIED });
     } catch (error) {
         console.error("Apply Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to apply coupon." });
+        res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message || "Failed to apply coupon." });
     }
 };
 
@@ -324,12 +332,10 @@ export const applyCoupon = async (req, res) => {
 export const removeCoupon = async (req, res) => {
     try {
         delete req.session.appliedCoupon;
-        req.session.save((err) => {
-            if (err) throw err;
-            res.json({ success: true, message: "Coupon removed successfully!" });
-        });
+        await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+        res.json({ success: true, message: CHECKOUT_MESSAGES.COUPON_REMOVED });
     } catch (error) {
         console.error("Remove Coupon Error:", error);
-        res.status(500).json({ success: false, message: "Failed to remove coupon." });
+        res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: CHECKOUT_MESSAGES.COUPON_REMOVE_FAILED });
     }
 };

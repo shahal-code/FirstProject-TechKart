@@ -8,6 +8,7 @@ import './config/passport.js';
 import session from "express-session";
 import * as ErrorHandler from "./middleware/errorHandler.js";
 import { userContext } from "./middleware/userAuth.js";
+import { preventCache, setLocals } from "./middleware/commonMiddleware.js";
 const app = express();
 
 connectDB();
@@ -16,12 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "-1");
-  next();
-});
+app.use(preventCache);
 
 //user session
 const userSession = session({
@@ -47,33 +43,21 @@ const adminSession = session({
 
 app.use(passport.initialize());
 
-const setLocals = (req, res, next) => {
-  res.locals.loginMethod = req.session.loginMethod || null;
-  res.locals.path = req.path;
-  next();
-};
-
 //user session,passport,routes
 app.use("/user", userSession, passport.session(), userContext, setLocals, userRoutes);
 //admin session ,passport,routes
-app.use("/admin", adminSession, passport.session(), setLocals, adminRoutes);
+app.use("/admin", adminSession, passport.session(), setLocals, adminRoutes)
 
-app.use((req, res, next) => {
-  res.locals.loginMethod = req.session ? req.session.loginMethod : null;
-  res.locals.path = req.path;
-  next();
-});
+app.use(setLocals);
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
-
 
 // Error Handling Middleware
 app.use(ErrorHandler.notFound);
 app.use(ErrorHandler.globalErrorHandler);
 
 //PORT
-
 
 app.listen(3000, () => {
   console.log(`Server running on http://localhost:${3000}`);

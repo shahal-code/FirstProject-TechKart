@@ -51,23 +51,32 @@ window.addToCart = async function(productId, variantId, quantity = 1, event = nu
             }
 
             // Update cart badge if exists
-            const badge = document.getElementById('cart-badge');
-            if (badge) {
+            const badges = document.querySelectorAll('.cart-badge-count, #cart-badge');
+            badges.forEach(badge => {
                 const newTotal = result.cart.items.reduce((total, item) => total + item.quantity, 0);
                 badge.textContent = newTotal;
                 badge.classList.remove('hidden');
-            }
+            });
         } else {
             if (result.redirect) {
                 window.location.href = result.redirect;
             } else {
+                // Check if product is unavailable/blocked
+                const isUnavailable = result.message && (
+                    result.message.toLowerCase().includes('unavailable') ||
+                    result.message.toLowerCase().includes('blocked')
+                );
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
+                    icon: isUnavailable ? 'warning' : 'error',
+                    title: isUnavailable ? 'Product Unavailable' : 'Error',
                     text: result.message || 'Failed to add item',
                     background: '#0D0D0D',
                     color: '#fff'
                 });
+                // Update product page UI if on product details page
+                if (isUnavailable && typeof window.markProductUnavailable === 'function') {
+                    window.markProductUnavailable(result.message);
+                }
             }
         }
         return result;
@@ -121,23 +130,34 @@ window.toggleWishlist = async function(event, productId, variantId) {
             });
 
             // Update wishlist badge
-            const badge = document.getElementById('wishlist-badge');
-            if (badge && typeof data.wishlistCount !== 'undefined') {
-                badge.textContent = data.wishlistCount;
-                if (data.wishlistCount > 0) {
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
+            const badges = document.querySelectorAll('.wishlist-badge-count, #wishlist-badge');
+            badges.forEach(badge => {
+                if (typeof data.wishlistCount !== 'undefined') {
+                    badge.textContent = data.wishlistCount;
+                    if (data.wishlistCount > 0) {
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
                 }
-            }
+            });
         } else {
+            // Check if product is unavailable/blocked
+            const isUnavailable = data.message && (
+                data.message.toLowerCase().includes('unavailable') ||
+                data.message.toLowerCase().includes('blocked')
+            );
             Swal.fire({
-                icon: 'warning',
-                title: 'Error',
+                icon: isUnavailable ? 'warning' : 'error',
+                title: isUnavailable ? 'Product Unavailable' : 'Error',
                 text: data.message || 'Something went wrong',
                 background: '#0D0D0D',
                 color: '#fff'
             });
+            // Update product page UI if on product details page
+            if (isUnavailable && typeof window.markProductUnavailable === 'function') {
+                window.markProductUnavailable(data.message);
+            }
         }
     } catch (error) {
         console.error('Wishlist error:', error);

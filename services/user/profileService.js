@@ -1,6 +1,8 @@
 import User from "../../models/userModel.js";
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import { PROFILE_MESSAGES } from "../../constants/messages.js";
+
 
 /**
  * Get user profile.
@@ -21,10 +23,10 @@ export const updateProfile = async (userId, updateData) => {
  */
 export const changePassword = async (userId, currentPassword, newPassword) => {
     const user = await User.findById(userId);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error(PROFILE_MESSAGES.USER_NOT_FOUND);
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) throw new Error("Incorrect current password");
+    if (!isMatch) throw new Error(PROFILE_MESSAGES.INCORRECT_CURRENT_PASSWORD);
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
@@ -36,7 +38,7 @@ export const changePassword = async (userId, currentPassword, newPassword) => {
  */
 export const updateEmail = async (userId, newEmail) => {
     const user = await User.findById(userId);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error(PROFILE_MESSAGES.USER_NOT_FOUND);
     
     user.email = newEmail;
     return await user.save();

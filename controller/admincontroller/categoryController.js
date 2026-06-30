@@ -1,5 +1,8 @@
 import Category from "../../models/categoryModel.js";
 import * as CategoryService from "../../services/admin/categoryService.js";
+import { CATEGORY_MESSAGES } from "../../constants/messages.js";
+import { STATUS_CODES } from "../../constants/statusCode.js";
+
 
 // Load Category Page
 export const categoryInfo = async (req, res) => {
@@ -51,10 +54,10 @@ export const getAddCategoryPage = async (req, res) => {
 export const addCategory = async (req, res) => {
   try {
     const { message } = await CategoryService.createCategory(req.body);
-    res.status(201).json({ message: "Category added successfully" });
+    res.status(STATUS_CODES.CREATED).json({ message: CATEGORY_MESSAGES.ADDED });
   } catch (error) {
     console.error("Error adding category:", error);
-    res.status(error.message === "Category already exists" ? 400 : 500).json({
+    res.status(error.message === CATEGORY_MESSAGES.ALREADY_EXISTS ? 400 : 500).json({
       error: error.message || "Internal Server Error"
     });
   }
@@ -66,7 +69,7 @@ export const toggleCategoryStatus = async (req, res) => {
     const { id } = req.params;
     const category = await CategoryService.toggleCategoryStatus(id);
 
-    res.status(200).json({
+    res.status(STATUS_CODES.OK).json({
       message: `Category ${category.is_blocked ? 'blocked' : 'unblocked'} successfully`,
       is_blocked: category.is_blocked
     });
@@ -104,10 +107,10 @@ export const editCategory = async (req, res) => {
   try {
     const { id } = req.params;
     await CategoryService.updateCategory(id, req.body);
-    res.status(200).json({ message: "Category updated successfully" });
+    res.status(STATUS_CODES.OK).json({ message: CATEGORY_MESSAGES.UPDATED });
   } catch (error) {
     console.error("Error editing category:", error);
-    const status = error.message === "Category not found" ? 404 : (error.message === "Category name already exists" ? 400 : 500);
+    const status = error.message === CATEGORY_MESSAGES.NOT_FOUND ? 404 : (error.message === CATEGORY_MESSAGES.NAME_ALREADY_EXISTS ? 400 : 500);
     res.status(status).json({
       error: error.message || "Internal Server Error"
     });
@@ -119,10 +122,10 @@ export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
     await CategoryService.deleteCategory(id);
-    res.status(200).json({ message: "Category deleted successfully" });
+    res.status(STATUS_CODES.OK).json({ message: CATEGORY_MESSAGES.DELETED });
   } catch (error) {
     console.error("Error deleting category:", error);
-    res.status(error.message === "Category not found" ? 404 : 500).json({
+    res.status(error.message === CATEGORY_MESSAGES.NOT_FOUND ? 404 : 500).json({
       error: error.message || "Internal Server Error"
     });
   }

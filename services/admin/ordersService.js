@@ -2,6 +2,49 @@ import mongoose from "mongoose";
 import Order from "../../models/ordersModel.js";
 import Product from "../../models/productModel.js";
 import * as walletService from "../user/walletService.js";
+import { ADMIN_ORDER_MESSAGES } from "../../constants/messages.js";
+
+
+const ORDER_PROGRESS_STATUSES = ['Pending', 'Shipped', 'Out for Delivery', 'Delivered'];
+const RETURN_STATUSES = ['Return Request', 'Returned'];
+const TERMINAL_STATUSES = ['Cancelled', 'Returned'];
+const VALID_ORDER_STATUSES = [...ORDER_PROGRESS_STATUSES, 'Cancelled', ...RETURN_STATUSES];
+
+const validateStatusTransition = (currentStatus, nextStatus, entityName = "Order") => {
+    if (!VALID_ORDER_STATUSES.includes(nextStatus)) {
+        throw new Error(ADMIN_ORDER_MESSAGES.INVALID_ORDER_STATUS);
+    }
+
+    if (currentStatus === nextStatus) return;
+
+    if (TERMINAL_STATUSES.includes(currentStatus)) {
+        throw new Error(`${entityName} status cannot be changed after it is ${currentStatus}.`);
+    }
+
+    if (currentStatus === 'Return Request') {
+        if (nextStatus === 'Returned' || nextStatus === 'Delivered') return;
+        throw new Error(`${entityName} return requests can only be approved as Returned or rejected back to Delivered.`);
+    }
+
+    if (nextStatus === 'Return Request') {
+        throw new Error(ADMIN_ORDER_MESSAGES.RETURN_REQUESTS_MUST_BE_SUBMITTED_B);
+    }
+
+    const currentIndex = ORDER_PROGRESS_STATUSES.indexOf(currentStatus);
+    const nextIndex = ORDER_PROGRESS_STATUSES.indexOf(nextStatus);
+
+    if (currentIndex !== -1 && nextIndex !== -1 && nextIndex < currentIndex) {
+        throw new Error(`Cannot move ${entityName.toLowerCase()} status back from ${currentStatus} to ${nextStatus}.`);
+    }
+
+    if (currentStatus === 'Delivered' && nextStatus === 'Cancelled') {
+        throw new Error(`${entityName} cannot be cancelled after it is delivered.`);
+    }
+
+    if (nextStatus === 'Returned') {
+        throw new Error(`${entityName} can be returned only from a return request.`);
+    }
+};
 
 export const getAllOrders = async (queryParams, page, limit) => {
     const { startDate, endDate, status, paymentMethod, search } = queryParams;
@@ -71,32 +114,20 @@ export const updateOrderStatus = async (orderId, status) => {
     const order = await Order.findById(orderId);
     if (!order) return null;
 
-    const activeStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Out for Delivery'];
-    const terminalStatuses = ['Cancelled', 'Returned'];
+    validateStatusTransition(order.status, status, "Order");
+
+    const activeStatuses = [...ORDER_PROGRESS_STATUSES, 'Return Request'];
 
     for (const item of order.orderedItems) {
         const oldItemStatus = item.status;
 
+        validateStatusTransition(oldItemStatus, status, "Item");
+
         // If item was active and is now being cancelled/returned, restore stock
-        if (terminalStatuses.includes(status) && activeStatuses.includes(oldItemStatus)) {
+        if (order.inventoryProcessed !== false && TERMINAL_STATUSES.includes(status) && activeStatuses.includes(oldItemStatus)) {
             await Product.updateOne(
                 { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
                 { $inc: { "variants.$.stock": item.quantity } }
-            );
-        }
-        // If item was cancelled/returned and is now being revived, deduct stock
-        else if (activeStatuses.includes(status) && terminalStatuses.includes(oldItemStatus)) {
-            const variantObjectId = new mongoose.Types.ObjectId(item.variantId);
-            const product = await Product.findOne({ _id: item.product, "variants._id": variantObjectId });
-            const variant = product.variants.id(variantObjectId);
-
-            if (variant.stock < item.quantity) {
-                throw new Error(`Insufficient stock to revive item: ${product.name}`);
-            }
-
-            await Product.updateOne(
-                { _id: item.product, "variants._id": variantObjectId },
-                { $inc: { "variants.$.stock": -item.quantity } }
             );
         }
         item.status = status;
@@ -142,38 +173,26 @@ export const updateOrderStatus = async (orderId, status) => {
 
 export const updateOrderItemStatus = async (orderId, itemId, status) => {
     const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found.");
+    if (!order) throw new Error(ADMIN_ORDER_MESSAGES.ORDER_NOT_FOUND);
 
     const item = order.orderedItems.id(itemId);
-    if (!item) throw new Error("Item not found in order.");
+    if (!item) throw new Error(ADMIN_ORDER_MESSAGES.ITEM_NOT_FOUND_IN_ORDER);
 
     const oldStatus = item.status;
     if (oldStatus === status) return order;
 
+    validateStatusTransition(oldStatus, status, "Item");
+
     console.log(`Updating Item ${itemId} in Order ${orderId} from ${oldStatus} to ${status}`);
 
     // Stock Management
-    if (status === 'Cancelled' || status === 'Returned') {
+    if (order.inventoryProcessed !== false && (status === 'Cancelled' || status === 'Returned')) {
         if (oldStatus !== 'Cancelled' && oldStatus !== 'Returned') {
             await Product.updateOne(
                 { _id: item.product, "variants._id": new mongoose.Types.ObjectId(item.variantId) },
                 { $inc: { "variants.$.stock": item.quantity } }
             );
         }
-    } else if (oldStatus === 'Cancelled' || oldStatus === 'Returned') {
-        // Re-deduct stock if revived
-        const variantObjectId = new mongoose.Types.ObjectId(item.variantId);
-        const product = await Product.findOne({ _id: item.product, "variants._id": variantObjectId });
-        const variant = product.variants.id(variantObjectId);
-
-        if (variant.stock < item.quantity) {
-            throw new Error("Insufficient stock to revive this item.");
-        }
-
-        await Product.updateOne(
-            { _id: item.product, "variants._id": variantObjectId },
-            { $inc: { "variants.$.stock": -item.quantity } }
-        );
     }
 
     item.status = status;

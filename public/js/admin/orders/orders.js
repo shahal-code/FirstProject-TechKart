@@ -1,16 +1,37 @@
+const ORDER_PROGRESS_STATUSES = ['Pending', 'Shipped', 'Out for Delivery', 'Delivered'];
+
+function getOrderStatusOptions(currentStatus) {
+    if (currentStatus === 'Return Request') {
+        return {
+            'Delivered': 'Delivered',
+            'Returned': 'Returned'
+        };
+    }
+
+    if (['Cancelled', 'Returned'].includes(currentStatus)) {
+        return {
+            [currentStatus]: currentStatus
+        };
+    }
+
+    const currentIndex = ORDER_PROGRESS_STATUSES.indexOf(currentStatus);
+    const availableStatuses = ORDER_PROGRESS_STATUSES.slice(Math.max(currentIndex, 0));
+
+    if (currentStatus !== 'Delivered') {
+        availableStatuses.push('Cancelled');
+    }
+
+    return availableStatuses.reduce((options, status) => {
+        options[status] = status;
+        return options;
+    }, {});
+}
+
 async function updateStatus(orderId, currentStatus) {
     const { value: newStatus } = await Swal.fire({
         title: 'Update Order Status',
         input: 'select',
-        inputOptions: {
-            'Pending': 'Pending',
-            'Shipped': 'Shipped',
-            'Out for Delivery': 'Out for Delivery',
-            'Delivered': 'Delivered',
-            'Cancelled': 'Cancelled',
-            'Return Request': 'Return Request',
-            'Returned': 'Returned'
-        },
+        inputOptions: getOrderStatusOptions(currentStatus),
         inputValue: currentStatus,
         showCancelButton: true,
         confirmButtonColor: '#0055ff',

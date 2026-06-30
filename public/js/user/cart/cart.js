@@ -27,7 +27,6 @@ async function updateCartItem(itemId, newQuantity) {
             // Update individual item quantity and buttons
             const qtyInput = document.getElementById(`qty-input-${itemId}`);
             const minusBtn = document.getElementById(`minus-${itemId}`);
-            const plusBtn = document.getElementById(`plus-${itemId}`);
 
             qtyInput.value = newQuantity;
             minusBtn.disabled = newQuantity <= 1;
@@ -43,6 +42,18 @@ async function updateCartItem(itemId, newQuantity) {
                     badge.textContent = totalQty;
                     badge.classList.toggle('hidden', totalQty === 0);
                 }
+            }
+
+            // SECURITY: Warn user if coupon was auto-removed due to cart total drop
+            if (result.couponRemoved) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Coupon Removed',
+                    text: result.couponWarning || 'Your coupon was removed because the cart total dropped below the minimum required.',
+                    background: '#0D0D0D',
+                    color: '#fff',
+                    confirmButtonColor: '#0055ff'
+                });
             }
         } else {
             Swal.fire({
@@ -99,6 +110,21 @@ async function removeCartItem(itemId) {
                     }
                 }, 300);
             }
+
+            // SECURITY: Warn user if coupon was auto-removed due to cart total drop
+            if (result.couponRemoved) {
+                // Small delay so the removal animation plays first
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Coupon Removed',
+                        text: result.couponWarning || 'Your coupon was removed because the cart total dropped below the minimum required.',
+                        background: '#0D0D0D',
+                        color: '#fff',
+                        confirmButtonColor: '#0055ff'
+                    });
+                }, 350);
+            }
         } else {
             Swal.fire({
                 icon: 'error',
@@ -116,7 +142,14 @@ async function removeCartItem(itemId) {
 function updateCartSummary(cart) {
     // Recalculate subtotal using prices from the DOM since the server only sends IDs
     let subtotal = 0;
+    let hasUnavailable = false;
+    
     cart.items.forEach(item => {
+        const itemRow = document.getElementById(`cart-item-${item._id}`);
+        if (itemRow && itemRow.querySelector('.text-red-500.bg-red-500\\/10')) {
+            hasUnavailable = true;
+        }
+
         const priceSpan = document.getElementById(`price-${item._id}`);
         if (priceSpan) {
             const price = parseFloat(priceSpan.textContent);
@@ -130,6 +163,30 @@ function updateCartSummary(cart) {
     document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
     document.getElementById('summary-tax').textContent = `₹${tax.toFixed(2)}`;
     document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
+
+    // Update checkout button state
+    const checkoutBtn = document.querySelector('a[href="javascript:void(0)"]');
+    // Find the warning paragraph which is placed next to the checkout button in EJS
+    const warningText = checkoutBtn ? checkoutBtn.nextElementSibling : null;
+
+    if (checkoutBtn) {
+        if (cart.items.length === 0) {
+            checkoutBtn.setAttribute('onclick', 'return showEmptyCartWarning()');
+            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else if (hasUnavailable) {
+            checkoutBtn.setAttribute('onclick', 'return showUnavailableWarning()');
+            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (warningText && warningText.tagName === 'P') {
+                warningText.style.display = 'block';
+            }
+        } else {
+            checkoutBtn.setAttribute('onclick', `return validateAndProceedToCheckout(${total.toFixed(2)})`);
+            checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            if (warningText && warningText.tagName === 'P' && warningText.textContent.includes('unavailable')) {
+                warningText.style.display = 'none';
+            }
+        }
+    }
 }
 
 function showEmptyCartWarning() {
@@ -182,3 +239,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+async function validateAndProceedToCheckout(expectedTotal) {
+    try {
+        const response = await fetch('/user/cart/validate-checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ expectedTotal })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = '/user/checkout';
+        } else {
+            Swal.fire({
+                icon: result.icon || 'warning',
+                title: result.title || 'Price Updated',
+                text: result.message || 'An offer has expired or prices have changed. The cart will be updated.',
+                background: '#0D0D0D',
+                color: '#fff',
+                confirmButtonColor: '#0055ff'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    } catch (error) {
+        console.error('Checkout validation error:', error);
+        window.location.href = '/user/checkout';
+    }
+    return false;
+}
