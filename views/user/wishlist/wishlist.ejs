@@ -59,7 +59,7 @@
             </div>
 
             <% if (wishlist && wishlist.products && wishlist.products.length> 0) { %>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
             <% wishlist.products.forEach(item=> {
                         const product = item.productId;
                         if (!product) return;
@@ -77,13 +77,13 @@
                                     <span class="material-symbols-outlined text-xl">close</span>
                                 </button>
                             </div>
-                            <div class="p-8">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">
+                            <div class="p-3 md:p-8">
+                                <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-2 md:mb-4 gap-1">
+                                    <h3 class="text-xs md:text-xl font-bold text-white group-hover:text-primary transition-colors line-clamp-1 md:line-clamp-none">
                                         <%= product.name %>
                                     </h3>
                                     <% if (!item.isUnavailable) { %>
-                                        <span class="text-primary font-bold">₹<%= variant?.price || 0 %></span>
+                                        <span class="text-primary font-bold text-xs md:text-base">₹<%= variant?.price || 0 %></span>
                                     <% } %>
                                 </div>
                                 <% if(variant && !item.isUnavailable) { %>
@@ -107,38 +107,39 @@
                                     <% } %>
 
                                         <% if (item.isUnavailable) { %>
-                                            <span class="inline-block mb-4 text-sm font-bold text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
-                                                Product Unavailable
+                                            <span class="inline-block mb-2 md:mb-4 text-[10px] md:text-sm font-bold text-red-500 bg-red-500/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full">
+                                                Unavailable
                                             </span>
                                         <% } else { %>
-                                            <p class="text-gray-400 text-sm line-clamp-2 mb-8">
+                                            <p class="text-gray-400 text-sm line-clamp-2 mb-8 hidden md:block">
                                                 <%= product.description %>
                                             </p>
                                         <% } %>
 
-                                        <div class="flex gap-4">
+                                        <div class="flex gap-2 md:gap-4 mt-2 md:mt-0">
                                             <a href="/user/product/<%= product._id %>"
-                                                class="flex-1 py-4 bg-white text-black text-center font-black text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all duration-300">
-                                                View Product
+                                                class="flex-1 py-2 md:py-4 bg-white text-black text-center font-black text-[10px] md:text-xs uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center">
+                                                <span class="md:hidden">View</span>
+                                                <span class="hidden md:inline">View Product</span>
                                             </a>
                                             <% if (item.isUnavailable) { %>
                                                 <button disabled
-                                                    class="size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed"
+                                                    class="size-8 md:size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed shrink-0"
                                                     title="Product Unavailable">
-                                                    <span class="material-symbols-outlined">block</span>
+                                                    <span class="material-symbols-outlined text-sm md:text-base">block</span>
                                                 </button>
                                             <% } else if (variant && variant.stock > 0) { %>
                                                 <button
                                                     onclick="moveToCart('<%= product._id %>', '<%= variant?._id %>')"
-                                                    class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300">
-                                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                                    class="size-8 md:size-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300 shrink-0">
+                                                    <span class="material-symbols-outlined text-sm md:text-base">add_shopping_cart</span>
                                                 </button>
                                             <% } else { %>
                                                 <button disabled
-                                                    class="size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed"
+                                                    class="size-8 md:size-12 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center text-red-500 cursor-not-allowed shrink-0"
                                                     title="Out of Stock">
                                                     <span
-                                                        class="material-symbols-outlined">remove_shopping_cart</span>
+                                                        class="material-symbols-outlined text-sm md:text-base">remove_shopping_cart</span>
                                                 </button>
                                             <% } %>
                                         </div>
