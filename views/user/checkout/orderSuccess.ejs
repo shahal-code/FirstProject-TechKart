@@ -73,44 +73,44 @@
         <div class="max-w-xl w-full text-center space-y-10">
             <!-- Animated Success Icon -->
             <div class="relative inline-block">
-                <div class="size-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center animate-check border border-primary/20 success-glow mx-auto">
-                    <span class="material-symbols-outlined text-6xl text-primary font-bold">verified</span>
+                <div class="size-24 md:size-32 rounded-[2rem] md:rounded-[2.5rem] bg-primary/10 flex items-center justify-center animate-check border border-primary/20 success-glow mx-auto">
+                    <span class="material-symbols-outlined text-5xl md:text-6xl text-primary font-bold">verified</span>
                 </div>
-                <div class="absolute -top-4 -right-4 size-10 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-400/20 animate-bounce">
-                    <span class="material-symbols-outlined text-white text-lg">check_circle</span>
+                <div class="absolute -top-3 md:-top-4 -right-3 md:-right-4 size-8 md:size-10 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-400/20 animate-bounce">
+                    <span class="material-symbols-outlined text-white text-base md:text-lg">check_circle</span>
                 </div>
             </div>
 
             <!-- Content -->
-            <div class="space-y-4 animate-fade-up delay-1">
-                <h1 class="text-5xl font-black tracking-tighter leading-none">
+            <div class="space-y-3 md:space-y-4 animate-fade-up delay-1">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter leading-none">
                     Order <span class="text-primary">Confirmed!</span>
                 </h1>
-                <p class="text-white/40 text-lg font-medium max-w-sm mx-auto leading-relaxed">
+                <p class="text-white/40 text-sm md:text-lg font-medium max-w-sm mx-auto leading-relaxed">
                     Thank you for choosing TechKart. Your tech is on its way to your doorstep.
                 </p>
             </div>
 
             <!-- Order ID Card -->
-            <div class="glass-card rounded-[2rem] p-6 max-w-sm mx-auto flex items-center justify-between group hover:bg-white/[0.05] transition-all animate-fade-up delay-2">
+            <div class="glass-card rounded-[2rem] p-5 md:p-6 max-w-sm mx-auto flex items-center justify-between group hover:bg-white/[0.05] transition-all animate-fade-up delay-2">
                 <div class="text-left">
-                    <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Confirmation Number</p>
-                    <p class="text-xl font-bold tracking-widest text-primary"><%= orderId %></p>
+                    <p class="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Confirmation Number</p>
+                    <p class="text-lg md:text-xl font-bold tracking-widest text-primary"><%= orderId %></p>
                 </div>
-                <div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <span class="material-symbols-outlined text-white/40 group-hover:text-primary transition-colors">receipt_long</span>
+                <div class="size-10 md:size-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <span class="material-symbols-outlined text-sm md:text-base text-white/40 group-hover:text-primary transition-colors">receipt_long</span>
                 </div>
             </div>
 
             <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6 animate-fade-up delay-3">
-                <a href="/user/orders" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group">
-                    <span class="material-symbols-outlined">package_2</span>
+            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-4 md:pt-6 animate-fade-up delay-3">
+                <a href="/user/orders" class="bg-primary hover:bg-primary/90 text-white px-6 py-3.5 md:px-8 md:py-4 text-sm md:text-base rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 md:gap-3 group">
+                    <span class="material-symbols-outlined text-xl md:text-2xl">package_2</span>
                     Track Your Order
                 </a>
-                <a href="/user/shop" class="bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3">
+                <a href="/user/shop" class="bg-white/5 hover:bg-white/10 text-white px-6 py-3.5 md:px-8 md:py-4 text-sm md:text-base rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-2 md:gap-3">
                     Continue Shopping
-                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span class="material-symbols-outlined text-xl md:text-2xl">shopping_cart</span>
                 </a>
             </div>
 
