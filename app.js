@@ -43,6 +43,10 @@ const adminSession = session({
 
 app.use(passport.initialize());
 
+app.get("/", (req, res) => {
+  res.redirect("/user");
+});
+
 //user session,passport,routes
 app.use("/user", userSession, passport.session(), userContext, setLocals, userRoutes);
 //admin session ,passport,routes
