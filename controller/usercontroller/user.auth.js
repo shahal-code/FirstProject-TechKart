@@ -211,6 +211,6 @@ export const isLogout = (req, res) => {
         }
         res.clearCookie("user.id");
         // res.header("Clear-Site-Data", '"cache", "cookies", "storage"');
-        res.redirect("/user/login");
+        res.redirect("/user");
     });
 };
