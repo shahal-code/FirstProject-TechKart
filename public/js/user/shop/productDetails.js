@@ -49,13 +49,13 @@ function updateSelection(type, value) {
 
     if (variant) {
         currentVariant = variant;
-        
+
         // Sync ALL filters to the found variant so the UI stays consistent
         selectedFilters.ram = variant.ram;
         selectedFilters.storage = variant.storage;
         selectedFilters.size = variant.size;
         selectedFilters.color = variant.color;
-        
+
         updateUI();
         updateButtonStyles();
     }
@@ -66,7 +66,7 @@ function updateButtonStyles() {
     document.querySelectorAll('.option-btn').forEach(btn => {
         const type = btn.getAttribute('data-type');
         const value = btn.getAttribute('data-value');
-        
+
         if (selectedFilters[type] === value) {
             btn.classList.add('border-[#3b82f6]', 'bg-[#3b82f6]/10', 'text-white');
             btn.classList.remove('border-white/10', 'text-slate-500');
@@ -271,7 +271,7 @@ window.addEventListener('load', () => {
  * Called by cartUtils.js when server returns a blocked/unavailable product error.
  * Updates the product page UI to reflect the unavailable state without a page reload.
  */
-window.markProductUnavailable = function(message) {
+window.markProductUnavailable = function (message) {
     // 1. Update stock indicator
     const stockDot = document.getElementById('stock-dot');
     const stockStatus = document.getElementById('stock-status');
@@ -354,7 +354,7 @@ async function handleAddToCart(productId, event = null) {
 
 async function openReviewModal() {
     const productId = window.location.pathname.split('/').pop();
-    
+
     const { value: formValues } = await Swal.fire({
         title: 'Write a Review',
         html: `
@@ -379,7 +379,7 @@ async function openReviewModal() {
         preConfirm: () => {
             const rating = document.getElementById('swal-rating').value;
             const comment = document.getElementById('swal-comment').value;
-            
+
             if (!rating || !comment) {
                 Swal.showValidationMessage('Please provide both a rating and a comment');
             }
@@ -400,7 +400,7 @@ async function openReviewModal() {
                 body: JSON.stringify(formValues)
             });
             const data = await response.json();
-            
+
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
